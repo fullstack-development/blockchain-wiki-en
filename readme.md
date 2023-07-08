@@ -1,3 +1,4 @@
+Digital Signatures on ethereum
 # Digital Signatures on Ethereum
 
 Cryptographic digital signatures are a key part of the blockchain. They are used to verify ownership of an address without revealing its private key. They are mainly used for signing transactions, but can also be used to sign arbitrary messages, opening up various possibilities for use in DApps.
@@ -74,7 +75,7 @@ We can encode a signed transaction as follows:
 3. Sign the hash with the private key using the ECDSA algorithm.
 4. Encode the signed transaction:
    ```solidity
-   RLP(nonce, gasPrice, gasLimit, to, value, data, v, r, s).
+   RLP(nonce, gasPrice, gasLimit, to, value, data, v, r, s).```
 
 By decoding the transaction data encoded with RLP, you can retrieve the raw transaction parameters and the signature.
 
@@ -98,6 +99,7 @@ sig: 0x0f1928d8f26b2d9260929425bdc6ac922f7d787fd73b42afe2548776a0e858016f52826d8
 r: 0x0f1928d8f26b2d9260929425bdc6ac922f7d787fd73b42afe2548776a0e85801
 s: 0x6f52826d8ab67e1c84e6e6778fa4769d8aa4f014bf76b3280be77e4e0c447f9b
 v: 1c (in hex) or 28 (in decimal)
+```
 
 ## Standardization of Signature Methods
 
@@ -106,7 +108,7 @@ v: 1c (in hex) or 28 (in decimal)
 Personal_sign is the common term for the process of signing a message that we described earlier. Let's go over the algorithm in general terms. The message is usually hashed beforehand, resulting in a fixed length of 32 bytes:
 ```solidity
 "\x19Ethereum Signed Message:\n32" + Keccak256(message)
-
+```
 Then this hash is signed, which works perfectly for confirming ownership rights to something.
 
 However, if user **A** signs a message and sends it to contract **X**, user **B** can copy that signed message and send it to contract **Y**. This is called a [replay attack](https://en.wikipedia.org/wiki/Replay_attack).
@@ -119,7 +121,7 @@ This standard is a simple proposal aimed at addressing the replay attack problem
 
 ```solidity
 0x19 <1 byte version> <version specific data> <data to sign>
-
+```
 |Версия | EIP |Description|
 |-------|-----|--------|
 |0x00   |191  |Validator's address. The data to be signed can be anything, and only the validator knows how to handle it|
