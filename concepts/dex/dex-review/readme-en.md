@@ -49,7 +49,6 @@ It's important to note that the protocol actually performs two swaps: it deposit
 **Why do we need to use `Router02` instead of `Router01`?** The reason is that routers do not have state and do not store token balances. They can be safely replaced with a new implementation if necessary. For example, if there are discovered issues or the need to add new logic. This was exactly what was done in Uniswap v2 when shortcomings were found in `Router01`.
 
 It's important to note that constructing swap routes is not the only task of the router contract. It also provides methods for token swaps, calculates certain values during swaps, and handles liquidity addition and removal.
-```
 
 I hope this helps! Let me know if you have any further questions.
 
