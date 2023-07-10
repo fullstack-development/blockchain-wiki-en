@@ -39,7 +39,7 @@ contract Hash {
 In smart contracts, the `keccak256` function is used for various purposes, such as working with signatures, creating hash tables (mappings), computing function selectors, working with Merkle trees, and more.
 
 The `keccak256` function can also be used for specific logic in smart contracts. For example, in a commit-reveal scheme, a user first submits a transaction with hashed data and later submits the actual data, which is then verified against the hash.
-
+```
 ## Links
 
 1. [SHA-3 Standard](https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.202.pdf)
