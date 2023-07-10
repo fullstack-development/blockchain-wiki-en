@@ -1,4 +1,4 @@
-**Data Separation** refers to the approach of creating multiple smart contracts to separate the storage of data from the business logic.
+## **Data Separation** refers to the approach of creating multiple smart contracts to separate the storage of data from the business logic.
 
 In this approach, users interact with a logical contract, while the data is stored in a separate storage contract.
 
@@ -6,7 +6,7 @@ The logical contract contains the code that executes when users interact with th
 
 The storage contract holds the state related to the logical smart contract, such as user balances and addresses.
 
-**Important!** Only the specific logic contract should be able to write data to the storage contract, and no one else.
+## **Important!** Only the specific logic contract should be able to write data to the storage contract, and no one else.
 
 By default, the storage contract should be immutable, but it provides the capability to change the logic contract to any other contract.
 
