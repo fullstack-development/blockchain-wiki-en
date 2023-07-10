@@ -76,11 +76,12 @@ contract TransparentProxy {
 }
 ```
 
-> In UUPS, the upgrade logic is handled by the implementation contract itself. This means that the implementation contract has a method `upgradeTo(address newLogic)`.
+> In UUPS, the upgrade logic is handled by the implementation contract itself. This means that the implementation contract has a method ```upgradeTo(address newLogic)```.
+> 
 ![](./images/schema-uups-proxy.png)
 >
 >
-> ```js
+```js
 contract Logic {
     uint256 private _value;
 
@@ -111,6 +112,7 @@ On the other hand, for UUPS, it is necessary to correctly implement methods in t
 You can refer to an example of using TransparentProxy based on the OpenZeppelin library [here](./contracts/TransparentProxy.sol).
 
 You can also refer to an example of using UUPS based on the OpenZeppelin library [here](./contracts/UUPSProxy.sol).
+
 ## Beacon Proxy
 The Beacon Proxy pattern is a proxy template where multiple proxy contracts reference a single smart contract. This smart contract provides the address of the logic contract. The contract that provides the implementation address to any proxy is called the "Beacon" contract.
 
