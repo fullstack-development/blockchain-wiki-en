@@ -1,4 +1,4 @@
 # Solidity
 
-- [ABI](./ABI/readme.md). Все про ABI
-- [Event arguments indexing](./event-argument-indexing/event-argument-indexing.md). Для чего параметры ```indexed``` и ```non-indexed``` в solidity событие
+- [ABI](./ABI/readme-en.md). All about ABI
+- [Event arguments indexing](./event-argument-indexing/event-argument-indexing-en.md).  The purpose of ```indexed``` and ```non-indexed``` in Solidity events. 
