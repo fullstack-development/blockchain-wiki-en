@@ -7,6 +7,7 @@ This knowledge base was born out of real-world project challenges. We've transfe
 We'd love to hear your feedback, contributions to the roadmap, and any kind of partnership opportunities. Let's grow together! 🌱✨
 
 Contact email: hello@metalamp.io
+
 Join our TG-channel: [MetaLamp|Web3 DevTeam](https://t.me/metametalamp)
 
 ### Blockchain wiki
