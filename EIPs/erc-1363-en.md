@@ -18,7 +18,6 @@ interface IERC1363 is IERC20, IERC165 {
 ```
 
 |```transferAndCall()```|```transferFromAndCall()```|```approveAndCall()```|
-
 |-|-|-|
 |Under the hood, it makes a standard function call to `transfer()`, and then makes an additional function call to the address of the **token recipient**.|Under the hood, it makes a standard function call to `transferFrom()`, and then makes an additional function call to the address of the **token recipient**.|Under the hood, it makes a standard function call to `approve()`, and then makes an additional function call to the address of the **entity granted permission** to use the token.|
 
