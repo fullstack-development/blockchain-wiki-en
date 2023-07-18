@@ -1,6 +1,6 @@
 # ERC-1363: Payable Token
 
-The ERC-1363 standard extends the functionality of the ERC-20 token by allowing the execution of code immediately after the `transfer()`, `transferFrom()`, or `approve()` functions within a single transaction. This standard helps to avoid double gas payment, as the additional call is made within the same transaction as the token transfer or approval.
+The ERC-1363 standard extends the functionality of the ERC-20 token by allowing the execution of code immediately after the `transfer()`, `transferFrom()`, or `approve()` functions within a single transaction. This standard helps to avoid double gas payment, as the additional call is made within the same transaction of the token transfer or approval.
 
 Important! The ERC-1363 standard is an extension of the ERC-20 standard and is fully backward compatible. This means it does not override the standard functions `transfer()`, `transferFrom()`, or `approve()`.
 
@@ -18,11 +18,9 @@ interface IERC1363 is IERC20, IERC165 {
 ```
 
 |```transferAndCall()```|```transferFromAndCall()```|```approveAndCall()```|
-|-|-|-|
 
-|Under the hood, it makes a standard function call to `transfer()`, and then makes an additional function call to the address of the **token recipient**.|
-|Under the hood, it makes a standard function call to `transferFrom()`, and then makes an additional function call to the address of the **token recipient**.|
-|Under the hood, it makes a standard function call to `approve()`, and then makes an additional function call to the address of the **entity granted permission** to use the token.|
+|-|-|-|
+|Under the hood, it makes a standard function call to `transfer()`, and then makes an additional function call to the address of the **token recipient**.|Under the hood, it makes a standard function call to `transferFrom()`, and then makes an additional function call to the address of the **token recipient**.|Under the hood, it makes a standard function call to `approve()`, and then makes an additional function call to the address of the **entity granted permission** to use the token.|
 
 >To execute code after calling `transfer()` or `transferFrom()`, the token recipient must be a **contract** and implement the `IERC1363Receiver.sol` interface.
 
