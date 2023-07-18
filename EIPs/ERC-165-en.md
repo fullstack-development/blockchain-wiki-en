@@ -1,6 +1,7 @@
 # ERC-165: Standard Interface Detection
 
-Sometimes, when interacting with an external contract, it can be useful to determine whether the smart contract supports certain "standard interfaces," such as the ERC-721 token interface, and if it does, which version of the interface it supports. To achieve this, the EIP-165: Standard Interface Detection exists, which defines how to perform such checks.
+Sometimes, when interacting with an external contract, it can be useful to determine whether the smart contract supports certain "standard interfaces," such as the ERC-721 token interface, and if it does, which version of the interface it supports. To achieve this there is the EIP-165: Standard Interface Detection, which defines how to perform such checks.
+
 
 **EIP-165** is a standard for Ethereum blockchain smart contracts that allows the identification of supported interfaces by smart contracts. This is accomplished by having a smart contract implement a special function called `supportsInterface(bytes4 interfaceID)`, which takes an interface identifier as input and returns a boolean value indicating whether the contract implements the corresponding interface. This approach simplifies interaction with smart contracts, as users can check whether a specific function or capability is supported by the smart contract before invoking it.
 
