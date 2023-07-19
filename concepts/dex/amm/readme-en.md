@@ -10,7 +10,7 @@ Important! AMMs have truly carved out their niche in the DeFi space due to their
 
 When you want to perform any action on a DEX using AMM, you have to interact with the exchange's smart contracts.
 
-Important! Interacting with an AMM can be thought of as interacting with a smart contract (P2C). Transactions occur between users and contracts.
+Important! Interacting with an AMM can be perceived as interacting with a smart contract (P2C). Transactions occur between users and contracts.
 
 Tokens for exchange cannot come out of thin air. They need to be stored somewhere as reserves on a smart contract (since the user interacts with the smart contract). So, if you want to swap USDT tokens for ETH, there should already be enough ETH on the smart contract.
 
@@ -112,7 +112,7 @@ The constant product market maker is the most popular type of AMM. Visualize the
 
 ![Constant Product Market Maker](./images/amm-curve.png)
 
-This mathematical curve is a hyperbola. Looking at the graph, you can see that this approach ensures the liquidity pool is never exhausted, as the curve never intersects with the axes. It guarantees that AMM pools will always have funds available. In the worst-case scenario, one of the tokens may reach a price that approaches infinity.
+This mathematical curve is a hyperbola. Looking at the graph, you can see that this approach ensures the liquidity pool is never drained, as the curve never intersects with the axes. It guarantees that AMM pools will always have funds available. In the worst-case scenario, one of the tokens may reach a price that approaches infinity.
 
 How does it work in practice? It's quite simple. When the quantity of token X changes, the quantity of token Y needs to be adjusted to maintain a constant K.
 
@@ -162,7 +162,7 @@ we get:
 
 This means that we will receive approximately 76 tokens of Y in exchange for 100 tokens of X. There will be 833 tokens of Y and 1200 tokens of X remaining in the pool. You may have noticed that our rounding affected the constant K, and it became 999,900. In this example, we can tolerate a small margin of error.
 
-Important note: In the first purchase, we received 91 tokens of Y. In the second purchase, we received 76 tokens of Y. With each subsequent purchase, we will receive fewer tokens of Y according to our curve and the laws of AMM. To buy the same amount of tokens of Y, we will need to provide more tokens of X. This means that the price of token Y will increase relative to token X with each purchase. This is how AMM ensures that the liquidity pool remains balanced and not exhausted.
+Important note: In the first purchase, we received 91 tokens of Y. In the second purchase, we received 76 tokens of Y. With each subsequent purchase, we will receive fewer tokens of Y according to our curve and the laws of AMM. To buy the same amount of tokens of Y, we will need to provide more tokens of X. This means that the price of token Y will increase relative to token X with each purchase. This is how AMM ensures that the liquidity pool remains balanced and drained.
 
 ## Conclusion
 
