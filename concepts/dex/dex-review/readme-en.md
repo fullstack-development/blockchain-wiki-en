@@ -50,8 +50,6 @@ It's important to note that the protocol actually performs two swaps: it deposit
 
 It's important to note that constructing swap routes is not the only task of the router contract. It also provides methods for token swaps, calculates certain values during swaps, and handles liquidity addition and removal.
 
-I hope this helps! Let me know if you have any further questions.
-
 ### Adding Liquidity
 
 Every smart contract `UniswapV2Pair.sol` manages a liquid pair of reserves for two ERC20 tokens. **Liquidity providers** add liquidity (create a market) by depositing two tokens. The amount of tokens is equivalent to their value at the time of addition. After that, the tokens are automatically locked in the smart contract. It can be a pair of ERC-20 tokens or ETH - ERC20 pair.
@@ -76,11 +74,11 @@ In the Read Contract tab, click on `token0` and `token1`. You will see the addre
 
 When creating a liquidity pool, LP tokens are minted in return, which reflect the liquidity provider's share in the pool. As long as Alice is the only liquidity provider, she holds 100% of the LP tokens. These tokens are also known as shares. Now, let's imagine that I want to create a similar pair after Alice.
 
-But here's the catch: I can't create the exact same pair; I can only add liquidity to Alice's pair. And I must do it at the current exchange rate.
+Here's the catch: I can't create the exact same pair; I can only add liquidity to Alice's pair. And I must do it at the current exchange rate.
 
 > For example, if I want to add 1500 2INCH, I need to provide 1 USDT. After that, Alice will have 91% of the LP tokens, and I will have 9%.
 
-_Important!_ **LP tokens** can always be exchanged back for the pool reserves.
+_Important!_ **LP tokens** can always be exchanged back to the pool reserves.
 
 ![](./images/uniswap-v2-add-liquidity-lp.png)
 
@@ -102,7 +100,7 @@ The developers of the third version promise increased capital utilization effici
 
 ### Concentrated Liquidity
 
-When LP provides liquidity to a Uniswap v2 pool, it is evenly distributed along the price curve. This allows for processing all price ranges from zero to infinity but makes capital utilization inefficient.
+When LP provides liquidity to a Uniswap v2 pool, it is evenly distributed along the price curve. This allows to process all price ranges from zero to infinity but makes capital utilization inefficient.
 
 The problem is that most assets are traded within specific price ranges. This is especially noticeable in pools with stablecoins, which have a very narrow range.
 
