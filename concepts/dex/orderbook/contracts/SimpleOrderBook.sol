@@ -13,13 +13,13 @@ error SimpleOrderBook__OfferIsInactive();
 error SimpleOrderBook__SenderIsNotOfferOwner();
 
 /**
- * @notice Контракт ордербука. Контракт не включает механизм сопоставления ордеров. Предполагается, что это делается off-chain
- * @dev Контракт создан в учебных целях. Не использовать на реальных проектах
+ * @notice Orderbook contract. The contract does not include a mechanism for matching orders. It is assumed that this is done off-chain.
+ * @dev Contract created for educational purposes. Do not use in real projects.
  */
 contract SimpleOrderBook is ReentrancyGuard {
     using SafeERC20 for IERC20;
 
-    /// @notice Предложение или ордер на обмен. Это может быть покупка или продажа токена
+    /// @notice Offer or order for exchange. It can be a token purchase or sale.
     struct Offer {
         uint256 id;
         address owner;
@@ -57,11 +57,11 @@ contract SimpleOrderBook is ReentrancyGuard {
     event OfferCanceled(uint256 indexed offerId, Offer offer);
 
     /**
-     * @notice Создание ордера
-     * @param _saleToken Адрес токена для продажи
-     * @param _amountToSell Сумма токена продажи
-     * @param _buyToken Адрес токена для покупки
-     * @param _amountToBuy Сумма токена покупки
+     * @notice Order creation
+     * @param _saleToken Address of the token for sale
+     * @param _amountToSell Amount of token for sale
+     * @param _buyToken Address of the token for purchase
+     * @param _amountToBuy Amount of token for purchase
      */
     function createOffer(address _saleToken, uint256 _amountToSell, address _buyToken, uint256 _amountToBuy) external nonReentrant {
         if (_saleToken == address(0) && _buyToken == address(0)) {
@@ -91,9 +91,9 @@ contract SimpleOrderBook is ReentrancyGuard {
     }
 
     /**
-     * @notice Исполнение ордера
-     * @param _id Идентификатор ордера
-     * @param _quantity Количество токена для исполнения ордера
+     * @notice Order execution
+     * @param _id Order identifier
+     * @param _quantity Quantity of token for order execution
      */
     function buy(uint256 _id, uint256 _quantity) external canBuy(_id) nonReentrant {
         Offer memory offer = _offers[_id];
@@ -125,8 +125,8 @@ contract SimpleOrderBook is ReentrancyGuard {
     }
 
     /**
-     * @notice Отмена ордера
-     * @param _id Идентификатор ордера
+     * @notice Order cancellation
+     * @param _id Order identifier
      */
     function cancel(uint256 _id) external canCancel(_id) nonReentrant {
         Offer memory offer = _offers[_id];
@@ -139,26 +139,26 @@ contract SimpleOrderBook is ReentrancyGuard {
     }
 
     /**
-     * @notice Получение ордера по идентификатору
-     * @param _id Идентификатор ордера
+     * @notice Getting an order by identifier
+     * @param _id Order identifier
      */
     function getOfferById(uint256 _id) external view returns (Offer memory) {
         return _offers[_id];
     }
 
     /**
-     * @notice Получение создателя ордера по идентификатору
-     * @param _id Идентификатор ордера
-     * @return Адрес владельца ордера
+     * @notice Getting the creator of an order by identifier
+     * @param _id Order identifier
+     * @return Address of the order owner
      */
     function getOwnerById(uint256 _id) public view returns (address) {
         return _offers[_id].owner;
     }
 
     /**
-     * @notice Проверка актуальности ордера
-     * @param _id Идентификатор ордера
-     * @return True, если ордер активен, иначе - false
+     * @notice Checking the validity of an order
+     * @param _id Order identifier
+     * @return True if the order is active, otherwise false
      */
     function isOfferActive(uint256 _id) public view returns (bool) {
         return _offers[_id].timestamp > 0;
