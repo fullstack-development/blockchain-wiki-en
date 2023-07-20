@@ -8,9 +8,9 @@ import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol";
 import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
 
 /**
- * @notice Контракт адаптер. Предназначен для демонстрации взаимодействия с контрактами Uniswap V2.
- * Реализовано добавление и удаление ликвидности, обмен ERC20 токена на ERC20 токен
- * @dev Контракт создан в учебных целях. Не использовать на реальных проектах
+ * @notice Adapter contract. Intended for demonstrating interaction with Uniswap V2 contracts.
+ * Implemented liquidity addition and removal, ERC20 token exchange with ERC20 token.
+ * @dev Contract created for educational purposes. Do not use in real projects.
  */
 contract Adapter {
     using SafeERC20 for IERC20;
@@ -50,11 +50,11 @@ contract Adapter {
     }
 
     /**
-     * @notice Добавление ликвидности
-     * @param amountA Количество токена A
-     * @param amountB Количество токена B
-     * @param amountAMin Минимально количество токена A
-     * @param amountBMin Минимально количество токена B
+     * @notice Liquidity addition
+     * @param amountA Amount of token A
+     * @param amountB Amount of token B
+     * @param amountAMin Minimum amount of token A
+     * @param amountBMin Minimum amount of token B
      */
     function addLiquidityToUniswap(
         uint256 amountA,
@@ -83,10 +83,10 @@ contract Adapter {
     }
 
     /**
-     * @notice Удаление ликвидности
-     * @param liquidity Количество lp токена
-     * @param amountAMin Минимально количество токена A
-     * @param amountBMin Минимально количество токена B
+     * @notice Liquidity removal
+     * @param liquidity Amount of LP token
+     * @param amountAMin Minimum amount of token A
+     * @param amountBMin Minimum amount of token B
      */
     function removeLiquidityFromUniswap(
         uint256 liquidity,
@@ -112,9 +112,9 @@ contract Adapter {
     }
 
     /**
-     * @notice Получение баланса lp токена
-     * @return lpToken Адрес lp токена
-     * @return lpBalance Баланс lp токена
+     * @notice Getting LP token balance
+     * @return lpToken Address of LP token
+     * @return lpBalance LP token balance
      */
     function getLpInfo() public view returns (address lpToken, uint256 lpBalance) {
         address _factory = router.factory();
@@ -123,9 +123,9 @@ contract Adapter {
     }
 
     /**
-     * @notice Получение стоимости токена из пула ликвидности для обмена
-     * @param amountIn Сумма токена на вход
-     * @return Сумма токенов на выходе
+     * @notice Getting the token price from the liquidity pool for the exchange
+     * @param amountIn Amount of token on the input
+     * @return Amount of tokens on the output
      */
     function getTokenPriceFromPair(
         uint256 amountIn
@@ -139,9 +139,9 @@ contract Adapter {
     }
 
     /**
-     * @notice Обмен токена A на токен B
-     * @param amountIn Сумма токена A на вход
-     * @param amountOutMin Минимальная сумма токена B на выходе
+     * @notice Exchanging token A for token B
+     * @param amountIn Amount of token A on the input
+     * @param amountOutMin Minimum amount of token B on the output
      */
     function swapTokenAToTokenB(
         uint256 amountIn,
