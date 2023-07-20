@@ -5,141 +5,143 @@ contract TestContract {
     function someFunc(uint256 amount, address addr) public {}
 }
 
-// Полезные заметки
-// 1. ABI - двоичный интерфейс контракта, стандартный способ взаимодействия с контрактами внутри экосистемы.
-//    Селектор функции(fucntion selector) - первые 4 байта определяют селектор функции.
-//    Начиная с 5-го байта кодируются аргументы функции
-//    Дальше кодируются типы(uint<M>, int<M>, address, uint, int, bool, ..., bytes<M, function> )
-//    Некторые типы не поддерживаются ABI напрямую (address payable, contract, enum, struct). Эти типы поддерживаются через стандартыне типы.
+// Useful Notes
+// 1. ABI - Binary interface of a contract, the standard way to interact with contracts within the ecosystem.
+//    Function selector - The first 4 bytes define the function selector.
+//    Starting from the 5th byte, the function arguments are encoded.
+//    Following that, types are encoded (uint<M>, int<M>, address, uint, int, bool, ..., bytes<M, function>).
+//    Some types are not directly supported by ABI (address payable, contract, enum, struct). These types are supported through standard types.
 //
-//    Есть динамические типы(bytes, string, T[])
-//    Есть статические типы(все остальные)
+//    There are dynamic types (bytes, string, T[]).
+//    There are static types (all others).
 //
-//    События бывают индексированные и неиндексированные. Здесь сложно.
-//    Первые кодируются в специальный журнал и сложно читаются, но легко ищутся.
-//    Вторые кодируются на месте, легко читаются, но сложно ищутся.
+//    Events can be indexed or non-indexed. It's a bit complicated.
+//    Indexed events are logged into a special log and are hard to read but easy to search.
+//    Non-indexed events are logged in-place, easy to read but hard to search.
 //
-//    Ошибки кодируются, как функции.
+//    Errors are encoded as functions.
 //
-//    encode - метод глобального объекта abi для вызова кодирования.
-//    encodePacked - нестандартный метод кодирования, где максимально объдиняются типы.
-//                   Динамические типы кодируются на месте и без длины.
-//                   Элементы массива дополняются, но кодируются на месте.
+//    encode - A method of the global ABI object for encoding.
+//    encodePacked - An unconventional encoding method where types are tightly packed.
+//                   Dynamic types are encoded in-place without length.
+//                   Array elements are padded but encoded in-place.
 //
-//    Ссылка на документацию: https://docs.soliditylang.org/en/v0.8.16/abi-spec.html#abi
+//    Documentation reference: [Solidity ABI Specification](https://docs.soliditylang.org/en/v0.8.16/abi-spec.html#abi)
 
-// 2. Для конкатенации строк можно использовать abi.encodePacked
-//    Пример: string(abi.encodePacked("Hi mom! ", "Miss you"));
-//
-//    Важно: С версии solidity 0.8.12 появился метод concat
-//      Пример: string.concat(strA, strB);
+// 2. For string concatenation, you can use abi.encodePacked.
+//    Example: string(abi.encodePacked("Hi mom! ", "Miss you"));
 
-// 3. Методы ниже encodeStringPacked и encodeStringsBytes дают одинаковый видимый результат.
-//    Разница описана здесь https://forum.openzeppelin.com/t/difference-between-abi-encodepacked-string-and-bytes-string/11837
-//    Первый — копирование памяти, второй — просто приведение типа указателя.
-//    Важно: Приведение типа обходится дешевле по газу.
+//    Important: Starting from Solidity version 0.8.12, the `concat` method is available.
+//      Example: string.concat(strA, strB);
+
+// 3. The methods encodeStringPacked and encodeStringsBytes produce the same visible result.
+//    The difference is described here: [Difference between abi.encodePacked(string) and bytes(string)](https://forum.openzeppelin.com/t/difference-between-abi-encodepacked-string-and-bytes-string/11837)
+//    The first one involves memory copying, while the second one is simply a pointer type conversion.
+//    Important: Pointer type conversion is cheaper in terms of gas usage.
 
 contract Encoding {
-    // Конкатенация строк
+    // String Contactination
     function combineStrings() public pure returns (string memory) {
         return string(abi.encodePacked("Hi mom! ", "Miss you"));
     }
 
-    // Кодирование нескольких строк
+    // Encoding multiple strings
     function combineBytesStrings() public pure returns (bytes memory) {
         return abi.encodePacked("Hi mom! ", "Miss you");
     }
 
-    // Кодирование числа
+    // Encoding a number
     function encodeNumber() public pure returns(bytes memory) {
         bytes memory number = abi.encode(1);
         return number;
     }
 
-    // Кодирование строки
+    // String encoding
     function encodeString() public pure returns(bytes memory) {
         bytes memory someString = abi.encode("some string");
         return someString;
     }
 
-    // Альтернативный способ кодирования строки
+    // Another way of string encoding
     function encodeStringPacked() public pure returns(bytes memory) {
         bytes memory someString = abi.encodePacked("some string");
         return someString;
     }
 
-    // Альтернативный способ кодирования строки
+    // Another way of string encoding
     function encodeStringsBytes() public pure returns(bytes memory) {
         bytes memory someString = bytes("some string");
         return someString;
     }
 
-    // Декодирование строки
+    // String decoding
     function decodeString() public pure returns (string memory) {
         string memory someString = abi.decode(encodeString(), (string));
         return someString;
     }
 
-    // Кодирование нескольких строк
+    // Encoding multiple strings
     function multiEncode() public pure returns(bytes memory) {
         bytes memory someString = abi.encode("some string", "it's bigger");
         return someString;
     }
 
-    // Декодирование нескольких строк
+    // Decoding multiple strings
     function multiDecode() public pure returns (string memory, string memory) {
         (string memory someString, string memory someOtherString) = abi.decode(multiEncode(), (string, string));
         return (someString, someOtherString);
     }
 
-    // Альтенативный способ кодирования нескольких строк
+    // Alternative way of Encoding multiple strings
     function multiEncodePacked() public pure returns(bytes memory) {
         bytes memory someString = abi.encodePacked("some string", "it's bigger");
         return someString;
     }
 
-    // Альтернативный способ декодирования нескольких строк
-    // Этот вариант нельзя реализовать. В обратную сторону множественное декодирование работать не будет.
-    // Так как при таком способе кодирования, мы избавляемся об информации пробелов и других лишних штук
+    // Alternative way of dencoding multiple strings
+    // "This approach cannot be implemented. Multiple decoding in the reverse direction will not work.
+// This is because with this encoding method, we eliminate information about spaces and other unnecessary things."
     function multiDecodePacked() public pure returns (string memory, string memory) {
         (string memory someString, string memory someOtherString) = abi.decode(multiEncodePacked(), (string, string));
         return (someString, someOtherString);
     }
 
-    // Альтернативный способ декодирования нескольких строк
-    // Этот вариант рабочий.
+    // Alternative way of dencoding multiple strings
+    // This option is working one.
     function multiStringCastPacked() public pure returns (string memory) {
         string memory someString = string(multiEncodePacked());
         return someString;
     }
 
-    //========= Получение селектора функции и аргументов ========
+    //========= Obtaining the function selector and arguments ========
 
-    // Пример: получить селектор вызова функции из закодированных данных
-    // Реальный кейс с которым пришлось столкнуться, когда из data вызова нужно получить отдельно селектор функции и аргументы функции
+    // Example: obtaining the function call selector and arguments from encoded data.
+// A real case scenario that I had to deal with, where I needed to separately extract the function call selector and function arguments from the call data.
     function getFuncSelectorAndArgs() public view returns (bytes4 selector, bool isSelecor, uint, address) {
-        // Кодируем селектор функции с аргументом uint256
+// Encoding the function selector with the argument uint256.
+
         bytes4 _selector = bytes4(keccak256("someFunc(uint256,address)"));
         bytes memory data = abi.encodeWithSelector(_selector, 100, msg.sender);
 
-        // Получаем селектор функции
+// Obtaining the function selector.
+
         selector = this.decodeFuncSelector(data);
-        // Проверяем что селектор правильный
+        // Verifying that the function selector is correct
         isSelecor = selector == TestContract.someFunc.selector;
 
-        // Получаем аргументы функции
+// Obtaining the function arguments.
         (uint256 argument1, address argument2) = this.decodeFuncArguments(data);
 
         return (selector, isSelecor, argument1, argument2);
     }
 
-    // Получаем селектор функции
+// Obtaining the function selector.
     function decodeFuncSelector(bytes calldata data) public pure returns (bytes4) {
         bytes4 selector = bytes4(data[:4]);
         return selector;
     }
 
-    // Получаем аргументы
+// Obtaining arguments.
     function decodeFuncArguments(bytes calldata data) public pure returns(uint amount, address addr) {
         (amount, addr) = abi.decode(data[4:], (uint256, address));
         return (amount, addr);
