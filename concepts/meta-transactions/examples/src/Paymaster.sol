@@ -5,9 +5,9 @@ import {BasePaymaster} from "gsn/BasePaymaster.sol";
 import "gsn/utils/GsnTypes.sol";
 
 /**
- * @notice Контракт на котором мы будем хранить средства для организации транзакций
- * @dev Будем использовать версию 2.2.5. Этот контракт создан только в ознакомительных целях.
- * Он не протестирован и не имеет реальной цели
+ * @notice A smart contract where we will store funds for organizing transactions.
+ * @dev We will use version 2.2.5. This contract is created for informational purposes only.
+ * It is not tested and does not serve any real-world purpose.
  */
 contract Paymaster is BasePaymaster {
     address private _target;
@@ -18,9 +18,9 @@ contract Paymaster is BasePaymaster {
     error NotTargetContract(address target);
 
     /**
-     * @notice Будет вызывано перед вызовом функции на целевом контракте Recipient
-     * @dev Здесь принимается решение, платить за транзакцию или нет.
-     * В нашем случае, мы будем платить, если вызов совпадает с нашим адресом целевого контракта
+     * @notice This will be called before invoking a function on the target contract "Recipient."
+ * @dev Here, a decision is made whether to pay for the transaction or not.
+ * In our case, we will pay if the call matches the address of our target contract.
      */
     function preRelayedCall(
         GsnTypes.RelayRequest calldata relayRequest,
@@ -36,13 +36,13 @@ contract Paymaster is BasePaymaster {
     }
 
     /**
-     * @notice Будет вызывано после вызова функции на целевом контракте Recipient
-     * @dev Здесь мы уже знаем практически конечную стоимость за газ и можем добавить любую логику
+     * @notice This will be called after invoking a function on the target contract "Recipient."
+ * @dev Here, we already know the practically final gas cost and can add any logic as needed.
      */
     function postRelayedCall(
-        bytes calldata context, // адрес который мы вернули первым параметром из функции preRelayedCall()
+        bytes calldata context, // The address that we returned as the first parameter from the function preRelayedCall().
         bool, // success
-        uint256, // gasUseWithoutPost - стоимость запроса по газу. За исключением стоимости самого газа postRelayedCall)
+        uint256, // gasUseWithoutPost - The cost of the gas for the request, excluding the cost of the gas used in postRelayedCall().
         GsnTypes.RelayData calldata // relayData
     ) external {
         emit PostRelayed(abi.decode(context, (address)));
