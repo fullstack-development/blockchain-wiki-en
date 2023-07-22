@@ -6,35 +6,35 @@ import {ProxyAdmin} from "@openzeppelin/contracts/proxy/transparent/ProxyAdmin.s
 import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 
 /**
- * Чтобы понять контракты. Лучше всего задеплоить их при помощи Remix.
- * Порядок деплоя:
- *      1. Задеплоить контрат Logic. Попробовать вызвать initialize() на задеплоенном контракте.
- *         Наша защита не позволит этого сделать
- *      2. Задеплоить контракт Admin
- *      3. Задеплоить контракт LogicProxy(address Logic, address Admin, 0x)
- *      4. Задеплоить контракт LogicProxy с ABI контракта Logic при помощи встроенного в ремикс функционала "Deploy at address"
- *         Это позволит вызывать методы контракта Logic для контракта LogicProxy
- *      5. Вызвать функцию initialize() на последнем задеплоенном контракте LogicProxy(задеплоен с ABI контракта Logic)
- *         Убедиться, что транзакция прошла успешно. Вызвать функцию initialize() повторно. Убедиться что транзакция вернулась с ошибкой
- *
- * Для обновления имплементации вызывать метод upgrade() на контракте Admin
+ * To understand the contracts better, it's best to deploy them using Remix.
+
+Deployment order:
+
+1. Deploy the Logic contract. Try calling initialize() on the deployed contract, but our protection will prevent this action.
+2. Deploy the Admin contract.
+3. Deploy the LogicProxy contract with the addresses of Logic and Admin as parameters, and "0x" as the third parameter.
+4. Deploy the LogicProxy contract with the ABI of the Logic contract using the built-in Remix functionality "Deploy at address." This will enable calling methods of the Logic contract for the LogicProxy contract.
+5. Call the initialize() function on the last deployed LogicProxy contract (deployed with the ABI of the Logic contract). Ensure that the transaction is successful. Try calling the initialize() function again to verify that the transaction returns an error.
+
+To update the implementation, call the upgrade() method on the Admin contract.
  */
 
-/// Контракт логики
+/// Logic SC
 contract Logic is Initializable {
     uint256 private _defaultValue;
     uint256 private _value;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
-        /// Это не позволит инициализировать контракт логики миную прокси
+        /// This will not allow initializing the logic contract without using the proxy.
         _disableInitializers();
     }
 
     /**
-     * @notice Функция инициализации.
-     * @param defaultValue Дефолтное значение
-     * @dev Используется модификатор из контракта Initializable.sol от OpenZeppelin
+     * @notice Initialization function.
+ * @param defaultValue Default value.
+ * @dev Uses a modifier from the Initializable.sol contract by OpenZeppelin.
+
      */
     function initialize(uint256 defaultValue) external initializer {
         _defaultValue = defaultValue;
@@ -53,7 +53,7 @@ contract Logic is Initializable {
     }
 }
 
-/// Контракт прокси
+/// Proxy contract
 contract LogicProxy is TransparentUpgradeableProxy {
     constructor(address _logic, address admin_, bytes memory _data)
         TransparentUpgradeableProxy(_logic, admin_, _data)
@@ -61,8 +61,8 @@ contract LogicProxy is TransparentUpgradeableProxy {
 }
 
 /**
- * @notice Контракт прокси админа
- * @dev Только прокси админ может обновлять контракт логики для прокси.
- * Поэтому технически необходимо вызывать метод upgrade() у контракта админа
+ * @notice Contract for Proxy Admin
+ * @dev Only the Proxy Admin can update the logic contract for the proxy.
+ * Therefore, it is technically required to call the upgrade() method on the Admin contract.
  */
 contract Admin is ProxyAdmin {}
