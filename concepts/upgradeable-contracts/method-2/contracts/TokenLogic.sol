@@ -25,8 +25,8 @@ contract TokenLogic {
     }
 
     function totalSupply() public view returns (uint256) {
-        // Возвращаем значение из контракта зранилища TotalSupply
-        return totalSupplyStorage.getTotalSupply();
+// Returning the value from the TotalSupply storage contract
+return totalSupplyStorage.getTotalSupply();
     }
 
     function _mint(address _account, uint256 _amount) internal virtual {
@@ -34,11 +34,11 @@ contract TokenLogic {
             revert AddressZero();
         }
 
-        // Записываем новое значение TotalSupply
-        uint256 prevTotalSupply = totalSupplyStorage.getTotalSupply();
+// Writing a new value to the TotalSupply
+uint256 prevTotalSupply = totalSupplyStorage.getTotalSupply();
         totalSupplyStorage.setTotalSupply(prevTotalSupply + _amount);
 
-        // Записываем новое значение balance
+// Writing a new value to the balance.
         uint256 prevBalance = balanceStorage.balanceOf(_account);
         balanceStorage.setBalance(_account, prevBalance + _amount);
 
