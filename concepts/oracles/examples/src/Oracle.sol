@@ -6,19 +6,19 @@ import {Counters} from "openzeppelin-contracts/utils/Counters.sol";
 import {IOracle} from "./interfaces/IOracle.sol";
 
 /**
- * @notice Пример контракта Oracle, через который другие контракты могут получать off-chain данные
- * @dev Получает on-chain запрос от контракта Client и генерирует запрос к оракл node на получение off-chain данных
- * Ожидается, что вызов функции executeRequest() будет доставлять off-chain данные до запросившего контракта
+ * @notice Example of an Oracle contract through which other contracts can receive off-chain data.
+ * @dev Receives an on-chain request from the Client contract and generates a request to the oracle node for obtaining off-chain data.
+ * It is expected that calling the executeRequest() function will deliver off-chain data to the requesting contract.
  */
 contract Oracle is IOracle, Ownable {
     using Counters for Counters.Counter;
 
     Counters.Counter private _requestIds;
 
-    /// @notice Список запросов на получение off-chain данных
+    /// @notice List of requests to obtain off-chain data.
     mapping(uint256 => Request) private _requests;
 
-    /// @notice Список адресов от имени которых oracle nodes смогут взаимодействовать с контрактом Oracle
+    /// @notice List of addresses on behalf of which oracle nodes will be able to interact with the Oracle contract.
     mapping(address => bool) private _oracleNodes;
 
     function getRequestById(uint256 requestId) external view returns (Request memory) {
@@ -26,10 +26,10 @@ contract Oracle is IOracle, Ownable {
     }
 
     /**
-     * @notice Создает запрос на получение данных и бросает событие, которое будет поймано oracle node off-chain
-     * @param oracleNode Адрес от имени которого oracle node может взаимодействовать с контрактом Oracle
-     * @param data Данные для запроса
-     * @param callback Данные для переадресации ответа
+     * @notice Creates a request to obtain data and emits an event that will be caught by the oracle node off-chain.
+ * @param oracleNode The address on behalf of which the oracle node can interact with the Oracle contract.
+ * @param data Data for the request.
+ * @param callback Data for forwarding the response.
      */
     function createRequest(address oracleNode, bytes memory data, Callback memory callback)
         external
@@ -53,10 +53,10 @@ contract Oracle is IOracle, Ownable {
     }
 
     /**
-     * @notice Выполнение запроса на получение off-chain данных
-     * @dev Только адрес установленный для соответствующего запроса сможет вызвать функцию выполнения запроса
-     * @param requestId Идентификатор запроса на получение off-chain данных
-     * @param data Off-chain данные
+     * @notice Execution of a request to obtain off-chain data.
+ * @dev Only the address set for the corresponding request can call the execute request function.
+ * @param requestId The identifier of the request to obtain off-chain data.
+ * @param data Off-chain data.
      */
     function executeRequest(uint256 requestId, bytes memory data) external {
         Request memory request = _requests[requestId];
