@@ -16,7 +16,7 @@ Deployment order:
 4. Deploy the LogicProxy contract with the ABI of the Logic contract using the built-in Remix functionality "Deploy at address." This will enable calling methods of the Logic contract for the LogicProxy contract.
 5. Call the initialize() function on the last deployed LogicProxy contract (deployed with the ABI of the Logic contract). Ensure that the transaction is successful. Try calling the initialize() function again to verify that the transaction returns an error.
 
-To update the implementation, call the upgrade() method on the Admin contract.
+To upgrade the implementation, call the upgrade() method on the Admin contract.
  */
 
 /// Logic SC
