@@ -47,7 +47,7 @@ contract Logic2 {
 
 // Beacon SC
 contract Beacon is UpgradeableBeacon {
-    // To update the logic for all proxy contracts, you need to call the upgradeTo() function on the Beacon contract.
+    // To upgrade the logic for all proxy contracts, you need to call the upgradeTo() function on the Beacon contract.
     constructor(address _implementation) UpgradeableBeacon(_implementation) {}
 }
 
