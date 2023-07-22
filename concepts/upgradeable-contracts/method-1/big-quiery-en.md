@@ -35,7 +35,7 @@ ORDER BY total_supply DESC
 LIMIT 50
 ```
 
-3. Получить количество транзакций за год в сети Ethereum
+3. Get the number of transactions for a year in the Ethereum network.
 ``` sql
 WITH daily_transactions AS (
   SELECT
