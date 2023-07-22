@@ -5,14 +5,14 @@ import {IOracle} from "./interfaces/IOracle.sol";
 import {RequestType} from "./utils/Constants.sol";
 
 /**
- * @notice Пример контракта, которому необходимо получать информацию о прайсе off-chain
- * @dev Получает off-chain данные через специальный контракт Oracle
+ * @notice Example of a contract that needs to receive off-chain price information.
+ * @dev Obtains off-chain data through a specialized Oracle contract.
  */
 contract Client {
-    /// @notice Экземпляр контракта Oracle
-    IOracle private _oracle;
+/// @notice Instance of the Oracle contract.
+IOracle private _oracle;
 
-    /// @notice Приватная переменная для записи off-chain информации о прайсе
+    /// @notice Private variable for storing off-chain information about the price.
     uint256 private _price;
 
     event OracleSet(address oracle);
@@ -35,8 +35,8 @@ contract Client {
     }
 
     /**
-     * @notice Делает запрос за off-chain данными на контракт Oracle
-     * @param oracleNode Адрес от имени которого oracle node может взаимодействовать с контрактом Oracle
+     * @notice Makes a request for off-chain data to the Oracle contract.
+ * @param oracleNode The address on behalf of which the oracle node can interact with the Oracle contract.
      * Oracle node находится в off-chain пространстве
      */
     function requestPrice(address oracleNode) external {
@@ -57,8 +57,8 @@ contract Client {
     }
 
     /**
-     * @notice Функция которая будет вызвана контрактом Oracle для обновления информации о прайсе
-     * @param data Набор закодированных данных, который содержат информацию о прайсе
+     * @notice Function that will be called by the Oracle contract to update the price information.
+ * @param data A set of encoded data containing information about the price.
      */
     function setPrice(bytes memory data) external onlyOracle {
         uint256 price = abi.decode(data, (uint256));
