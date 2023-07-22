@@ -14,7 +14,8 @@ BigQuery is a tool that is part of the [Google Cloud Console](https://console.cl
 ## Examples
 
 1. Retrieving account balances sorted in descending order (Top richest accounts in the Ethereum network):
-   ``` sql
+
+``` sql
 SELECT
   address AS Account,
   CAST(eth_balance as NUMERIC) / 1000000000000000000 as Balance
@@ -24,6 +25,7 @@ LIMIT 50
 ```
 
 2. Getting the first 50 tokens sorted by totalSupply in descending order:
+
 ``` sql
 SELECT
   name,
@@ -36,6 +38,7 @@ LIMIT 50
 ```
 
 3. Get the number of transactions for a year in the Ethereum network.
+
 ``` sql
 WITH daily_transactions AS (
   SELECT
