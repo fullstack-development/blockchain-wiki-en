@@ -6,11 +6,11 @@ import "@openzeppelin/contracts/proxy/Clones.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 /**
- * Порядок деплоя:
- * 1. Деплоем контракт Pair
- * 2. Деплоем контракт Factory(address Pair)
- * 3. Вызываем метод createPair на контракте Factory. Адреса токенов можно отправить любые
- * 4. Убедиться, что новый инстанс(клон) контракта Pair успешно создан
+ * Deployment order:
+1. Deploy the Pair contract.
+2. Deploy the Factory contract with the address of the Pair contract as a parameter.
+3. Call the createPair method on the Factory contract. You can send any token addresses.
+4. Ensure that a new instance (clone) of the Pair contract is successfully created.
  */
 
 interface IPair {
@@ -49,11 +49,11 @@ contract Factory {
     function createPair(address _tokenA, address _tokenB) external returns (address pair) {
         require(getPair(_tokenA, _tokenB) == address(0), "Pair has been created already");
 
-        // При помощи библиотеки clones развертываем контракт pair на основе задеплоенного контракта Pair
-        bytes32 salt = keccak256(abi.encodePacked(_tokenA, _tokenB));
+// Using the Clones library to deploy the Pair contract based on the deployed Pair contract.
+bytes32 salt = keccak256(abi.encodePacked(_tokenA, _tokenB));
         pair = Clones.cloneDeterministic(pairImplementation, salt);
 
-        // Инициализируем контракт пары. Передаем токены и дополнительно установится адрес factory для Pair
+        // Initializing the Pair contract. Passing tokens and additionally setting the Factory address for the Pair.
         IPair(pair).initialize(_tokenA, _tokenB);
 
         _pairs[_tokenA][_tokenB] = pair;
