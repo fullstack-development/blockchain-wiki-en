@@ -5,14 +5,14 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import "@openzeppelin/contracts/proxy/utils/UUPSUpgradeable.sol";
 
-/// Контракт логики
+/// Logic contract
 contract Logic is UUPSUpgradeable, OwnableUpgradeable {
     uint256 private _value;
 
     /**
-     * @dev Так как в обновляемых контрактах нет конструктора, то нам необходимо использовать функцию initialize()
-     * Дополнительно необходимо инициализировать контракт Ownable, так как он тоже обновляемый
-     * Тот кто вызовет initialize() станет владельцем контракта Logic и сможет обновлять имплементацию для прокси
+     * @dev The upgradeable contracts do not have a constructor, we need to use the initialize() function.
+ * Additionally, we need to initialize the Ownable contract because it is also upgradeable.
+ * The one who calls initialize() will become the owner of the Logic contract and will be able to upgrade the implementation for the proxy.
      */
     function initialize() external initializer {
        __Ownable_init();
@@ -27,15 +27,15 @@ contract Logic is UUPSUpgradeable, OwnableUpgradeable {
     }
 
     /**
-     * @notice Проверка возможности обновлять контракт
-     * @dev Согласно абстрактному контракту UUPSUpgradeable, нам обязательно необходимо переопределить данную функцию
-     * При помощи собственной реализации функции мы будем определять возможность обновления контракта логики для контракта прокси
-     * В рамках этого примера обновлять контракт логики может только владелец контракта логики
+     * @notice Checking the ability to upgrade the contract.
+ * @dev According to the abstract contract UUPSUpgradeable, it is mandatory for us to override this function.
+ * By using our own implementation of the function, we will determine the ability to upgrade the logic contract for the proxy contract.
+ * In the context of this example, only the owner of the logic contract can upgrade it.
      */
     function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 }
 
-/// Контракт прокси
+/// Proxy contact
 contract LogicProxy is ERC1967Proxy {
     constructor(
         address _logic,
