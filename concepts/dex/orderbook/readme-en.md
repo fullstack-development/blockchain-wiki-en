@@ -119,7 +119,7 @@ So, it turns out that an **orderbook-based exchange** acts as an intermediary fo
 
 The exchange guarantees the security of the transaction and ensures compliance with all agreed-upon conditions. It can do this because all user interactions and assets go through it.
 
-Security is ensured through decentralization and transparency, as the orderbook is implemented using smart contracts, and all order information is stored in the blockchain.
+Security is ensured through decentralization and transparency, as the orderbook is implemented by using smart contracts, and all order information is stored in the blockchain.
 
 The exchange's interest lies in charging fees for transactions.
 
@@ -153,13 +153,13 @@ I will then buy the remaining two tokens at a price of $221. The order to sell a
 
 ### Candlestick Chart
 
-The orderbook is closely related to another tool. The **candlestick chart** represents useful information about the current and past market conditions.
+The orderbook is closely related to another tool. The **candlestick chart** that represents useful information about the current and past market conditions.
 
 ![](./images/candlestick-chart.png)
 
 The chart allows you to see the price movement within a specific time period. For example, you can see how much the price has dropped within a minute. It is visually represented by green and red bars known as **candles**.
 
-A candlestick consists of different elements, so let's get to know it better.
+A candlestick consists of different elements, so, let’s get a closer look at it.
 
 ![](./images/candlestick.png)
 
@@ -197,7 +197,7 @@ This step-by-step algorithm can be represented in the following diagram:
 
 ![](./images/matching-engine.png)
 
-_Important!_ According to the basic principle of blockchain technology, blocks are created at certain intervals. Therefore, order matching occurs periodically. If some blocks were missed, the matching engine will also process orders received in the past when matching all open orders. This is the main difference in the functioning of the matching system in DEX compared to CEX.
+_Important!_ According to the basic principle of blockchain technology, blocks are created at certain intervals. Therefore, order matching occurs periodically. If some blocks were missed then the matching engine will process the orders received in the past while matching all open orders. This is the main difference in the functioning of the matching system in DEX compared to CEX.
 
 ## Order Types
 
@@ -225,7 +225,7 @@ This order is suitable when you need a specific buying or selling price. To plac
 
 > For example, a user wants to sell 2 ETH at a price of $1600 USDT. Currently, ETH is worth much less than $1600 USDT. The user creates a limit order to sell 2 ETH. The order is sent to the orderbook.
 >
-> After some time, the market price changes and becomes equal to $1600 USDT. At this point, I come into the picture from the example above with a market order. I am willing to buy at the current market price. The matching system identifies us as the most suitable buyer and seller for each other.
+> After some time, the market price changes and becomes equal to $1600 USDT. At this point, I refer once again to the example above with a market order. I am willing to buy at the current market price. The matching system identifies us as the most suitable buyer and seller for each other.
 >
 > My market order and the delayed order of the other user are executed because their sell order for 2 ETH was also fulfilled. As a result, I have 2 ETH in my account, and the other user has 3200 USDT in their account. The delayed order is removed from the orderbook.
 
