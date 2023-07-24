@@ -81,7 +81,7 @@ You can explore a simple [demo](https://ctf-react.opengsn.org/) that shows gasle
 ### More Services
 
 Currently, there are numerous services that support the concept of meta transactions in one way or another:
-1. [Biconomy]([https://docs.biconomy.io/products/enable-gasless-transactions](https://docs.biconomy.io/docs/1.0/build-w-bico/gasless-txn)) - The first SDK on the list for working with meta transactions. It offers several ways to implement gasless transactions, including EIP-2771. It's an interesting alternative to GSN.
+1. [Biconomy](https://docs.biconomy.io/docs/1.0/build-w-bico/gasless-txn) - The first SDK on the list for working with meta transactions. It offers several ways to implement gasless transactions, including EIP-2771. It's an interesting alternative to GSN.
 2. [Gelato](https://docs.gelato.network/developer-services/relay) - Gelato provides its own transaction abstraction using its own SDK. Their approach focuses on providing a user-friendly SDK that abstracts away low-level blockchain details. Currently, they support 17 EVM networks.
 3. [Infura](https://docs.infura.io/infura/features/itx-transactions/itx-meta-transactions) - Infura has its own mechanism called Infura Transactions (ITX), which provides a simplified way to send Ethereum transactions. It can be considered as an API. They attempt to apply the meta transaction approach with this API.
 4. [Defender by OpenZeppelin](https://docs.openzeppelin.com/defender/relay) - Considering that Defender relays are versatile, they can also be used for other types of meta transactions, such as gasless ERC20 token transfers using EIP-2612 or EIP-3009.
