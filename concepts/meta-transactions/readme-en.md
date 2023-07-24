@@ -10,7 +10,7 @@ The scheme looks like this:
 
 The process happening in the scheme can be described as follows:
 
-1. The **User** signs a meta transaction, which is essentially a message containing information about the transaction they want to execute. If you haven't read our article on digital signatures, you can check it out [here](../digital-signature-on-ethereum/README.md).
+1. The **User** signs a meta transaction, which is essentially a message containing information about the transaction they want to execute. If you haven't read our article on digital signatures, you can check it out [here](https://github.com/fullstack-development/blockhain-wiki-eng/blob/main/concepts/digital-signature-on-ethereum/readme-en.md).
 
 2. The **Relayer** or a web server with a wallet signs the actual transaction and sends it to the blockchain.
 
@@ -39,7 +39,7 @@ It is possible to implement gas payment for users in ERC20 tokens. A service can
 
 The ERC-2771 standard defines the necessary minimum interface for interaction between the `Recipient` and `Forwarder` contracts. The trusted `Forwarder` contract calls the `Recipient` contract and **must** append the transaction signer's address (20 bytes of data) to the end of `msg.data`.
 
-The standard is described in sufficient detail and clarity [here](https://eips.ethereum.org/EIPS/eip-2771).
+The detailed and clear explanation of the standard can be found [here](https://eips.ethereum.org/EIPS/eip-2771).
 
 Important! The standard does not regulate the `Forwarder` contract, except for the mechanism of passing the transaction signer's address to the `Recipient` contract.
 
@@ -76,19 +76,18 @@ The [GSN documentation](https://docs.opengsn.org/) provides a good understanding
 
 Writing contracts with GSN support is covered in the [contract documentation](https://docs.opengsn.org/contracts/).
 
-You can explore a simple [demo](https://ctf-react.opengsn.org/) that demonstrates gasless transactions. You can change the flag without paying gas. However, you'll still need the Metamask wallet for this 😉
+You can explore a simple [demo](https://ctf-react.opengsn.org/) that shows gasless transactions. You can change the flag without paying gas. However, you'll still need the Metamask wallet for this 😉
 
 ### More Services
 
 Currently, there are numerous services that support the concept of meta transactions in one way or another:
-1. [Beaconomy](https://docs.biconomy.io/products/enable-gasless-transactions) - The first SDK on the list for working with meta transactions. It offers several ways to implement gasless transactions, including EIP-2771. It's an interesting alternative to GSN.
+1. [Biconomy]([https://docs.biconomy.io/products/enable-gasless-transactions](https://docs.biconomy.io/docs/1.0/build-w-bico/gasless-txn)) - The first SDK on the list for working with meta transactions. It offers several ways to implement gasless transactions, including EIP-2771. It's an interesting alternative to GSN.
 2. [Gelato](https://docs.gelato.network/developer-services/relay) - Gelato provides its own transaction abstraction using its own SDK. Their approach focuses on providing a user-friendly SDK that abstracts away low-level blockchain details. Currently, they support 17 EVM networks.
 3. [Infura](https://docs.infura.io/infura/features/itx-transactions/itx-meta-transactions) - Infura has its own mechanism called Infura Transactions (ITX), which provides a simplified way to send Ethereum transactions. It can be considered as an API. They attempt to apply the meta transaction approach with this API.
 4. [Defender by OpenZeppelin](https://docs.openzeppelin.com/defender/relay) - Considering that Defender relays are versatile, they can also be used for other types of meta transactions, such as gasless ERC20 token transfers using EIP-2612 or EIP-3009.
 
 ## Links
 
-1. [What are Meta Transactions?](https://tgdratings.com/ru/glossary/metatransaction/) A brief article in simple words.
-2. [Gas-free transactions: Meta Transactions explained](https://medium.com/coinmonks/gas-free-transactions-meta-transactions-explained-f829509a462d)
-3. [ERC-2771](https://eips.ethereum.org/EIPS/eip-2771)
+1. [Gas-free transactions: Meta Transactions explained](https://medium.com/coinmonks/gas-free-transactions-meta-transactions-explained-f829509a462d)
+2. [ERC-2771](https://eips.ethereum.org/EIPS/eip-2771)
 
