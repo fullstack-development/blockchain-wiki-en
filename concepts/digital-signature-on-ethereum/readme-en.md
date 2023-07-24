@@ -21,8 +21,6 @@ The Ethereum and Bitcoin networks use a more advanced digital signature algorith
 
 Important! ECDSA is solely an algorithm for digital signatures. Unlike RSA and AES, it cannot be used for encryption.
 
-To better understand how it works, you can watch a video that explains DSA and the differences between DSA and ECDSA in simple terms.
-
 ## Sign message and verify using ECDSA
 
 ECDSA signatures consist of two integers: **r** and **s**. Ethereum also uses an additional variable **v** (recovery identifier). Such a signature can be represented as **{r, s, v}**.
@@ -70,7 +68,7 @@ We can encode a signed transaction as follows:
     ```solidity
     RLP(nonce, gasPrice, gasLimit, to, value, data, chainId, 0, 0).
     ```
-2. Get the hash of the unsigned transaction in RLP encoding using **Keccak256**.
+2. Get the hash of the unsigned transaction in RLP encoding using ```Keccak256```
 3. Sign the hash with the private key using the ECDSA algorithm.
 4. Encode the signed transaction:
    ```solidity
@@ -81,8 +79,6 @@ By decoding the transaction data encoded with RLP, you can retrieve the raw tran
 _Important!_ This is used within the Ethereum network for data exchange between nodes. It helps reduce node operation costs and storage requirements while increasing network throughput by efficiently utilizing memory.
 
 You can learn more about RLP and data serialization in general in this excellent [article](https://medium.com/@markodayansa/a-comprehensive-guide-to-rlp-encoding-in-ethereum-6bd75c126de0).
-
-Feel free to ask if you have any further questions!
 
 How do wallets work with signatures?
 
@@ -154,7 +150,7 @@ Adding **domain** solves the problem of potential replay attacks.
 
 In Solidity, there is a built-in function called `ecrecover()`. In fact, it is a pre-compiled contract located at address **0x1**. Using this function helps to recover the public address of the private key that was used to sign the message.
 
-However, there are some caveats in using `ecrecover()`. According to EIP-2, there is still some flexibility in the signature for `ecrecover()` in the Ethereum network. The ECDSA library from OpenZeppelin allows removing this flexibility and making the signature unique. You can check the secure implementation of `ecrecover()` [here](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/cryptography/ECDSA.sol#L124).
+However, there are some pitfalls in using `ecrecover()`. According to EIP-2, there is still some flexibility in the signature for `ecrecover()` in the Ethereum network. The ECDSA library from OpenZeppelin allows removing this flexibility and making the signature unique. You can check the secure implementation of `ecrecover()` [here](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/cryptography/ECDSA.sol#L124).
 
 ## Examples
 
