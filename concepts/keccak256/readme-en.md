@@ -19,7 +19,7 @@ The length of the digest (output) of a cryptographic hash function can vary, suc
 
 Keccak256 is considered a highly secure hash algorithm that is resistant to various types of attacks, such as pre-image attacks, collision attacks, and length extension attacks. It is also one of the most efficient hash algorithms and is supported by a wide range of libraries. For these reasons, it was chosen for use in blockchains like Ethereum and Bitcoin to perform various tasks.
 
-The functions in the Keccak family are based on the sponge construction. In the context of cryptography, a sponge construction is a mode of operation based on the permutation (or transformation) of fixed-length data, as well as a padding rule that constructs a function mapping a variable-length input to a variable-length output. More details about the sponge construction can be found [here](https://keccak.team/sponge_duplex.html).
+The functions in the Keccak family are based on the sponge construction. In the context of cryptography, a sponge construction is a mode of operation based on the permutation (or transformation) of fixed-length data, as well as a filling rule that constructs a function mapping a variable-length input to a variable-length output. More details about the sponge construction can be found [here](https://keccak.team/sponge_duplex.html).
 
 ## Keccak256 in Solidity
 
