@@ -142,7 +142,7 @@ You can read more about this process in the [official Chainlink documentation](h
 Advantages of the Operator Contract over the Oracle Contract:
 1. The limitation on the response size from the oracle node has been removed. Previously, the response was limited to bytes32.
 2. Deployment process: With the Oracle Contract, it was necessary to manually compile and deploy the contract for each node. To address this, the Operator Contract introduced the OperatorFactory contract.
-3. Flexible funding system for node addresses: Multiple externally owned accounts (EOAs) can be used on Chainlink nodes. This allows for multiple strategies for sending back transactions.
+3. Flexible funding system for node addresses: Multiple externally owned accounts (EOAs) can be used on Chainlink nodes. This allows to set multiple strategies for sending back transactions.
 
 ### Contract Overview
 
@@ -200,7 +200,7 @@ You can find oracle rankings on [CoinMarketCap](https://coinmarketcap.com/view/o
 ## Real-Life Use Cases of Oracles
 
 1. [Compound using Chainlink](https://docs.compound.finance/v2/prices/)
-2. [Time-Weighted Average Prices (TWAP) from Uniswap](https://docs.uniswap.org/contracts/v2/concepts/core-concepts/oracles). You can find more details about TWAP in our dedicated [article](./twap.md).
+2. [Time-Weighted Average Prices (TWAP) from Uniswap](https://docs.uniswap.org/contracts/v2/concepts/core-concepts/oracles). You can find more details about TWAP in our dedicated [article](https://github.com/fullstack-development/blockhain-wiki-eng/blob/main/concepts/oracles/twap-en.md).
 3. [Oracle Module in MakerDAO](https://docs.makerdao.com/smart-contract-modules/oracle-module)
 
 If you still need more examples, you can find over 77+ use cases [here](https://blog.chain.link/smart-contract-use-cases/).
