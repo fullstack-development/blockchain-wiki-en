@@ -43,13 +43,13 @@ The distribution model for calendar-based vesting might look like this:
 
 -   **Early Investors**: A total of 1 million tokens is allocated to them. In the first month after the start, they receive 5% of their allocated tokens. Their remaining tokens stay locked for the second and third months. In the fourth month, they receive 20% of tokens, followed by 25% of the remaining tokens each subsequent month.
 
--   **Public Investors**: A total of 5 million tokens is allocated to them. They can't claim any tokens for the first three months; their funds remain locked. This initial period between vesting start and the first token distribution is called the cliff period. For public investors, this cliff period lasts three months. After that, they receive 20% of tokens each month.
+-   **Public Investors**: A total of 5 million tokens is allocated to them. They can't claim any tokens for the first three months; their funds remain locked. This initial period between the start of vesting and the first token distribution is called the cliff period. For public investors, this cliff period lasts three months. After that, they receive 20% of tokens each month.
 
-          Cliff — the time between vesting start and the first token payment after unlocking.
+          Cliff — the time between the start of vesting and the first token payment after unlocking.
 
 -   **Advisors**: A total of 500,000 tokens is allocated to them. They receive 10% of their allocation every month over a period of 10 months.
 
--   **Development Team**: A total of 1 million tokens is allocated to them. To enhance motivation and trust, they receive a significant portion of their tokens after a year. In the first month, 5% is unlocked; then 10% in the fourth month, 15% in the sixth month, and 25% in the eighth month. The remaining 45% of tokens remain locked until the twelfth month after vesting start.
+-   **Development Team**: A total of 1 million tokens is allocated to them. To enhance motivation and trust, they receive a significant portion of their tokens after a year. In the first month, 5% is unlocked; then 10% in the fourth month, 15% in the sixth month, and 25% in the eighth month. The remaining 45% of tokens remain locked until the twelfth month after the start of vesting.
 
 -   **Marketing**: A total of 500,000 tokens is allocated to sustain the marketing campaign. These tokens are unlocked over a year. In the first month, 12% of the total amount is accessible, followed by 8% each subsequent month.
 
@@ -90,7 +90,7 @@ This way, beneficiaries don't need to pay transaction gas fees for token claimin
 
 Here, we conclude the general information about vesting and provide an overview of technical solutions for implementation in smart contracts.
 
-Despite the simplicity of the core vesting idea (locking tokens after purchase and subsequently unlocking them per a schedule), the technical implementation can vary significantly from project to project. Product managers' creativity and decentralization principles dictate their own rules. Therefore, before implementing it on smart contracts, several questions need answers.
+Despite the simplicity of the core vesting idea (locking tokens after purchase and subsequently unlocking them per a schedule), the technical implementation can vary significantly from project to project. Product managers' creativity and decentralization principles dictate their own rules. Therefore, before implementing it on smart contracts, several questions need to be answered.
 
 1. What type of vesting will be used? (linear, stepped, calendar-based, etc.)
     - Will all users have the same schedule, or will it differ for each beneficiary?
@@ -194,7 +194,7 @@ The minter here is the private sale contract (remember that this could be any ad
 
 Here's a simple example of a smart contract called [VestingToken](./examples/src/VestingToken.sol).
 
-This approach allows creating multiple share tokens for different sales rounds. Each share token will have its own vesting schedule. Plus, it will act as a pool for base tokens from the sales round. This approach gave us even more flexibility than we initially thought, but more on that later.
+This approach allows to create multiple share tokens for different sales rounds. Each share token will have its own vesting schedule. Plus, it will act as a pool for base tokens from the sales round. This approach gave us even more flexibility than we initially thought, but more on that later.
 
 The contract implements a very flexible feature for setting the vesting schedule. You can specify dates and times as regular timestamps (down to the second), set any number of payout periods with different intervals, and even adjust the payout percentages for each interval. The only condition is that the total adds up to 100%. This allows for various scenarios and vesting distribution graphs.
 Here's an example of a schedule that can be set up. This represents a vesting period of 2 years with a 6-month cliff and a changing percentage distribution (10% for the last two months, and 5% for all previous months):
@@ -240,7 +240,7 @@ This approach also has its pros and cons, but compared to the previous options, 
 
 ## Conclusion
 
-And now, why is the last solution quite flexible? In startups, everything changes very rapidly, and it's impossible to completely hedge against it, but you can try to prepare. In our case, the client made a decision to fundamentally change the initial concept. Firstly, the backend was largely responsible for sales, and secondly, share tokens now needed to be burned at any time and exchanged for NFTs. All this was disconnected from the vesting schedule. Moreover, base tokens also needed to be burned.
+And now, why is the last solution quite flexible? In startups, everything changes very rapidly, and it's impossible to completely hedge against it, but you can try to prepare yourself. In our case, the client made a decision to fundamentally change the initial concept. Firstly, the backend was largely responsible for sales, and secondly, share tokens now needed to be burned at any time and exchanged for NFTs. All this was disconnected from the vesting schedule. Moreover, base tokens also needed to be burned.
 
 The burning functionality led to a number of complex tasks, such as creating burning rounds and recalculating the vesting schedule. However, the main contract responsible for vesting (share token) was already ready for sales via the backend. It just needed to be created through the Vesting Manager contract, set up with a schedule, and assigned the backend address as the minter.
 
