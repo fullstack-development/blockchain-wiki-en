@@ -1,4 +1,4 @@
-# Vesting
+# Vesting 
 
 -   [Vesting](#vesting)
     -   [What is vesting?](#what-is-vesting)
