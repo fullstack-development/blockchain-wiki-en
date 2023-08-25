@@ -39,7 +39,7 @@ There are two most popular models: calendar-based and milestone-based vesting.
 
 ### Calendar-Based Vesting
 
-The distribution model for calendar-based vesting might look like this:
+jfkjsdkfsdbcmz
 
 -   **Early Investors**: A total of 1 million tokens is allocated to them. In the first month after the start, they receive 5% of their allocated tokens. Their remaining tokens stay locked for the second and third months. In the fourth month, they receive 20% of tokens, followed by 25% of the remaining tokens each subsequent month.
 
