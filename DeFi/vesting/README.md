@@ -78,7 +78,7 @@ _Vesting schedule for Aptos project_
 
 Token payouts are carried out according to the schedule mentioned earlier. There are two main approaches to payouts: known as push and pull.
 
-**Pull:** With the pull method, the beneficiary can claim their tokens by initiating a blockchain transaction. After vesting ends, the tokens are unlocked but remain in the smart contract until the beneficiary transfers them to their wallet or a designated address. This approach provides token holders with more control over when they receive their tokens, as they can choose specific token retrieval dates.
+**Pull:** With  the pull method, the beneficiary can claim their tokens by initiating a blockchain transaction. After vesting ends, the tokens are unlocked but remain in the smart contract until the beneficiary transfers them to their wallet or a designated address. This approach provides token holders with more control over when they receive their tokens, as they can choose specific token retrieval dates.
 
 Example: According to the distribution schedule, 10% of the total tokens are unlocked each month. This means you could claim 5% after half a month or choose not to claim anything for three months and then receive 30% at once.
 
