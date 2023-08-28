@@ -8,10 +8,10 @@ import {ERC20Upgradeable} from "@oz-upgradeable/contracts/token/ERC20/ERC20Upgra
 import {Vesting, Schedule} from "./IVestingToken.sol";
 
 /**
- * @title Контракт share-токена (вестинг-токен)
- * @notice Отвечает за логику блокировки/разблокировки средств
- * @dev Код предоставлен исключительно в ознакомительных целях и не протестирован
- * Из контракта убрано все лишнее, включая некоторые проверки, геттеры/сеттеры и события
+ * @title Vesting Token Smart Contract
+ * @notice Responsible for fund locking/unlocking logic
+ * @dev The code is provided solely for informational purposes and is not tested
+ * Extraneous code has been removed from the Smart contract, including some checks, getters/setters, and events
  */
 contract VestingToken is Initializable, ERC20Upgradeable {
     using SafeERC20 for IERC20;
@@ -72,8 +72,8 @@ contract VestingToken is Initializable, ERC20Upgradeable {
     // region - Initialize
 
     /**
-     * @notice Так как это прокси, нужно выполнить инициализацию
-     * @dev Создается и инициализируется только контрактом VestingManager
+     * @notice Since this is a proxy, initialization is required
+     * @dev Created and initialized only by the VestingManager contract
      */
     function initialize(string calldata name, string calldata symbol, address minter, address baseToken)
         public
@@ -91,8 +91,9 @@ contract VestingToken is Initializable, ERC20Upgradeable {
     // region - Set vesting schedule
 
     /**
-     * @notice Установка расписания также выполняется контрактом VestingManager
-     * @dev Здесь важно проверить что расписание было передано корректное
+     * @notice Setting the schedule is also done by the VestingManager smart contract
+     * @dev It's important to verify that the schedule has been provided correctly here
+
      */
     function setVestingSchedule(uint256 startTime, uint256 cliff, Schedule[] calldata schedule)
         external
@@ -146,7 +147,7 @@ contract VestingToken is Initializable, ERC20Upgradeable {
     // region - Mint
 
     /**
-     * @notice Списываем токен который будем блокировать и минтим share-токен
+     * @notice Deduct the token to be locked and mint the share token
      */
     function mint(address to, uint256 amount) external onlyMinter {
         if (block.timestamp >= _vesting.cliff) {
@@ -166,7 +167,7 @@ contract VestingToken is Initializable, ERC20Upgradeable {
     // region - Claim
 
     /**
-     * @notice Сжигаем share-токен и переводим бенефициару разблокированные базовые токены
+     * @notice Burn the share token and transfer the beneficiary the unlocked base tokens
      */
     function claim() external {
         uint256 releasable = availableBalanceOf(msg.sender);
@@ -214,9 +215,9 @@ contract VestingToken is Initializable, ERC20Upgradeable {
     }
 
     /**
-     * @notice Основная функция для расчета разблокированных токенов
-     * @dev Проверяется сколько прошло полных периодов и сколько времени прошло
-     * после последнего полного периода.
+    * @notice Main function for calculating unlocked tokens
+     * @dev Checks how many full periods have passed and how much time has elapsed
+     * since the last full period.
      */
     function _computeUnlocked(uint256 lockedTokens, uint256 time) private view returns (uint256 unlockedTokens) {
         if (time < _vesting.cliff) {
@@ -247,7 +248,7 @@ contract VestingToken is Initializable, ERC20Upgradeable {
     }
 
     /**
-     * @notice Трансферить токены нельзя, только минтить и сжигать
+     * @notice Transferring tokens is not allowed, only minting and burning
      */
     function _beforeTokenTransfer(address from, address to, uint256 amount) internal override {
         super._beforeTokenTransfer(from, to, amount);
