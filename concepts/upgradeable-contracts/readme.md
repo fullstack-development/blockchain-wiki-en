@@ -13,7 +13,7 @@ _Important!_ Control over upgrades should be decentralized to avoid malicious ac
 
 There are several ways to modify the executable code:
 
-1. Creating multiple versions of smart contracts and migrating the state from the old contract to the new contract. [Learn more](https://github.com/fullstack-development/blockhain-wiki-eng/blob/main/concepts/upgradeable-contracts/method-1/readme-en.md).
+1. Creating multiple versions of smart contracts and migrating the state from the old contract to the new contract. [Learn more](./method-1/readme.md).
 2. Creating multiple smart contracts to separate state and business logic. [Learn more](https://github.com/fullstack-development/blockhain-wiki-eng/blob/main/concepts/upgradeable-contracts/method-2/readme-en.md).
 3. Using **Proxy patterns** to delegate function calls from an immutable proxy contract to a mutable logic contract. [Learn more](https://github.com/fullstack-development/blockhain-wiki-eng/blob/main/concepts/upgradeable-contracts/method-3/readme-en.md).
 4. Using the **Strategy pattern**. Creating an immutable main contract that interacts with flexible auxiliary contracts and relies on them to perform certain functions. [Learn more](https://github.com/fullstack-development/blockhain-wiki-eng/blob/main/concepts/upgradeable-contracts/method-4/readme-en.md).
