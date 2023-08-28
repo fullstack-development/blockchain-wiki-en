@@ -1,7 +1,7 @@
 # Concepts
 
-- [Digital Signatures on ethereum](https://github.com/fullstack-development/blockhain-wiki-eng/tree/main/concepts/digital-signature-on-ethereum)
+- [Digital Signatures on ethereum](./digital-signature-on-ethereum/readme.md)
 - [keccak256](./keccak256/readme.md)
-- [Meta transactions](https://github.com/fullstack-development/blockhain-wiki-eng/tree/main/concepts/meta-transactions)
-- [Oracles](https://github.com/fullstack-development/blockhain-wiki-eng/tree/main/concepts/oracles)
+- [Meta transactions](./meta-transactions/readme.md)
+- [Oracles](./oracles/readme.md)
 - [Upgradeable contracts](./upgradeable-contracts/readme.md)
