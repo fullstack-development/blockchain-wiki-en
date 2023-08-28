@@ -26,7 +26,7 @@ To recover data from events, you need to understand how events are stored, index
 
 One way to collect data is by using the [Google BigQuery API](https://cloud.google.com/blog/products/data-analytics/ethereum-bigquery-public-dataset-smart-contract-analytics) service.
 
-For more details and examples, refer to [here](./big-query.md).
+For more details and examples, refer to [here](./big-quiery.md).
 
 # Links
 
