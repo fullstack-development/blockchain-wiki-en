@@ -43,13 +43,13 @@ The distribution model for calendar-based vesting might look like this:
 
 -   **Early Investors**: A total of 1 million tokens is allocated to them. In the first month after the start, they receive 5% of their allocated tokens. Their remaining tokens stay locked for the second and third months. In the fourth month, they receive 20% of tokens, followed by 25% of the remaining tokens each subsequent month.
 
--   **Public Investors**: A total of 5 million tokens is allocated to them. They can't claim any tokens for the first three months; their funds remain locked. This initial period between the start of vesting and the first token distribution is called the cliff period. For public investors, this cliff period lasts three months. After that, they receive 20% of tokens each month.
+  **Public Investors**: A total of 5 million tokens is allocated to them. They can't claim any tokens for the first three months; their funds remain locked. This initial period between the start of vesting and the first token distribution is called the cliff period. For public investors, this cliff period lasts three months. After that, they receive 20% of tokens each month.
 
-          Cliff — the time between the start of vesting and the first token payment after unlocking.
+        Cliff — the time between vesting start and the first token payment after unlocking.
 
 -   **Advisors**: A total of 500,000 tokens is allocated to them. They receive 10% of their allocation every month over a period of 10 months.
 
--   **Development Team**: A total of 1 million tokens is allocated to them. To enhance motivation and trust, they receive a significant portion of their tokens after a year. In the first month, 5% is unlocked; then 10% in the fourth month, 15% in the sixth month, and 25% in the eighth month. The remaining 45% of tokens remain locked until the twelfth month after the start of vesting.
+-    **Development Team**: A total of 1 million tokens is allocated to them. To enhance motivation and trust, they receive a significant portion of their tokens after a year. In the first month, 5% is unlocked; then 10% in the fourth month, 15% in the sixth month, and 25% in the eighth month. The remaining 45% of tokens remain locked until the twelfth month after the start of vesting.
 
 -   **Marketing**: A total of 500,000 tokens is allocated to sustain the marketing campaign. These tokens are unlocked over a year. In the first month, 12% of the total amount is accessible, followed by 8% each subsequent month.
 
