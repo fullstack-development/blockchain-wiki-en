@@ -17,7 +17,7 @@ There are several ways to modify the executable code:
 2. Creating multiple smart contracts to separate state and business logic. [Learn more](./method-2/readme.md).
 3. Using **Proxy patterns** to delegate function calls from an immutable proxy contract to a mutable logic contract. [Learn more](./method-3/readme.md).
 4. Using the **Strategy pattern**. Creating an immutable main contract that interacts with flexible auxiliary contracts and relies on them to perform certain functions. [Learn more](./method-4/readme.md).
-5. Using the **Diamond pattern** to delegate function calls from a proxy contract to logical contracts. [Learn more](./method-5/readme-en.md).
+5. Using the **Diamond pattern** to delegate function calls from a proxy contract to logical contracts. [Learn more](./method-5/readme.md).
 
 ## Pros and Cons of Smart Contract Upgrades
 
