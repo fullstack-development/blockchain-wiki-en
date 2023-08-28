@@ -5,11 +5,12 @@ import {Clones} from "@openzeppelin/contracts/proxy/Clones.sol";
 import {IVestingToken, Vesting} from "./IVestingToken.sol";
 
 /**
- * @title Контракт-фабрика для создания share-токенов
- * @notice Основная задача смарт-контракта создавать экземпляры share-токенов
- * и устанавливать на них расписание вестинга
- * @dev Код предоставлен исключительно в ознакомительных целях и не протестирован
- * Из контракта убрано все лишнее, включая некоторые проверки, геттеры/сеттеры и события
+ * @title Contract Factory for Creating Share Tokens
+ * @notice The main task of this smart contract is to create instances of share tokens
+ * and set vesting schedules for them.
+ * @dev The code is provided for informational purposes only and has not been tested.
+ * Unnecessary code, including some checks, getters/setters, and events, has been removed from the contract.
+
  */
 contract VestingManager {
     address private _vestingImplementation;
@@ -19,11 +20,11 @@ contract VestingManager {
     }
 
     /**
-     * @notice Основная функция для создания экземпляра share-токена
-     * Т.к. это создание ERC20 - задаем name и symbol
-     * Указываем адрес токена который будет блокироваться под вестинг
-     * Указываем адрес который сможет минтить share-токены (к примеру контракт продаж)
-     * Передаем расписание
+     * @notice The main function for creating an instance of a share token.
+     * Since this is the creation of an ERC20 token, we set the name and symbol.
+     * Specify the address of the token that will be locked for vesting.
+     * Specify the address that will be able to mint share tokens (for example, a sale contract).
+     * Pass the vesting schedule.
      */
     function createVesting(
         string calldata name,
