@@ -82,9 +82,9 @@ Decentralized exchanges can be divided into two groups:
 
 The **orderbook** can be fully implemented on-chain using smart contracts. Alternatively, it can be a hybrid model with off-chain computations and on-chain settlement. This approach minimizes blockchain transactions to reduce gas costs.
 
-Read more about **AMM-based DEX** [here](./amm/README.md).
+Read more about **AMM-based DEX** [here](./amm/readme.md).
 
-Read more about **orderbook-based DEX** [here](./orderbook/README.md).
+Read more about **orderbook-based DEX** [here](./orderbook/readme.md).
 
 ## Pitfalls of Decentralized Trading
 
@@ -94,7 +94,7 @@ There are a few key considerations to keep in mind. I would highlight three:
 2. **Impermanent loss**: A significant risk for liquidity providers. When providing liquidity, if the asset price increases more than the profit offered by the exchange, the liquidity provider loses potential gains. In other words, if the liquidity provider had sold the assets instead, they would have earned more than what the exchange provides for liquidity.
 3. **Arbitrage**: Other participants in the market taking advantage of price differences between exchanges. While it can help align asset prices across exchanges, it introduces various negative effects on token exchanges for regular users.
 
-Read more about these pitfalls [here](./underwater-rocks/README.md).
+Read more about these pitfalls [here](./underwater-rocks/readme.md).
 
 ## DEX Overview
 
@@ -108,7 +108,7 @@ There are relatively few well-known **orderbook-based DEX** solutions due to liq
 
 Popular examples of **AMM-based DEX** include [Uniswap](https://uniswap.org/), [Balancer](https://balancer.fi/), [Bancor](https://app.bancor.network/), and others. Each DEX has its own unique features and addresses specific challenges. If you've made it this far, it's essential to understand the approaches different DeFi protocols take to solve their tasks.
 
-Read a more detailed review of popular AMM-based DEX [here](./dex-review/README.md).
+Read a more detailed review of popular AMM-based DEX [here](./dex-review/readme.md).
 
 ## Conclusion
 
