@@ -1,4 +1,5 @@
 # DeFi
 
-- [Vesting](./vesting/README.md)
-- [DEX](./dex/README.md)
+- [Vesting](./DeFi/vesting/README.md)
+- [DEX](./DeFi/dex/README.md)
+
