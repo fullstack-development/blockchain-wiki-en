@@ -9,13 +9,14 @@ import "./interfaces/ILiquidityPool.sol";
 import "./interfaces/ISimpleOrderBook.sol";
 
 /**
- * @notice Основной контракт примера.
- * Реализует простой вариант проведения операций с заемными средствами.
- * @dev Заемные средства берутся с контракта LiquidityPool.sol.
- * Операции обмена токенов реализованы контрактом заглушкой SimpleOrderBook.sol,
- * который отвечает за ценообразование и физический трансфер токенов
- * Все функции могут вызваны только владельцем контракта
+ * @notice Main contract of the example.
+ * Implements a simple way to operate with borrowed funds.
+ * @dev Borrowed funds are taken from the LiquidityPool.sol contract.
+ * Token exchange operations are simulated by the SimpleOrderBook.sol contract,
+ * which is responsible for pricing and the actual token transfers.
+ * All functions can only be called by the contract owner.
  */
+
 contract MarginTrading is Ownable {
     using SafeERC20 for IERC20;
 
@@ -52,35 +53,37 @@ contract MarginTrading is Ownable {
     }
 
     /**
-     * @notice Открытие длинной позиции. Покупка токена B c расчетом, что его стоимость вырастет в дальнейшем
-     * @param amountBToBuy Количество токена B для покупки
-     * @param leverage Плечо, которое должно увеличить сумму покупки заемными средствами
-     * @dev Подразумевается, что когда стоимость токена B вырастет,
-     * sender этой функции должен самостоятельно вызвать функцию closeLong() для получения профита
-     */
+ * @notice Opening a long position. Buying token B with the expectation that its price will increase in the future.
+ * @param amountBToBuy The amount of token B to purchase.
+ * @param leverage The leverage to increase the purchase amount with borrowed funds.
+ * @dev It is implied that when the price of token B increases,
+ * the sender of this function should manually call the closeLong() function to realize the profit.
+ */
+
     function openLong(uint256 amountBToBuy, uint256 leverage) external onlyOwner {
-        /// Рассчитываем количество токена А необходимого для покупки токена B
+/// Calculating the amount of token A required to purchase token B.
         uint256 amountAToSell = orderBook.calcAmountToSell(address(tokenA), address(tokenB), amountBToBuy * leverage);
 
-        /// Берем токен А в заем для покупки большего количества токена B
+/// Borrowing token A to purchase a larger amount of token B.
         liquidityPool.borrow(amountAToSell);
 
         longDebtA += amountAToSell;
         longBalanceB += amountBToBuy;
 
-        /// Покупаем токен B в замен отдаем токен А
+/// Buying token B in exchange for token A.
         tokenA.safeApprove(address(orderBook), amountAToSell);
         orderBook.buy(address(tokenA), address(tokenB), amountBToBuy);
 
         emit LongOpened();
     }
 
-    /**
-     * @notice Закрытие длинной позиции.
-     * Продажа токена B и закрытие долговых обязательств с дальнейшим снятием профита
-     */
+   /**
+ * @notice Closing a long position.
+ * Selling token B and settling the debt obligations, followed by profit withdrawal.
+ */
+
     function closeLong() external onlyOwner {
-        /// Продаем весь токен B
+        /// Selling all of the token B
         tokenB.safeApprove(address(orderBook), longBalanceB);
         uint256 balanceA = orderBook.sell(address(tokenB), address(tokenA), longBalanceB);
 
@@ -88,14 +91,14 @@ contract MarginTrading is Ownable {
             revert MarginTrading__InsufficientAmountForClosePosition();
         }
 
-        /// Закрываем долг токеном А, который был взят в заем для покупки токена B
+        /// Closing the debt with token A, which was borrowed to purchase token B
         tokenA.safeApprove(address(liquidityPool), longDebtA);
         liquidityPool.repay(longDebtA);
 
         longDebtA = 0;
         longBalanceB = 0;
 
-        /// Профит в виде токена А от покупки токена B дешевле, чем он был продан, отправляем владельцу контракта
+        /// Sending the profit in the form of token A from buying token B cheaper than it was sold to the contract owner
         uint256 freeTokenA = tokenA.balanceOf(address(this));
         tokenA.safeTransfer(owner(), freeTokenA);
 
@@ -103,19 +106,20 @@ contract MarginTrading is Ownable {
     }
 
     /**
-     * @notice Открытие короткой позиции. Продажа токена A c расчетом, что его стоимость упадет в дальнейшем
-     * @param amountAToSell Количество токена A для продажи
-     * @param leverage Плечо, которое должно увеличить сумму продажи заемными средствами
-     * @dev Подразумевается, что когда стоимость токена A упадет,
-     * sender этой функции должен самостоятельно вызвать функцию closeShort() для получения профита
-     */
+ * @notice Opening a short position. Selling token A with the expectation that its price will drop in the future.
+ * @param amountAToSell The amount of token A to sell.
+ * @param leverage The leverage to increase the selling amount with borrowed funds.
+ * @dev It is implied that when the price of token A drops,
+ * the sender of this function should manually call the closeShort() function to claim the profit.
+ */
+
     function openShort(uint256 amountAToSell, uint leverage) external {
-        /// Занимаем токен А для продажи
+/// Borrowing token A for selling.
         liquidityPool.borrow(amountAToSell * leverage);
 
         shortDebtA += amountAToSell * leverage;
 
-        /// Продаем токен A в расчете, что его стоимость упадет, в замен получаем токен B
+/// Selling token A, anticipating its price will drop, in exchange for token B.
         tokenA.safeApprove(address(orderBook), amountAToSell * leverage);
         shortBalanceB += orderBook.sell(address(tokenA), address(tokenB), amountAToSell * leverage);
 
@@ -123,11 +127,10 @@ contract MarginTrading is Ownable {
     }
 
     /**
-     * @notice Закрытие короткой позиции.
-     * Покупка токена B и закрытие долговых обязательств с дальнейшим снятием профита
-     */
+     * @notice Closing a short position. Buying token B and settling debt obligations, followed by profit withdrawal.
+
     function closeShort() external {
-        /// Покупаем токена A дешевле, чем продавали, в замен отдаем токен B
+        /// Buying token A at a lower price than sold, in exchange for token B.
         tokenB.safeApprove(address(orderBook), shortBalanceB);
         uint256 balanceA = orderBook.buy(address(tokenB), address(tokenA), shortDebtA);
 
@@ -135,14 +138,14 @@ contract MarginTrading is Ownable {
             revert MarginTrading__InsufficientAmountForClosePosition();
         }
 
-        /// Возвращаем токен А, который был взят для продажи
+        /// Returning token A that was borrowed for selling.
         tokenA.safeApprove(address(liquidityPool), shortDebtA);
         liquidityPool.repay(shortDebtA);
 
         shortDebtA = 0;
         shortBalanceB = 0;
 
-        /// Профит в виде токена B, который остался отправляем владельцу контракта
+        /// Sending the remaining profit in the form of token B to the contract owner
         uint256 freeTokenB = tokenB.balanceOf(address(this));
         tokenB.safeTransfer(owner(), freeTokenB);
 
