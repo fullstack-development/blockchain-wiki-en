@@ -5,9 +5,10 @@ import {IERC20} from "openzeppelin-contracts/token/ERC20/ERC20.sol";
 import {SafeERC20} from "openzeppelin-contracts/token/ERC20/utils/SafeERC20.sol";
 
 /**
- * @notice Контракт хранилище для предоставления ликвидности.
- * Подразумевается, что управление ликвидностью происходит поставщиками путем вызова функций: deposit() и withdraw()
+ * @notice Contract storage for providing liquidity.
+ * It is assumed that liquidity management is carried out by providers through the use of functions: deposit() and withdraw().
  */
+
 contract LiquidityPool {
     using SafeERC20 for IERC20;
 
@@ -47,10 +48,10 @@ contract LiquidityPool {
     }
 
     /**
-     * @notice Позволяет предоставить средства для использования в займах
-     * @param amount Сумма актива, который будет добавлен на контракт
-     * @dev Пользователь, который предоставит токен будет называться поставщиком ликвидности
-     */
+ * @notice Allows you to provide funds for lending
+ * @param amount The amount of the asset to be added to the contract
+ * @dev The user providing the token will be referred to as a liquidity provider
+ */
     function deposit(uint256 amount) external {
         liquidityProviders[msg.sender] = amount;
 
@@ -59,12 +60,12 @@ contract LiquidityPool {
         emit LiquidityAdded(msg.sender, amount);
     }
 
-    /**
-     * @notice Позволяет поставщику ликвидности забрать свои средства
-     * @param amount Сумма снятия
-     * @dev Доступно для вызова пользователю, который предоставил свои средства контракту.
-     * Вывод может быть частичный, но не больше предоставленной суммы
-     */
+   /**
+ * @notice Allows the liquidity provider to withdraw their funds
+ * @param amount The withdrawal amount
+ * @dev Available for calling by the user who provided their funds to the contract.
+ * Withdrawal can be partial, but not exceeding the provided amount
+ */
     function withdraw(uint256 amount) external onlyLiquidityProvider(msg.sender) {
         if (amount > liquidityProviders[msg.sender]) {
             amount = liquidityProviders[msg.sender];
@@ -76,10 +77,10 @@ contract LiquidityPool {
     }
 
     /**
-     * @notice Позволяет брать средства предоставленные поставщиками в займы
-     * @param amount Сумма займа
-     * @dev Сумма долга записывается в mapping borrowers
-     */
+ * @notice Allows borrowing funds provided by liquidity providers
+ * @param amount The loan amount
+ * @dev The loan amount is recorded in the 'borrowers' mapping
+ */
     function borrow(uint256 amount) external {
         if (amount > token.balanceOf(address(this))) {
             revert LiquidityPool_InsufficientLiquidity();
@@ -94,9 +95,9 @@ contract LiquidityPool {
     }
 
     /**
-     * @notice Позволяет заемщику погасить долг
-     * @param amount Сумма погашения долга
-     */
+ * @notice Allows a borrower to repay the debt
+ * @param amount The repayment amount
+ */
     function repay(uint256 amount) external onlyBorrower(msg.sender) {
         totalDebt -= amount;
         borrowers[msg.sender] -= amount;
@@ -107,9 +108,9 @@ contract LiquidityPool {
     }
 
     /**
-     * @notice Возвращает сумму долга для конкретного заемщика
-     * @param borrower Адрес аккаунта заемщика
-     */
+ * @notice Returns the debt amount for a specific borrower
+ * @param borrower The address of the borrower's account
+ */
     function getDebt(address borrower) external view returns (uint256) {
         return borrowers[borrower];
     }
