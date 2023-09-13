@@ -22,18 +22,18 @@ On the other hand, there are alternative contract-based wallets ([Gnosis wallet]
 
 **Important!** An EOA account is required because only it can initiate transactions in the blockchain. An EOA account signs transactions with its private key and pays gas for their execution.
 
-ERC-4337 combines the features of EOA-based wallets and contract wallets by using pseudo-transactions instead of regular transactions. This eliminates the need to sign each transaction with a private key. This approach replaces [ERC-2771](https://eips.ethereum.org/EIPS/eip-2771) about meta-transactions. You can read more about it [here](https://ethereum.org/en/roadmap/account-abstraction/). Pseudo-transactions provide **abstraction** over the user's account. 😇
+ERC-4337 combines the features of EOA-based wallets and contract wallets by using pseudo-transactions instead of regular transactions. This eliminates the need to sign each transaction with a private key. This approach replaces [ERC-2771](https://eips.ethereum.org/EIPS/eip-2771) with meta-transactions. You can read more about it [here](https://ethereum.org/en/roadmap/account-abstraction/). Pseudo-transactions provide **abstraction** over the user's account. 😇
 
 ## How Does It Work?
 
-Alchemy has prepared a series of articles on the topic of account abstraction. These articles not only explain the new standard but also step-by-step describe why specific approaches were used in the standard. From a technical perspective, these are the most useful articles I've encountered, aside from Vitalik's articles. I believe that developers should definitely read them to gain a better understanding.
+Alchemy has prepared a series of articles on the topic of account abstraction. These articles not only explain the new standard but also give a step-by-step description on why specific approaches were used in the standard. From a technical perspective, these are the most useful articles I've encountered, aside from Vitalik's articles. I believe that developers should definitely read them to gain a better understanding.
 
 1. [You Could Have Invented Account Abstraction: Part 1](https://www.alchemy.com//blog/account-abstraction)
 2. [Account Abstraction Part 2: Sponsoring Transactions Using Paymasters](https://www.alchemy.com/blog/account-abstraction-paymasters)
 3. [Account Abstraction Part 3: Wallet Creation](https://www.alchemy.com/blog/account-abstraction-wallet-creation)
 4. [Account Abstraction Part 4: Aggregate Signatures](https://www.alchemy.com/blog/account-abstraction-aggregate-signatures)
 
-Now, you can go ahead and read the "laws." 😜 [ERC-4337](https://eips.ethereum.org/EIPS/eip-4337), welcome!
+Now, you can go ahead and read the "laws." 😜 Welcome, [ERC-4337](https://eips.ethereum.org/EIPS/eip-4337)!
 
 Below, I'll show a few general diagrams and briefly explain the operation process of the standard.
 The main **actors** are:
