@@ -12,8 +12,10 @@ Join our TG-channel: [MetaLamp|Web3 DevTeam](https://t.me/metametalamp)
 
 ### Blockchain wiki
 
+- [Algorithms and data structures](./algorithms/README.md)
 - [Concepts](./concepts/README.md)
 - [DeFi](./DeFi/README.md)
+- [Ethereum virtual machine](./ehtereum-virtual-machine/README.md)
 - [EIPs](./EIPs/README.md)
 - [Solidity](./solidity/README.md)
 - [Tools](./tools/README.md)
