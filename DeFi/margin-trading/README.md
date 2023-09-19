@@ -4,7 +4,7 @@ _Margin trading_ is a trading tool that involves using borrowed funds from a thi
 
 Think of margin trading as taking out a loan, which increases the size of your trade and the potential for higher profits with a smaller initial investment. In the world of CeFi (Centralized Finance), exchanges often serve as the source of these loans, allowing users to access additional assets and use them for intra-exchange trading.
 
-**Important!** The larger the trading volume, the more potential profit you can make. The ability to earn more significantly increases user interest.
+**Important!** The larger the trading volume, the more potential profit you can make. The ability to earn more significantly increases user's interest.
 
 > Let's say the market price of an asset is $1,500 per unit.
 >
@@ -18,7 +18,7 @@ The net profit is $10,000.
 
 > The market price of an asset is still $1,500 per unit.
 >
-> 1. Before buying, we take out a loan of $150,000 to purchase an additional quantity of the asset.
+> 1. Before buying, we take out a loan of $150,000 to purchase an additional asset.
 > 2. We buy the assets (100 units + 100 units).
 > 3. At that moment, the price of one asset has also risen to $1,600, just like in the previous example.
 > 4. We sell all 200 units of the asset and receive $320,000.
@@ -112,7 +112,7 @@ The practice of margin trading is known by several alternative names:
 
 In theory, margin trading is accessible to any user who can provide the required minimum collateral for a loan. However, there's a catch!
 
-To make a profit, you need to be confident about the price direction. In case of an error, losses from margin trading can be more significant than if margin trading were not used.
+To make a profit, you need to be confident about the price direction. In case of an error, losses from margin trading can be more significant than if margin trading was not used.
 
 **Important!** Margin trading amplifies both profits and losses.
 
