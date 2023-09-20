@@ -4,15 +4,15 @@ pragma solidity ^0.8.19;
 import {Counters} from "@openzeppelin/contracts/utils/Counters.sol";
 
 /**
- * @title Поиск в ширину
- * @notice Контракт реализует функцию search(),
- * которая выполняет поиск в ширину
- * @dev Для организации поиска необходимо создать граф.
- * Функция addNode() - создает узлы графа.
- * Функция addEdge() - создает ребра графа(связи между узлами графа)
- * Важно! Все узлы графа нумеруются в порядке добавления.
- * Это необходимо, чтобы знать общее количество узлов для проведения поиска и учета посещенных узлов
+ * @title Breadth-First Search
+ * @notice The contract implements a search() function that performs breadth-first search.
+ * @dev To organize the search, you need to create a graph.
+ * The addNode() function creates nodes in the graph.
+ * The addEdge() function creates edges in the graph (connections between nodes).
+ * Important! All nodes in the graph are numbered in the order they are added.
+ * This is necessary to know the total number of nodes for conducting the search and keeping track of visited nodes.
  */
+
 contract BreadthFirstSearch {
     using Counters for Counters.Counter;
 
@@ -25,8 +25,8 @@ contract BreadthFirstSearch {
     Counters.Counter private _nodeCount;
 
     /**
-     * @notice Создает узлы графа
-     * @param name Название узла
+     * @notice Creates nodes in the graph
+     * @param name The name of the node
      */
     function addNode(string memory name) external {
         Node storage newNode = _graph[_nodeCount.current()];
@@ -36,57 +36,57 @@ contract BreadthFirstSearch {
     }
 
     /**
-     * @notice Добавляет связь между узлами графа
-     * @param from Начальный узел графа
-     * @param to Конечный узел графа
+     * @notice Adds a connection between nodes in the graph
+     * @param from The starting node of the connection
+     * @param to The ending node of the connection
      */
     function addEdge(uint256 from, uint256 to) external {
         _graph[from].neighbors.push(to);
     }
 
     /**
-     * @notice Вызывает алгоритм поиска в ширину
-     * @param start Идентификатор узла с которого начнется поиск
-     * @param goal Искомый идентификатор узла
-     * @dev По сути функция проверит возможность добраться из одной узла графа в другой
+     * @notice Invokes the breadth-first search algorithm
+     * @param start The identifier of the node to start the search from
+     * @param goal The identifier of the node to find
+     * @dev Essentially, this function checks the possibility of reaching one node in the graph from another
      */
     function search(uint256 start, uint256 goal) external view returns (bool) {
-        /// Массив для учета посещенных узлов. Это поможет избежать зацикливания
+        /// An array to keep track of visited nodes. This helps to prevent cycling
         bool[] memory visited = new bool[](_nodeCount.current());
 
-        /// Массив для организации очереди поиска.
-        /// Проверяя каждый узел мы будем добавлять связи этого узла в конец очереди для последующей проверки
+        /// An array to organize the search queue.
+        /// As we check each node, we will add the connections of this node to the end of the queue for later examination.
         uint256[] memory queue = new uint256[](_nodeCount.current());
 
-        /// Счетчики для навигации по массиву очереди. Будут помогать добавлять узлы в очередь и извлекать из очереди
+        /// Counters for navigating through the queue array. They will help in adding nodes to the queue and extracting them from the queue.
         uint256 front = 0;
         uint256 back = 0;
 
-        /// Помещаем в очередь начальный элемент
+        /// Place the initial element in the queue
         queue[back++] = start;
 
-        /// Помечаем узел проверенным
+        /// Mark the node as visited
         visited[start] = true;
 
         while (front != back) {
             uint256 current = queue[front++];
 
             if (current == goal) {
-                /// Если целевое значение равно значению узла графа, то значение найдено
+                /// If the target value equals the value of the graph node, the value is found
                 return true;
             }
 
-            /// Извлекаем все соседние узлы рассматриваемого узла графа
+            /// Extract all neighboring nodes of the examined graph node
             uint256[] memory neighbors = _graph[current].neighbors;
 
             for (uint256 i = 0; i < neighbors.length; ++i) {
                 uint256 neighbor = neighbors[i];
 
                 if (!visited[neighbor]) {
-                    /// Помечаем соседний узел, как проверенный
+                    /// Mark the neighboring node as checked
                     visited[neighbor] = true;
 
-                    /// Добавляем соседний узел в очередь
+                    /// Add the neighboring node to the queue
                     queue[back++] = neighbor;
                 }
             }
