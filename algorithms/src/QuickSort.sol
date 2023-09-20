@@ -2,10 +2,11 @@
 pragma solidity ^0.8.19;
 
 /**
- * @title Быстрая сортировка
- * @notice Контракт реализует функцию sort(),
- * которая выполняет алгоритм быстрой сортировки для массива чисел
+ * @title Quick Sort
+ * @notice This contract implements the sort() function,
+ * which performs the quicksort algorithm for an array of numbers
  */
+
 contract QuickSort {
     error ArrayZero();
 
@@ -18,18 +19,18 @@ contract QuickSort {
             revert ArrayZero();
         }
 
-        /// Рекурсивно запускаем быструю сортировку.
-        /// Для первого запуска указываем весь диапазон массива
+        /// Recursively execute quicksort.
+/// For the initial call, specify the entire array range.
        _quickSort(arr, int256(0), int256(arr.length - 1));
 
        return arr;
     }
 
     /**
-     * @notice Приватная функция быстрой сортировки. Необходима для рекурсивного вызова
-     * @param arr Массив чисел
-     * @param left Индекс левой границы массива
-     * @param right Индекс правой границы массива
+     * @notice Private quicksort function used for recursive calls.
+* @param arr Array of numbers
+* @param left Index of the left boundary of the array
+* @param right Index of the right boundary of the array
      */
     function _quickSort(uint256[] memory arr, int256 left, int256 right) private {
         int256 i = left;
@@ -39,33 +40,35 @@ contract QuickSort {
             return;
         }
 
-        /// Выбираем опорный элемент массива по середине
+* @notice Select the pivot element from the middle of the array
         uint256 pivot = arr[uint256(left + (right - left) / 2)];
 
         while (i <= j) {
-            /// Находим индекс элемента, который будет больше опорного.
-            /// То есть находится левее него, а должен находиться правее
+            /// Find the index of an element greater than the pivot.
+/// This element should be to the left of the pivot, but it currently is to the right.
+
             while (arr[uint256(i)] < pivot) {
                 i++;
             }
 
-            /// Находим индекс элемента, который будет меньше опорного.
-            /// То есть находится правее него, а должен находиться левее
+           /// Find the index of an element smaller than the pivot.
+/// This element should be to the right of the pivot, but it currently is to the left.
+
             while (pivot < arr[uint256(j)]) {
                 j--;
             }
 
             if (i <= j) {
-                /// Меняем местами найденные элементы
+/// Swap the found elements.
                 (arr[uint256(i)], arr[uint256(j)]) = (arr[uint256(j)], arr[uint256(i)]);
 
-                /// Повлияет на уменьшение диапазона для рекурсивного вызова
+/// Reduces the range for the recursive call.
                 i++;
                 j--;
             }
         }
 
-        /// Делаем рекурсивный вызов
+/// Make a recursive call.
         if (left < j) {
             _quickSort(arr, left, j);
         }
