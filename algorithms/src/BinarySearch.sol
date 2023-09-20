@@ -2,17 +2,17 @@
 pragma solidity ^0.8.19;
 
 /**
- * @title Бинарный поиск
- * @notice Контракт реализует функцию binarySearch(),
- * которая выполняет поиску элемента в отсортированном списке
+ * @title Binary Search
+ * @notice The contract implements the binarySearch() function, which performs a search for an element in a sorted list
  */
+
 contract BinarySearch {
     uint256[] private _list;
 
-    /// @notice Возврат, когда искомый элемент не найден в списке
+    /// @notice Return when the desired element is not found in the list
     error None();
 
-    /// @notice Возврат, когда размер создаваемого списка равен нулю
+    /// @notice Return when the size of the created list is zero
     error ZeroSize();
 
     constructor(uint256 size) {
@@ -23,28 +23,29 @@ contract BinarySearch {
         _createList(size);
     }
 
-    /**
-     * @notice Бинарный поиск
-     * @param desiredValue Искомое значение
-     */
+   /**
+ * @notice Binary search
+ * @param desiredValue The value being searched for
+ */
+
     function binarySearch(uint256 desiredValue) external view returns (uint256) {
-        /// Переменные для хранения границ списка, в которой выполняется поиск
+    /// Variables to store the boundaries of the list being searched
         uint256 start = 0;
         uint256 end = _list.length - 1;
 
-        /// Ведем поиск, пока не будет найден искомый элемент
+        /// Continue searching until the desired element is found
         while (start <= end) {
             uint256 middle = (start + end) / 2;
             uint256 guessedValue = _list[middle];
 
             if (guessedValue == desiredValue) {
-                return middle; /// Значение найдено
+                return middle; /// Value found
             }
 
             if (desiredValue < guessedValue) {
-                end = middle - 1; /// Искомый элемент находится в левой половине
+                end = middle - 1; /// The desired element is in the left half
             } else {
-                start = middle + 1; /// Искомый элемент находится в правой половине
+                start = middle + 1; /// The desired element is in the right half
             }
         }
 
@@ -52,8 +53,8 @@ contract BinarySearch {
     }
 
     /**
-     * @notice Инициализация отсортированного списка
-     * @param size Размер создаваемого отсортированного списка
+     * @notice Initialize a sorted list
+     * @param size The size of the sorted list to be created
      */
     function _createList(uint256 size) private {
         for (uint256 i = 0; i < size; i++) {
