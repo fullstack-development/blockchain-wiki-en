@@ -2,41 +2,44 @@
 pragma solidity ^0.8.19;
 
 /**
- * @title Алгоритм Дейкстры
- * @notice Контракт реализует функцию search(),
- * которая выполняет поиск кратчайшего пути до любой точки графа
+ * @title Dijkstra's Algorithm
+ * @notice This contract implements the search() function,
+ * which performs the search for the shortest path to any point in the graph.
  */
-contract Dijkstra {
-    /**
-     * @notice Вызывает алгоритм поиска кратчайшего пути
-     * @param graph граф, в котором будет производиться поиск
-     * @param startNodeId Идентификатор узла с которого будет начинаться поиск
-     * @dev Считаем что все узлы графа пронумерованы от 0 до graph.length
-     * Если до узла будет невозможно добраться, то возвращаемое значение будет равняться type(uint256).max
-     */
-    function search(uint256[][] memory graph, uint256 startNodeId) public pure returns (uint256[] memory) {
-        /// Массив для учета минимального расстояние, чтобы добраться до узла
-        uint256[] memory nodeWeights = new uint256[](graph.length);
-        /// Массив для учета посещенных узлов. Это поможет избежать зацикливания
-        bool[] memory visited = new bool[](graph.length);
 
-        /// Проставляем все результирующие значения в максимально возможные.
-        /// Это необходимо для поиска минимального пути до каждого узла графа
-        for (uint256 i = 0; i < graph.length; i++) {
-            nodeWeights[i] = type(uint256).max;
+contract Dijkstra {
+/**
+ * @notice Calls the shortest path search algorithm
+ * @param graph The graph in which the search will be performed
+ * @param startNodeId The identifier of the node from which the search will start
+ * @dev We assume that all nodes in the graph are numbered from 0 to graph.length
+ * If it is impossible to reach a node, the return value will be equal to type(uint256).max
+ */
+
+function search(uint256[][] memory graph, uint256 startNodeId) public pure returns (uint256[] memory) {
+    /// Array to keep track of the minimum distance to reach a node
+    uint256[] memory nodeWeights = new uint256[](graph.length);
+    /// Array to keep track of visited nodes. This helps avoid cycling
+    bool[] memory visited = new bool[](graph.length);
+
+/// Set all initial values to the maximum possible. 
+/// This is necessary for finding the minimum path to each node in the graph.
+for (uint256 i = 0; i < graph.length; i++) {
+    nodeWeights[i] = type(uint256).max;
+
         }
 
-        /// Расстояние из начального узла до начального равняется нулю. Закрепляем это сразу.
+/// The distance from the starting node to itself is zero. We establish this immediately.
         nodeWeights[startNodeId] = 0;
 
-        /// Обходим все узлы графа
+/// Traverse all nodes in the graph
         uint256 count = graph.length;
         while(count > 0) {
-            /// Находим минимальный путь до ближайшего соседнего узла графа и устанавливаем такой узел начальным
+/// Find the minimum path to the nearest neighboring node in the graph and set that node as the starting node
             startNodeId = _findMinWeight(nodeWeights, visited);
             visited[startNodeId] = true;
 
-            /// Считаем все возможные расстояния до ближайших соседних узлов.
+/// Calculate all possible distances to the nearest neighboring nodes
             for (uint256 endNodeId = 0; endNodeId < graph.length; endNodeId++) {
                 if (
                     !visited[endNodeId]
@@ -44,7 +47,7 @@ contract Dijkstra {
                     && nodeWeights[startNodeId] != type(uint256).max
                     && nodeWeights[startNodeId] + graph[startNodeId][endNodeId] < nodeWeights[endNodeId]
                 ) {
-                    /// Обновляем расстояние, если оно меньше, чем было установлено ранее
+/// Update the distance if it's smaller than what was set previously
                     nodeWeights[endNodeId] = nodeWeights[startNodeId] + graph[startNodeId][endNodeId];
                 }
             }
