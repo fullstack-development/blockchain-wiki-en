@@ -1,222 +1,212 @@
-# Алгоритмы и структуры данных
+# Algorithms and Data Structures
 
-> Эта статья использует в качестве основы для примеров книгу Адитья Бархава "Грокаем алгоритмы".
+> This article is based on the book "Grokking Algorithms" by Aditya Bhargava.
 
-Сама книга [тут](./book/grokking-algorithms.pdf).
-Примеры кода из книги в этом [репозитории](https://github.com/egonSchiele/grokking_algorithms/tree/master/02_selection_sort).
+Code examples from the book can be found in this [repository](https://github.com/egonSchiele/grokking_algorithms/tree/master/02_selection_sort).
 
+_Definition:_ An **algorithm** is a set of instructions for performing a specific task.
 
-_Опр._ **Алгоритмом** называется набор инструкций для выполнения некоторой задачи.
+_Definition:_ **Recursion** is the process of a function calling itself. In each recursive function, two cases must be handled: the base case and the recursive case. The base case signifies the termination of the recursive call.
 
-_Опр._ **Рекурсия** - вызов функции самой себя. В каждой рекурсивной функции должно обрабатываться два случая: базовый и рекурсивный. Базовый случай означает окончание рекурсивного вызова.
+## Array vs. Linked List
 
-## Массив данных vs связный список
+_Definition:_ An array and a linked list are data structures used to store a collection of values (elements) that can be identified by an index. The main difference lies in how data is stored in memory.
 
-_Опр._ Массив и связный список — это структуры данных для хранения набора значений(элементов), идентифицируемых по индексу. Основная разница заключается в представление данных в памяти.
+**Important!** Arrays store data sequentially. Each memory cell follows the next one. This allows for easy retrieval of the value of any array element because we know the order in which elements are stored.
 
-_Важно!_ Для массивов данные хранятся непрерывно. Ячейка памяти за ячейкой памяти. Поэтому удобно считывать значения произвольного элемента массива, так как мы знаем в какой по очередности ячейки хранится элемент.
-
-_Важно!_ Для связного списка данные хранятся где угодно в памяти, но каждый элемент хранит ссылку на следующий элемент. Это удобно, когда необходимо считывать данные последовательно, удалять или вставлять произвольный элемент.
+**Important!** In a linked list, data can be stored anywhere in memory, but each element holds a reference to the next element. This is useful for reading data sequentially, as well as for inserting or deleting arbitrary elements.
 
 ![](./images/array-vs-list.jpg)
 
-## Хеш-таблица
+## Hash Table
 
-_Опр!_ **Хеш-таблица** - структура данных, которая организует хранение элементов при помощи специальных **хеш-функций**.
+_Definition:_ A **hash table** is a data structure that organizes elements using special **hash functions**.
 
-_Опр!_ **Хеш-функция** - функция, которая получает строку и возвращает число. Под строкой понимается любой набор данных, выраженный последовательностью байтов.
+_Definition:_ A **hash function** is a function that takes a string and returns a number. Here, a string refers to any data expressed as a sequence of bytes.
 
-Требования к хеш-функции:
-1. Быть последовательной. Для одной и той же строки, функция должна возвращать одно и тоже число.
-2. Разным строкам должны соответствовать разные числа.
+Requirements for a hash function:
+1. It should be deterministic. For the same input, the function should return the same output.
+2. Different inputs should yield different outputs.
 
-Пример на базе книги стоимости товаров. Как хеш-функция будет работать для массива памяти?
+An example based on the book involves storing the prices of goods in memory using a hash function.
 
 ![](./images/hash-function.png)
 
-На схеме показан процесс внесения стоимости `апельсинов` и `молока` в память.
-1. Вызывается хеш-функция, которая принимает строку `апельсины`. Хеш-функция возвращает значение **2**. Стоимость `апельсинов`(23💲) запишется в ячейку массива памяти под номером два.
-2. Для `молока` хеш-функция возвращает значение **1**. Стоимость `молока`(10💲) будет записана в массив памяти под номером 1.
-3. Теперь, если необходимо быстро узнать стоимость товара, мы вызываем хеш-функцию, узнаем номер ячейки массива, в которой хранится стоимость товара и получаем стоимость напрямую из массива памяти. Сложность такой операции равняется O(1).
+The diagram illustrates the process of storing the prices of "oranges" and "milk" in memory.
+1. The hash function is called with the string "oranges," and it returns the value **2**. The price of "oranges" (23💲) is stored in the memory cell at index 2.
+2. For "milk," the hash function returns **1**. The price of "milk" (10💲) is then recorded in the memory cell at index 1.
+3. Now, if we need to quickly determine the price of a product, we invoke the hash function, find the memory cell where the price is stored, and retrieve the price directly from memory. The complexity of this operation is O(1).
 
-_Важно!_ Вместе *хеш-функция* и *массив* и есть **хеш-таблица**! Хеш-таблицы известны и под другими именами: ассоциативные массивы, словари, отображения, хеш-карты, хеш. **Хеш-таблица** состоит из ключей и значений(key => value). В solidity хеш-таблицей является функция **mapping**.
+**Important!** Together, the *hash function* and the *array* form a **hash table**! Hash tables are known by other names: associative arrays, dictionaries, mappings, hash maps, and more. A **hash table** consists of keys and values (key => value). In Solidity, the **mapping** function represents a hash table.
 
-**Хеш-таблицы** хорошо подходят для выполнения следующих задач:
-1. Моделирование отношений между объектами
-2. Устранение или отслеживание дубликатов
-3. Кеширование или запоминание данных
+**Hash tables** are well-suited for various tasks, including:
+1. Modeling relationships between objects
+2. Eliminating or tracking duplicates
+3. Caching or storing data
 
-Создается впечатление, что хеш-функция всегда возвращает уникальный индекс в массиве. Однако, в действительности практически невозможно реализовать такую хеш-функцию. Ситуация, когда хеш-функция возвращает одно число для двух строк, называется **коллизией**.
+It may seem that a hash function always returns a unique index in the array. However, in practice, it's nearly impossible to implement such a hash function. When a hash function returns the same number for two strings, it's called a **collision**.
 
-Пример коллизии на схеме ниже Андреев Иван и Алексеев Иван претендуют на запись в ячейку 002.
+An example of a collision is shown in the diagram below, where both "Andreev Ivan" and "Alexeev Ivan" contend for a spot in cell 002.
 
 ![](./images/collision.png)
 
-**Коллизии** решаются множеством способов. Самый простой реализовать связный список для двух строк, которые должны будут быть записаны в одну ячейку массива. Способ посложнее, увеличивать размер хеш-таблицы.
+**Collisions** can be resolved in various ways. The simplest approach is to implement a linked list for the two strings that should be stored in the same array cell. A more complex method involves increasing the size of the hash table.
 
-_Важно!_ Хеш-функция должна сводить количество коллизий к минимуму, тогда она будет более эффективна.
+**Important!** A hash function should minimize the number of collisions to make it more efficient.
 
-## Стек
+# Stack
 
-_Опр!_ **Стек** - структура данных "last-in, first-out" (LIFO). Последний пришел - первый вышел.
+_Definition:_ A **stack** is a "last-in, first-out" (LIFO) data structure. The last item added is the first one to be removed.
 
 ![](./images/stack.png)
 
-Solidity код реализации стека можно посмотреть [тут](./src/libraries/Stack.sol).
+You can find the Solidity code implementation of a stack [here](./src/libraries/Stack.sol).
 
-## Очередь
+## Queue
 
-_Опр!_ **Очередь** - структура данных "first-in, first-out"(FIFO). Первым пришел - первым вышел.
+_Definition:_ A **queue** is a "first-in, first-out" (FIFO) data structure. The first item added is the first one to be removed.
 
 ![](./images/queue.png)
 
-Solidity код реализации очереди можно посмотреть [тут](./src/libraries/Queue.sol).
+You can find the Solidity code implementation of a queue [here](./src/libraries/Queue.sol).
 
-## Время выполнения
+## Runtime Complexity
 
-_Опр._ Время выполнения - измеряет скорость роста количества операций алгоритма. Описывается специальной нотацией "О-большое". Нотация показывает количество операций.
+_Definition:_ Runtime complexity measures the rate of growth of the number of operations an algorithm performs. It is described using "Big O" notation, which indicates the number of operations.
 
-Виды времени выполнения:
-1. **О(n)** или линейный. Пример: простой поиск перебором.
-2. **O(log n)** или логарифмический. Пример: бинарный поиск.
-3. **O(n * log n)**. Пример: эффективные алгоритмы сортировки(быстрая сортировка).
-4. **O(n ** 2)**. Пример: медленные алгоритмы сортировки(сортировка выбором).
-5. **О(n!)**. Пример: очень медленные алгоритмы(задача о коммивояжере).
+Types of runtime complexity:
+1. **O(n)** or linear. Example: simple linear search.
+2. **O(log n)** or logarithmic. Example: binary search.
+3. **O(n * log n)**. Example: efficient sorting algorithms (quicksort).
+4. **O(n^2)**. Example: slow sorting algorithms (selection sort).
+5. **O(n!)**. Example: very slow algorithms (traveling salesman problem).
 
-## Бинарный поиск
+## Binary Search
 
-_Опр._ Бинарный поиск - это алгоритм, который на входе получает отсортированный список элементов и искомый элемент. На выходе возвращает позицию элемента в списке, если он найден, иначе - null. Каждый раз алгоритм делит список пополам и проверяет в какой половине находится искомый элемент. Ненужная половина отбрасывается, нужная половина снова делится пополам, пока искомый элемент не будет найден.
+_Definition:_ Binary search is an algorithm that takes a sorted list of elements and a target element as input. It returns the position of the element in the list if found, otherwise, it returns null. The algorithm repeatedly divides the list in half and checks which half the target element is in. The unnecessary half is discarded until the element is found.
 
-Типичный пример: поиск номера телефона в телефонной книге.
+A typical example is searching for a phone number in a phone book.
 
-_Важно!_ Бинарный поиск имеет логарифмическое время выполнения. Работает за **log2n** шагов. И работает, только, если список отсортирован.
+**Important!** Binary search has a logarithmic runtime complexity, working in **log2n** steps. It only works if the list is sorted.
 
-Solidity код бинарного поиска можно посмотреть [тут](./src/BinarySearch.sol).
+You can find the Solidity code implementation of binary search [here](./src/BinarySearch.sol).
 
-## Сортировка выбором
+## Selection Sort
 
-_Идея!_ Сортировка выбором предполагает поиск минимального или максимального значения в неотсортированной части массива с последующей сменой местами последнего или первого элемента с найденным значением.
+_Idea:_ Selection sort involves finding the minimum or maximum value in the unsorted portion of an array and swapping it with the last or first element, respectively.
 
-_Важно!_ В solidity мы будем найденное максимальное или минимальное значение добавлять в новый отсортированный массив.
+**Important!** In Solidity, we add the found maximum or minimum value to a new sorted array.
 
-Solidity код сортировки выбором можно посмотреть [тут](./src/SelectionSort.sol).
+You can find the Solidity code implementation of selection sort [here](./src/SelectionSort.sol).
 
-## Быстрая сортировка
+## Quicksort
 
-Быструю сортировку еще называют **сортировкой Хоара**. Сортировка на основана на подходе "разделяй и властвуй".
+Quicksort, also known as **Hoare's sort**, is based on the "divide and conquer" approach.
 
-_Важно!_ Стратегия **разделяй и властвуй** основана на разбиение задачи на уменьшающиеся фрагменты. Если применить стратегию к работе со списками, то базовым случаем скорее всего является пустой элемент или массив из одного элемента.
+**Important!** The "divide and conquer" strategy involves breaking down a problem into smaller fragments. For lists, the base case is usually an empty list or a list with one element.
 
-_Идея!_ В массиве выбирается **опорный элемент a[i]**. Массив разделяется на две части. Значения меньшие или равные опорному - влево, большие - вправо. Теперь массив состоит из двух подмножеств. Для обоих подмножеств рекурсивно запускается процедура выбора **опорного элемента** и разделения подмножества на две части. Это происходит, пока в подмножестве не окажется меньше двух элементов. В конце получается полностью отсортированный массив.
+_Idea:_ In an array, a **pivot element a[i]** is selected. The array is divided into two parts: values less than or equal to the pivot go to the left, and values greater than the pivot go to the right. Now, the array consists of two subsets. For both subsets, the process of selecting a **pivot element** and dividing the subset into two parts is repeated recursively until each subset contains fewer than two elements. In the end, a fully sorted array is obtained.
 
-_Важно!_ Скорость алгоритма быстрой сортировки зависит от выбора опорного элемента. Поэтому у этой сортировки есть понятие лучшего(О(log n)) и худшего случая(O(n)).
+**Important!** The speed of the quicksort algorithm depends on the choice of the pivot element. Therefore, it has the concept of best (O(log n)) and worst-case (O(n)) scenarios.
 
-Вариант реализации быстрой сортировки для Solidity будет похож на вариант реализации для C-подобных языков. В силу специфики работы с памятью исходный массив не бьется на подмножество. Реализуется вариант одновременного прохода по массиву с обоих концов и перестановкой элементов местами при необходимости.
+The implementation of quicksort for Solidity will be similar to that for C-like languages. Due to the memory handling specifics, the original array is not split into subsets. Instead, a variant of simultaneously traversing the array from both ends and swapping elements as needed is implemented.
 
-Solidity код быстрой сортировки можно посмотреть [тут](./src/QuickSort.sol).
+You can find the Solidity code implementation of quicksort [here](./src/QuickSort.sol).
 
-## Графы
+# Graphs
 
-_Опр!_ Граф - это геометрическая фигура, которая состоит из точек и линий, которые их соединяют. Такая фигура моделирует набор связи между объектами.
+_Definition:_ A **graph** is a geometric figure consisting of points and lines connecting them. Such a figure models a set of connections between objects.
 
 ![](./images/graph.png)
 
-Каждый граф состоит из **узлов** и **ребер**. Узлы, которые имеют общие ребра называются **соседями**.
+Every graph consists of **nodes** and **edges**. Nodes that share edges are called **neighbors**.
 
-Графы бывают:
-1. **Направленные**. Отношения действуют только в одном направление. По стрелкам.
-2. **Ненаправленные**. Отношения действуют в обе стороны. Стрелок нет.
+Graphs can be:
+1. **Directed**: Relationships only act in one direction, indicated by arrows.
+2. **Undirected**: Relationships act in both directions, without arrows.
 
 ![](./images/graph-direction.png)
 
-_Важно!_ Граф, в котором нет ребер, указывающих в обратном направление называется **деревом**.
+**Important!** A graph with no edges pointing backward is called a **tree**.
 
 ![](./images/tree.png)
 
-## Поиск в ширину
+## Breadth-First Search
 
-_Опр!_ Поиск в ширину позволяет найти кратчайшее расстояние между двумя объектами. Под кратчайшем расстояние может пониматься множество вещей: кратчайший путь к победе в шашках, проверка правописания(кратчайшее расстояние - это минимальное количество изменений), найти ближайшего врача.
+_Definition:_ Breadth-First Search allows finding the shortest distance between two objects. Shortest distance can mean various things: the shortest path to victory in checkers, spell-checking (shortest distance is the minimum number of changes), finding the nearest doctor, etc.
 
-Поиск в ширину может ответить на два вопроса:
-1. Существует ли путь из точки А в точку B?
-2. Как выглядит кратчайший путь от узла А к узлу B?
+Breadth-First Search can answer two questions:
+1. Does a path exist from point A to point B?
+2. What does the shortest path from node A to node B look like?
 
-_Идея!_ Алгоритм поэтапно перебирает все возможные варианты пути, постепенно углубляясь по списку. Например, ты ищешь того, кто готов пойти с тобой в кино в соцсетях. Сначала ты методично опрашиваешь своих друзей, если все отказались, ты спускаешься глубже к друзьям своих друзей и т.д. Это продолжается пока ты не найдешь человека, который согласится пойти с тобой в кино.
+_Idea:_ The algorithm systematically explores all possible path options, gradually deepening the list. For example, when searching for someone to go to the movies with on social media, you first ask your friends. If they all decline, you go deeper and ask your friends' friends, and so on. This continues until you find someone willing to go to the movies with you.
 
-Поиск в ширину активно использует понятие **очередь**. Нельзя обращаться к произвольным элементам очереди. Можно только добавить элемент в очередь или извлечь из очереди. Возвращаясь к примеру в идее алгоритма, реализация с очередью выглядит так:
+Breadth-First Search actively uses the concept of a **queue**. You cannot access arbitrary elements in a queue; you can only add an element to it or remove an element from it. Returning to the algorithm's idea, the implementation with a queue looks like this:
 
 ![](./images/breadth-first-search.png)
-1. Открываем список своих друзей(на схеме "*my account*"). Добавляем своих друзей в очередь: Alice, Bob, John.
-2. Проверяем первого друга: Alice. Если он согласен, поиск окончен. Если он не согласен, добавляем его друзей в конец нашего списка.
-3. Проверяем второго друга: Bob, третьего, John.
-4. И так, пока не найдется партнер для похода в кино или не закончатся люди в соцсети. В нашем случае Barbara согласна пойти в кино.
+1. Open your list of friends (in the diagram, "*my account*"). Add your friends to the queue: Alice, Bob, John.
+2. Check the first friend: Alice. If she agrees, the search is over. If not, add her friends to the end of your list.
+3. Check the second friend: Bob. Check the third friend: John.
+4. Repeat until you find a movie partner or run out of people in your social network. In our case, Barbara agrees to go to the movies.
 
-_Важно!_ Время выполнения такого алгоритма рассчитывается, как O(V + E), где V - количество вершин, E - количество ребер.
+**Important!** The algorithm's runtime is calculated as O(V + E), where V is the number of vertices, and E is the number of edges.
 
-Solidity код поиска в ширину можно посмотреть [тут](./src/BreadthFirstSearch.sol).
+You can find the Solidity code implementation of Breadth-First Search [here](./src/BreadthFirstSearch.sol).
 
-Для тестов использовался вот такой граф. В скобках указан идентификатор узла графа.
+For testing, we used the following graph. Node identifiers are in parentheses.
 ![](./images/breadth-first-search-test-graph.png)
 
-## Алгоритм Дейкстры
+## Dijkstra's Algorithm
 
-_Опр!_ Алгоритм Дейкстры - это алгоритм, который позволяет найти кратчайший путь от одной из вершин графа до всех остальных.
+_Definition:_ Dijkstra's algorithm is used to find the shortest path from one node in a graph to all other nodes.
 
-_Идея!_ Алгоритм последовательно перебирает узлы графа, записывая кратчайший путь в память. При нахождение наиболее кратчайшего пути до промежуточного узла, информация перезаписывается и поиск продолжается.
+_Idea:_ The algorithm iteratively examines the nodes of the graph, recording the shortest path in memory. When it finds a shorter path to a node, it updates the information and continues searching.
 
-_Важно!_ Для каждого ребра вводиться понятие **вес**. Вес может быть отрицательным. Такой граф называется **взвешенным**.
+**Important!** For each edge, a **weight** is introduced. Weights can be negative. Such a graph is called **weighted**.
 
 ![](./images/weighted-graph.png)
 
-Алгоритм Дейкстры:
-1. Найти узел с наименьшей стоимостью(то есть узел, до которого можно добраться за минимальное время)
-2. Проверить, существует ли более дешевый путь к соседям этого узла и если существует, то обновить их стоимость.
-3. Повторять, пока это не будет сделано для всех узлов графа.
-4. Вычислить итоговый путь.
+Dijkstra's Algorithm:
+1. Find the node with the lowest cost (i.e., the node that can be reached in the shortest time).
+2. Check if there's a cheaper path to the neighbors of this node and update their cost if necessary.
+3. Repeat until this is done for all nodes in the graph.
+4. Calculate the final path.
 
 ![](./images/dijkstra.png)
 
-Для вычисления кратчайшего пути до любой точки графа удобно использовать таблицу. Для этого необходимо создать количество столбцов равное количеству узлов в графе.
-1. **На первой итерации** необходимо определить начальную точку. В нашем случае это узел 1. Расстояние из узла 1 до узла 1 равно 0, до остальных узлов пока что неизвестно и ставим знак бесконечности.
-2. **На второй итерации.** Проверяем до каких узлов мы можем добраться из узла 1. До 2-го узла 10, до третьего не возможно, оставляем бесконечность, до 4-го - 30, до 5-го 100.
-3. **На третьей итерации.** Выбираем узел со второй итерации с минимальным расстоянием. Это узел 2. Расстояние до него равно 10. Считаем расстояние от 2-го узла до узлов не использованных(для узла 1 мы уже проверяли пути, оставляем поле пустым). Расстояние до третьего узла равно 50 + 10(от 2-го до 3-го + от 1-го до 2-го узла). Для 4-го узла расстояние остается 30, до 5-го узла 100, так как добраться до них из 2-го узла невозможно.
-4. **На четвертой итерации.** Выбираем узел с третьей итерации с минимальным расстоянием. Это узел 4. Повторяем действия. Из четвертого узла можно добраться до оставшихся 3-го узла за 20 + 30 = 50. До пятого узла 90.
-5. **На пятой итерации.** Выбираем узел с наименьшим расстоянием. Это узел 3. Из 3-го узла можно добраться до 5-го за 10 + уже пройденные 50. Итого 60.
-6. **Ответ**: Кратчайшее расстояние из узла 1 до узла 5 равняется 60.
+To calculate the shortest path to any point in an unweighted graph, use the **breadth-first search** algorithm. For a weighted graph, use **Dijkstra's algorithm**. In general, Dijkstra's algorithm only works with directed acyclic graphs, often abbreviated as DAGs (Directed Acyclic Graphs).
 
-Для вычисления кратчайшего пути в невзвешенном графе используется алгоритм **поиск в ширину**. Для взвешенного графа используется **алгоритм Дейкстры**. В целом алгоритм Дейкстры работает только с направленными ациклическими графами, их нередко обозначают сокращением DAG(Directed Acyclic Graph).
+**Important!** Dijkstra's algorithm does not support graphs with negative weights. For such cases, you can use the [Bellman-Ford algorithm](https://www.geeksforgeeks.org/bellman-ford-algorithm-simple-implementation/).
 
-_Важно!_ Алгоритм Дейкстры не поддерживает графы с отрицательными весами. Для этого используется алгоритм [Беллмана-Форда](https://www.geeksforgeeks.org/bellman-ford-algorithm-simple-implementation/).
+You can find the Solidity code implementation of Dijkstra's algorithm [here](./src/Dijkstra.sol).
 
-Solidity код алгоритма Дейкстры можно посмотреть [тут](./src/Dijkstra.sol).
+## Greedy Algorithms
 
-## Жадные алгоритмы
+> The case when greed is not a vice! 💰
 
-> Тот случай, когда жадность не порок!💰
+_Definition!_ A greedy algorithm is an algorithm that makes the locally optimal choice at each step in the hope that the overall solution will be optimal.
 
-_Опр!_ Жадный алгоритм - это алгоритм, который на каждом шагу делает локально наилучший выбор в надежде, что итоговое решение будет оптимальным.
+_Important!_ The Dijkstra's algorithm (finding the shortest path in a graph) also falls under greedy algorithms.
 
-_Важно!_ Алгоритм Дейкстры(нахождение кратчайшего пути в графе) тоже относится к жадным алгоритмам.
+Problems suitable for greedy algorithms:
+1. **Scheduling Problem**: For instance, you have a class schedule with overlapping lessons. It's impossible to conduct all lessons because they clash in time. **Solution:** Choose the lesson that ends first, then find the next lesson that starts immediately after the previous one, and so on.
+2. **Coin Change Problem**: You have a set of coins with different denominations, and you need to make change for a given amount with the fewest number of coins. **Solution:** Use as many coins with the highest denomination as possible, then move to the lower denomination coins, and so on.
+3. **Knapsack Problem**: A thief with a limited capacity knapsack wants to steal the most valuable items from a store. **Solution:** Choose the most valuable item and place it in the knapsack. Continue until the knapsack is full.
+4. **Set Cover Problem**: Suppose you need to select the minimum number of radio stations to cover the maximum number of areas. **Solution:** Choose the station with the most extensive coverage. If it covers some areas already covered, it's fine. Repeat until all areas are covered.
+5. **Traveling Salesman Problem**: A traveling salesman needs to visit five different cities. The salesman must find the shortest path that includes all cities. **Solution:** Iterate through all possible paths and select the one with the shortest distance.
 
-Задачи для которых подходит жадный алгоритм:
-1. **Задача о расписание**. Например есть учебный класс, в котором нужно провести уроки. Все уроки провести не получится, потому что они пересекаются по времени. **Решение:** Берем самый первый по времени окончания урок, находим другой урок, который начинается сразу после окончания первого и так далее.
-2. **Задача о размене монет.** Есть набор монет с разными номиналами. Необходимо разменять заданную сумму минимальным количеством монет. **Решение:** используем как можно больше монет с максимальным номиналом, затем переходим к меньшему номиналу и так далее.
-3. **Задача о рюкзаке.** Воришка с рюкзаком забрался в магазин. Емкость рюкзака ограничена. Необходимо забрать с собой самые дорогие товары. **Решение:** выбираем самый дорогой товар и кладем его в рюкзак. Продолжаем, пока в рюкзаке не закончится место.
-4. **Задача о покрытии множества.** Например, необходимо выбрать минимальное количество радиостанций, которые будут покрывать максимально большое количество областей. **Решение:** Выбрать станцию с наибольшим покрытием. Если станция будет покрывать области, которые уже были покрыты, то это нормально. Повторять, пока остаются штаты, не входящие в покрытие.
-5. **Задача о коммивояжере.** Коммивояжер должен был посетить пять разных городов. Коммивояжер должен найти кратчайший путь, который включит все города. **Решение:** Проходим по всем возможным комбинациям путей и выбираем минимальное расстояние.
+_Important!_ Greedy algorithms are not always efficient, and their application should be considered carefully. For example, in the knapsack problem, it's possible that the first item selected occupies the entire knapsack's capacity. However, it might be more profitable to choose smaller-sized items in greater quantities. In such cases, the algorithm would need to consider not only the item's value but also its size.
 
-_Важно!_ Далеко не всегда жадный алгоритм эффективный и его необходимо применять. Например в задаче о рюкзаке с воришкой могла быть ситуация, что первый же товар займет все место в рюкзаке. Однако, было бы сильно выгоднее, набрать товара меньшего размера, но в больше количестве. Если это имело место быть, то алгоритм требовал бы учитывать не только стоимость товара, но и размер.
+_Interesting!_ Such algorithms are also known as **approximation algorithms**. When finding the exact solution is too time-consuming, an approximation algorithm is applied.
 
-_Интересно!_ Такие алгоритмы еще называют **приближенными**. Когда вычисление точного решения занимает слишком много времени, применяется приближенный алгоритм.
+The traveling salesman problem significantly increases algorithm execution time based on the number of cities, as its complexity grows factorially. For 10 cities, you would need to evaluate 3,628,800 possibilities. Such problems are called NP-hard (non-deterministic polynomial - "non-deterministic polynomial time") problems. Recognizing this and transitioning from seeking an ideal solution to using an approximation algorithm is crucial.
 
-Задача о коммивояжере в зависимости от количества городов резко увеличивает время работы алгоритма, потому что сложность растет по факториалу. Для 10 городов необходимо перебрать 3628800 вариантов. Такие задачи называют NP-полными(non-deterministic polynomial - "недетерминированные с полиномиальным временем"). Важно вовремя это понять и перейти от поиска идеального решения к решению с применением приближенного алгоритма.
+Characteristics of NP-hard problems:
+1. The algorithm works quickly with a small number of elements but significantly slows down as the number of elements increases.
+2. If you need to evaluate all "combinations x," it's one of the most characteristic signs.
+3. If there's a sequence in the problem (e.g., a city sequence), and the problem doesn't have a straightforward solution.
+4. If there's a set involved in the problem (e.g., a set of radio stations), and the problem doesn't have a straightforward solution.
 
-Характерные признаки NP-полной задачи:
-1. Алгоритм быстро работает при малом количестве элементов, но сильно замедляется при увеличение числа элементов
-2. Если нужно перебрать все "комбинации x". Это один из самых характерных признаков
-3. Если в задаче встречается некая последовательность(например, последовательность городов) и задача не имеет простого решения
-4. Если в задаче встречается некоторое множество(например, как множество радиостанций) и задача не имеет простого решения
+## Conclusion
 
-## Вывод
-
-Алгоритмы - это очень хорошо. Но не будем забывать, что выполнение большого количества операций в Solidity будет стоить большое количество газа. Это приведет к большой комиссии за выполнение транзакции. Не будем забывать и про ограничение размера блока по газу. Да, блок достаточно гибкий и может расширяться, но все же не безграничен. Подробнее про это [тут](https://ethereum.org/en/developers/docs/gas/#block-size). Поэтому необходимо стараться проводить все большие алгоритмические операции off-chain, а блокчейн использовать для хранения данных или подтверждения результата работы алгоритмов. Но это уже совсем другая история.🔦
+Algorithms are great! However, keep in mind that performing a large number of operations in Solidity can consume a considerable amount of gas, leading to high transaction fees. Also, consider the gas limit constraint in a block. While blocks are somewhat flexible and can expand, there are limits. Learn more about it [here](https://ethereum.org/en/developers/docs/gas/#block-size). Therefore, it's essential to try to perform extensive algorithmic operations off-chain and use the blockchain for data storage or confirming algorithm results. But that's a different story. 🔦
