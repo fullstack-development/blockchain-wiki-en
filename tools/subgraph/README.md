@@ -2,88 +2,91 @@
 
 **Author:** [Kutsenko Aleksei](https://github.com/bimkon144) 👨‍💻
 
-## Что такое the Graph?
+## What is The Graph?
 
-**The Graph** — это децентрализованный протокол для индексации и запроса данных блокчейна. The Graph позволяет запрашивать данные, которые трудно запросить напрямую с контракта.
+**The Graph** is a decentralized protocol for indexing and querying blockchain data. The Graph allows for querying data that is difficult to directly request from the contract.
 
-**Индексация** – это процесс организации и обработки данных блокчейна таким образом, чтобы их можно было быстро и эффективно запросить. Это аналогично тому, как поисковые системы индексируют веб-страницы, чтобы предоставлять быстрые ответы на поисковые запросы пользователей
+**Indexing** is the process of organizing and processing blockchain data in such a way that it can be quickly and efficiently queried. This is similar to how search engines index web pages to provide quick responses to user search queries.
 
-Например, проекты со сложными смарт-контрактами, такие как Uniswap, и  NFT, такие как Bored Ape Yacht Club, хранят данные в блокчейне, что очень затрудняет чтение чего-либо, кроме основных данных, непосредственно из блокчейна.
+For example, projects with complex smart contracts, such as Uniswap, and NFTs, such as Bored Ape Yacht Club, store data on the blockchain, which makes it very difficult to read anything other than basic data directly from the blockchain.
 
-В случае NFT Bored Ape Yacht Club, мы можем выполнять основные операции чтения контракта, такие как получение владельца определенного id токена, получение URI контента  на основе id токена, или totalSupply, поскольку эти функция записаны в смарт-контракт. Более сложные запросы и операции реального мира, такие как агрегация, поиск, отношения и нетривиальная фильтрация, невозможны.
+In the case of NFT Bored Ape Yacht Club, we can perform basic contract reading operations, such as getting the owner of a specific token id, getting content URI based on token id, or totalSupply, since these functions are written in the smart contract. More complex queries and real-world operations such as aggregation, search, relationships, and non-trivial filtering are impossible.
 
-Например, если бы мы хотели запросить id токенов, принадлежащих определенному адресу, и отфильтровать по одной из его характеристик, мы не смогли бы получить эту информацию, взаимодействуя непосредственно с самим контрактом.
+For example, if we wanted to query the ids of tokens belonging to a certain address and filter by one of its characteristics, we would not be able to get this information by interacting directly with the contract itself.
 
-Чтобы получить эти данные, вам придется обработать каждое событие `transfer`, когда-либо созданное, прочитать метаданные из IPFS с использованием id токена и хэша IPFS, а затем агрегировать их. Даже на такие относительно простые вопросы децентрализованному приложению (dapp), работающему в браузере, потребуются часы или даже дни, чтобы получить ответ.
+To get this data, you would have to process every `transfer` event ever created, read metadata from IPFS using token id and IPFS hash, and then aggregate them. Even for such relatively simple questions, a decentralized application (dapp) running in a browser would take hours or even days to get a response.
 
-Вы также можете создать свой собственный сервер, обрабатывать там транзакции, сохранять их в базе данных и создавать конечную точку API поверх всего этого, чтобы запрашивать данные. Однако этот вариант является [ресурсоемким](https://thegraph.com/docs/en/network/benefits/), требует обслуживания, представляет собой единую точку отказа и нарушает важные свойства безопасности, необходимые для децентрализации.
+You can also create your own server, process transactions there, store them in a database, and create an API endpoint on top of all this to query data. However, this option is [resource-intensive](https://thegraph.com/docs/en/network/benefits/), requires maintenance, represents a single point of failure, and compromises important security properties necessary for decentralization.
 
-Индексировать данные блокчейна очень и очень сложно.
-Свойства блокчейна, такие как завершенность, реорганизация цепочки или неподключенные блоки, еще больше усложняют этот процесс и делают не только трудоемким, но и концептуально трудным получение правильных результатов запроса из данных блокчейна.
+Indexing blockchain data is very and very difficult.
+Blockchain properties such as finality, chain reorganization, or orphaned blocks further complicate this process and make it not only labor-intensive but also conceptually difficult to get the correct query results from blockchain data.
 
-The Graph решает эту проблему с помощью децентрализованного протокола, который индексирует и обеспечивает эффективный процесс получения данных из блокчейна с последующей структуризацией и предоставлением внешнего API для работы с этими данными"
+The Graph solves this problem with a decentralized protocol that indexes and ensures an efficient process of obtaining data from the blockchain with subsequent structuring and providing an external API to work with these data"
 
-Сегодня есть [hosted service](https://thegraph.com/docs/en/deploying/hosted-service/), который позволяет деплоить сабграфы бесплатно, не используя децентрализованную сеть, а также децентрализованный протокол с теми же возможностями. Оба поддерживаются реализацией [Graph Node](https://github.com/graphprotocol/graph-node) с открытым исходным кодом.
+Today there is a [hosted service](https://thegraph.com/docs/en/deploying/hosted-service/) that allows you to deploy subgraphs for free, without using the decentralized network, as well as a decentralized protocol with the same capabilities. Both are supported by the open-source implementation of [Graph Node](https://github.com/graphprotocol/graph-node).
 
->Важно: Обратите внимание, что в 2023 году хостинговая служба начнет закрываться, но она останется доступной для сетей, которые не поддерживаются в децентрализованной сети. Разработчикам рекомендуется обновить свои сабграфы до The Graph Network. Хостинговые службы в каждой сети будут закрываться постепенно, чтобы у разработчиков было достаточно времени для обновления сабграфов до децентрализованной сети. Подробнее о прекращении действия размещенной службы можно прочитать [тут](https://thegraph.com/blog/sunsetting-hosted-service/).
+>Important: Note that in 2023, the hosting service will begin to shut down, but it will remain available for networks not supported in the decentralized network. Developers are advised to upgrade their subgraphs to The Graph Network. Hosting services in each network will be phased out gradually, so developers have enough time to upgrade subgraphs to the decentralized network. More about the termination of the hosted service can be read [here](https://thegraph.com/blog/sunsetting-hosted-service/).
 
-## Как он работает?
+## How does it work?
 
-The Graph индексирует данные блокчейна, на основе описаний subgraph, известных как subgraph manifest.
+The Graph indexes blockchain data based on descriptions of subgraphs known as a subgraph manifest.
 
-После написания subgraph manifest вы используете Graph CLI для сохранения описания в IPFS и указываете индексатору начать индексацию данных для этого subgraph.
+After writing a subgraph manifest, you use the Graph CLI to save the description in IPFS and instruct the indexer to start indexing data for this subgraph.
 ![graph-diagram](./images/graph.png)
 
-**Разберем порядок работы сабграфов:**
+**Let's break down the order of work with subgraphs:**
 
-- Децентрализованное приложение добавляет данные в блокчейн через транзакции при взаимодействии со  смарт-контрактом.
-- Смарт-контракт генерирует одно или несколько событий при обработке транзакции.
-- Graph Node постоянно сканирует блокчейн на наличие новых блоков и данных для вашего subgraph, которые они могут содержать.
-- Graph Node находит события блокчейн для вашего subgraph в этих блоках и запускает предоставленные вами mapping handlers. Обработчик — это модуль WASM, который создает или обновляет объекты данных, которые Graph Node хранит в ответ на события блокчейн.
-- Децентрализованное приложение запрашивает у Graph Node данные, проиндексированные из блокчейна, используя [node's GraphQL endpoint](https://graphql.org/learn/). Graph Node, в свою очередь, преобразует запросы GraphQL в запросы к своему базовому хранилищу данных, чтобы получить эти данные, используя возможности индексирования хранилища. Децентрализованное приложение отображает эти данные в пользовательском интерфейсе для конечных пользователей, которые они используют для создания новых транзакций в блокчейн. Цикл повторяется.
+- A decentralized application adds data to the blockchain through transactions when interacting with a smart contract.
+- The smart contract generates one or more events when processing the transaction.
+- Graph Node constantly scans the blockchain for new blocks and data for your subgraph that they may contain.
+- Graph Node finds blockchain events for your subgraph in these blocks and runs the mapping handlers you provided. The handler is a WASM module that creates or updates data objects that Graph Node stores in response to blockchain events.
+- The decentralized application requests data from Graph Node, indexed from the blockchain, using [node's GraphQL endpoint](https://graphql.org/learn/). Graph Node, in turn, converts GraphQL queries into queries to its underlying data store to get this data, using the indexing capabilities of the store. The decentralized application displays these data in the user interface for end users, who use them to create new transactions in the blockchain. The cycle repeats.
 
-## Создание subgraph
+## Creating a Subgraph
 
-В этом разделе мы разберемся в трех ключевых элементах при создании subgraph.
+In this section, we'll delve into three key elements in creating a subgraph.
 
-Разберем создание основных элементов сабграфа на простом контракте который задеплоен в сети [Sepolia](https://sepolia.etherscan.io/address/0x90d092977ad098E1E0382fbD5Cc2D07D458369f3#code).
+We'll look at creating the main components of a subgraph using a simple contract deployed on the [Sepolia](https://sepolia.etherscan.io/address/0x90d092977ad098E1E0382fbD5Cc2D07D458369f3#code) network.
 
-Первым делом рекомендую пройти регистрацию и создать свой сабграф [тут](https://thegraph.com/hosted-service/dashboard). При инициализации  выбираем тип ethereum, сеть sepolia и тип сервиса hosted-service, указываем адрес контракта. Будет произведена автоматическая инициализация проекта
+First, I recommend registering and creating your subgraph [here](https://thegraph.com/hosted-service/dashboard). When initializing, select the Ethereum type, the Sepolia network, and the hosted-service type, then enter the contract address. An automatic project initialization will be performed.
 
-Определение subgraph состоит из нескольких файлов:
+A subgraph definition consists of several files:
 
- - **subgraph.yaml**: YAML файл который содержит subgraph manifest. В нем указываются информация необходимая для индексации и запроса к определенному сабграфу.
- - **schema.graphql**: GraphQL схема, которая определяет, какие данные хранятся для вашего subgraph и как запрашивать их через GraphQL.
- - **AssemblyScript Mappings**: Код [AssemblyScript](https://github.com/AssemblyScript/assemblyscript), который преобразует данные c событий в сущности, определенные в schema.graphql файле.
+ - **subgraph.yaml**: A YAML file that contains the subgraph manifest. It specifies information necessary for indexing and querying a particular subgraph.
+ - **schema.graphql**: A GraphQL schema that defines what data is stored for your subgraph and how to query it through GraphQL.
+ - **AssemblyScript Mappings**: [AssemblyScript](https://github.com/AssemblyScript/assemblyscript) code that transforms data from events into entities defined in the schema.graphql file.
 
-> Словарь терминов для статьи:
-**Сущность** (entity) - это часть схемы сабграфа, по которой мы будем определять как записывать, хранить, и как получать эти данные при запросе.
-Сопоставление (маппинг, mapping) - это Файл `assebmlyScript`, в котором написаны все функции, которые обрабатывают будь то тригер event, вызов функции, блок и обновляют/создают новою сущность в схеме сабграфа.
+> Glossary for the article:
+**Entity** - a part of the subgraph schema by which we define how to write, store, and retrieve these data upon request.
+Mapping - An `assemblyScript` file where all the functions are written that process whether it's an event trigger, function call, block, and update/create a new entity in the subgraph schema.
 
-### **1. Определение subgraph.yaml**
+### **1. Defining subgraph.yaml**
 
-Любой формат данных, который имеет четко определенное отображение с каноническим форматом [IPLD]( https://github.com/ipld/ipld), может использоваться для определения манифеста сабграфа. Сюда входят YAML и JSON.
-Манифест сабграфа и все связанные с ним файлы — это то, что развертывается в IPFS и хешируется для создания идентификатора сабграфа, на который можно ссылаться и который можно использовать для извлечения сабграфа в The Graph.
+Any data format that has a clearly defined mapping with the canonical [IPLD](https://github.com/ipld/ipld) format can be used to define a subgraph manifest. This includes YAML and JSON.
+The subgraph manifest and all associated files are what is deployed to IPFS and hashed to create a subgraph identifier, which can be referenced and used to retrieve the subgraph in The Graph.
 
-Примеры в этом документе представлены в формате YAML.
+Examples in this document are provided in YAML format.
 
-Самый первый шаг - определить subgraph manifest с использованием синтаксиса YAML. Полную спецификацию сабграф манифеста можно посмотреть [тут](https://github.com/graphprotocol/graph-node/blob/master/docs/subgraph-manifest.md).
+The very first step is to define the subgraph manifest using YAML syntax. The full subgraph manifest specification can be viewed [here](https://github.com/graphprotocol/graph-node/blob/master/docs/subgraph-manifest.md).
 
-Мы можем посмотреть сгенерированный файл и разобраться в нем:
+We can look at the generated file and understand it:
+
 ```javascript
 specVersion: 0.0.5
-//Удобочитаемое описание того, что представляет собой сабграф.
-//Это описание отображается в Graph Explorer при развертывании сабграфа в hosted service.
+// A human-readable description of what the subgraph represents.
+// This description is displayed in Graph Explorer when deploying the subgraph to the hosted service.
 description: Wiki
-//URL-адрес репозитория, в котором можно найти манифест подграфа. Это также отображается в Graph Explorer
+// The URL of the repository where the subgraph manifest can be found. This is also displayed
+в Graph Explorer
 repository: https://github.com/graphprotocol/graph-tooling
-//Путь до сабграф схемы
+// Path to the subgraph schema
 schema:
   file: ./schema.graphql
-//Новые функции сабграфа, которые уже можно использовать, объявляются тут. Более подробно расскажем далее.
+// New subgraph features that are already available are declared here. More details will be provided later.
+
 features:
   - fullTextSearch
-//Указываем источник в виде сети, названия, адреса и abi контракта
+// Specify the source in the form of the network, name, address, and ABI of the contract
 dataSources:
   - kind: ethereum
     name: Wiki
@@ -91,26 +94,28 @@ dataSources:
     source:
       address: "0x90d092977ad098E1E0382fbD5Cc2D07D458369f3"
       abi: Wiki
-//Это необязательный параметр, который позволяет вам определить, с какого блока в начнется индексация.
-//Установка начального блока позволяет источнику данных потенциально пропускать миллионы ненужных блоков.
-//Обычно разработчик сабграфа устанавливает startBlock для блока, в котором был создан смарт-контракт.
-      startBlock: 4423006 //Тут автоматически должен установиться блок деплоя контракта, если не установился, укажите блок создания контракта
-//Раздел который описывает сущности схемы, abi контрактов и все типы хендлеров обрабатываемые контрактом.
+// This is an optional parameter that allows you to specify from which block the indexing will start.
+// Setting the start block allows the data source to potentially skip millions of unnecessary blocks.
+// Typically, the subgraph developer sets the startBlock to the block in which the smart contract was created.
+
+      startBlock: 4423006 // Here, the contract deployment block should be automatically set, if not, specify the block of contract creation.
+// The section that describes the schema entities, contract ABIs, and all types of handlers processed by the contract.
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
       language: wasm/assemblyscript
-//Сущности, которые источник данных записывает в хранилище.  Данные сущности были сгенерированы автоматически, мы должны будем сами их поменять согласно сущностям которые создадим позже.
+// Entities that the data source writes to the store. These entities were generated automatically; we will need to change them ourselves according to the entities we create later.
       entities:
         - NewBook
         - NewPerson
         - NewProduct
         - NewWiki
-//Перечень abi для всех контрактов, с которыми мы будем взаимодействовать при написании маппингов
+// List of ABIs for all smart contracts that we will interact with when writing mappings
+
       abis:
         - name: Wiki
           file: ./abis/Wiki.json
-//Перечисляет события смарт-контракта, на которые реагирует сабграф, и хендлеры, которые преобразуют эти события в сущности согласно схеме сабграфа. У вас должны автоматически подтянуться с контракта, либо необходимо самим записать.
+// Lists the smart contract events that the subgraph responds to, and the handlers that transform these events into entities according to the subgraph schema. They should automatically be pulled from the contract, or you may need to write them yourself.
       eventHandlers:
         - event: NewBook(uint256,string,string)
           handler: handleNewBook
@@ -120,15 +125,16 @@ dataSources:
           handler: handleNewProduct
         - event: NewWiki(uint256,address,string,string)
           handler: handleNewWiki
-//Перечисляет функции смарт-контракта, на которые реагирует сабграф, и хендлеры,
-//Которые преобразуют входные и выходные данные при вызове функции в сущности в схеме. Например возьмем функцию createWiki
+// Lists the smart contract functions that the subgraph responds to, and the handlers,
+// Which transform the input and output data when calling a function into entities in the schema. For example, let's take the function
+createWiki
       callHandlers:
         - function: createWiki(string,string)
           handler: handleCreateWiki
-//Перечисляет блоки, на которые реагирует сабграф, и хендлеры в маппингах, которые
-//Выполняются при добавлении блока в цепочку. Без фильтра обработчик блока будет запускаться в каждом блоке.
-//Дополнительный фильтр вызовов можно предоставить, добавив в обработчик поле фильтра с kind: call.
-//Обработчик будет запущен только в том случае, если блок содержит хотя бы один вызов контракта источника данных.
+// Lists the blocks that the subgraph responds to, and the handlers in the mappings that
+// Are executed when a block is added to the chain. Without a filter, the block handler will run in every block.
+// An additional call filter can be provided by adding a filter field with kind: call to the handler.
+// The handler will only be triggered if the block contains at least one call to the data source contract.
       blockHandlers:
         - handler: handleBlock
         - handler: handleBlockWithCall
@@ -137,33 +143,33 @@ dataSources:
 //Путь где хранятся маппинги для обработки событий, блоков, вызовов функций
       file: ./src/yourName.ts
 ```
-Один сабграф может индексировать данные сразу из нескольких смарт-контрактов, для этого необходимо просто указать еще один источник данных после поля ```DataSources:```
+A single subgraph can index data from several smart contracts, for this you just need to specify another data source after the `DataSources:` field.
 
-Но что будет если в одном блоке будет и тригер ивента и тригер вызова функции, а если еще и добавить блок к этому всему? В какой последовательности будут обрабатывать это все хендлеры в маппингах?
+But what if in one block there is both an event trigger and a function call trigger, and if you add a block to all of this? In what order will all the handlers in the mappings process this?
 
-Для этого существуют правила, которые определяют, в какой последовательности будут запущены хендлеры в нашем манифесте для смарт-контракта внутри одного блока транзакций:
+For this, there are rules that determine the order in which handlers in our manifest for a smart contract will be triggered within a single block of transactions:
 
-**1. Триггеры событий и вызовов сортируются по индексу транзакции в блоке.**
-Это значит, что если в одном блоке несколько транзакций, сначала будут запущены все триггеры из первой транзакции, потом из второй и так далее.
+**1. Event and call triggers are sorted by transaction index in the block.**
+This means that if there are several transactions in one block, first all triggers from the first transaction will be triggered, then from the second, and so on.
 
-**2. Внутри одной транзакции сортировка идет по типу: сначала триггеры событий, потом триггеры вызовов функций.**
-Если в одной транзакции есть и события, и вызовы функций, то сначала будут обработаны все события, а потом все вызовы.
-Кроме того, учитывается порядок, заданный в манифесте.
+**2. Within a single transaction, sorting goes by type: first event triggers, then function call triggers.**
+If a transaction has both events and function calls, then all events will be processed first, and then all calls.
+In addition, the order set in the manifest is taken into account.
 
-**3. Триггеры, относящиеся к блоку, запускаются после всех остальных.**
-Эти триггеры сработают после того, как будут обработаны все события и вызовы во всех транзакциях этого блока.
+**3. Triggers related to the block are executed after all others.**
+These triggers will be activated after all events and calls in all transactions of this block have been processed.
 
->В будущем алгоритм упорядочивания может быть пересмотрен.
+> In the future, the ordering algorithm may be revised.
 
-### **2. Определение schema.graphql**
+### **2. Defining schema.graphql**
 
-Схемы GraphQL определяются с помощью языка определения интерфейса GraphQL. Если вы никогда не писали схему GraphQL, рекомендуется ознакомиться с [этим](https://thegraph.com/docs/en/querying/graphql-api/#schema) учебником по системе типов GraphQL. В учебнике можно ознакомиться с понятием entities(сущности).
+GraphQL schemas are defined using the GraphQL Interface Definition Language. If you have never written a GraphQL schema, it is recommended to familiarize yourself with [this](https://thegraph.com/docs/en/querying/graphql-api/#schema) tutorial on the GraphQL type system. In the tutorial, you can familiarize yourself with the concept of entities.
 
-Перед определением сущностей важно подумать о том, как наши данные структурированы и связаны. Все запросы будут выполняться к модели данных, определенной в схеме сабграфа, и сущностям, индексированным подграфом. Поэтому важно  хорошо определить схему подграфа так, чтобы она соответствовала потребностям децентрализованного приложения. Лучше всего представлять сущности как «объекты, содержащие данные», а не как события или функции.
+Before defining entities, it's important to think about how our data is structured and related. All queries will be made to the data model defined in the subgraph schema and the entities indexed by the subgraph. Therefore, it is important to define the subgraph schema well so that it meets the needs of the decentralized application. It is best to think of entities as "objects containing data", rather than events or functions.
 
-Мы просто определяем типы сущностей в `schema.graphql`, а Graph node генерирует поля верхнего уровня для запроса отдельных экземпляров и коллекций этого типа сущностей. Каждый тип, который должен быть сущностью, должен быть аннотирован директивой `@entity`. По умолчанию, сущности являются изменяемыми. Это означает, что маппинги могут загружать существующие сущности, изменять их и сохранять новую версию этой сущности. Изменчивость имеет свою цену, и для типов сущностей, о которых известно, что они никогда не будут изменены, рекомендуется помечать их как неизменяемые с помощью `@entity(immutable: true)`. Маппинги могут вносить изменения в неизменяемые сущности, если эти изменения происходят в том же блоке, в котором была создана сущность. Неизменяемые сущности гораздо быстрее пишутся и запрашиваются, поэтому их следует использовать везде, где это возможно.
+We simply define entity types in `schema.graphql`, and Graph node generates top-level fields for querying individual instances and collections of this entity type. Each type that should be an entity must be annotated with the `@entity` directive. By default, entities are mutable. This means that mappings can load existing entities, change them, and save a new version of that entity. Mutability has its price, and for entity types that are known to never change, it is recommended to mark them as immutable with `@entity(immutable: true)`. Mappings can make changes to immutable entities if these changes occur in the same block in which the entity was created. Immutable entities are much faster to write and query, so they should be used wherever possible.
 
-Давайте определим первую сущность для нашего контракта:
+Let's define the first entity for our contract:
 ```javascript
 type Wiki @entity {
   id: ID!
@@ -171,32 +177,33 @@ type Wiki @entity {
   wikiId: String!
 }
 ```
-Каждая сущность должна иметь поле идентификатора (id), которое должно быть типа `Bytes!` или `String!`. Обычно рекомендуется использовать `Bytes!`, если идентификатор не содержит удобочитаемый текст, поскольку объекты с `Bytes!` id будет быстрее записать и запросить, чем те, у которых есть `String!` идентификатор. Поле `id` служит первичным ключом и должно быть уникальным среди всех сущностей одного типа. По историческим причинам тип `ID!` также принимается и является синонимом `String!`.
+Each entity must have an identifier field (id), which should be of type `Bytes!` or `String!`. It's usually recommended to use `Bytes!` if the identifier does not contain readable text, as objects with a `Bytes!` id will be faster to write and query than those with a `String!` identifier. The `id` field serves as the primary key and must be unique among all entities of the same type. For historical reasons, the `ID!` type is also accepted and is a synonym for `String!`.
 
-Поля сущности могут быть определены как обязательные или необязательные. Обязательные поля отмечены в схеме восклицательным знаком `!`. Если в маппинге не задано обязательное поле, вы получите эту ошибку при запросе поля: ```Null value resolved for non-null field 'name'```. Поэтому если мы делаем обязательное поле, то должны присвоить ему начальное значение, либо убрать пометку обязательности поля в схеме сабграфа.
+Entity fields can be defined as mandatory or optional. Mandatory fields are marked in the schema with an exclamation mark `!`. If a mandatory field is not set in the mapping, you will get this error when querying the field: ```Null value resolved for non-null field 'name'```. Therefore, if we make a mandatory field, we must assign it an initial value, or remove the mandatory field marker in the subgraph schema.
 
-Иногда, для создания уникальных сущностей можно использовать конкатенацию двух других `id` сущностей, например ``let id = left.id.concat(right.id)``. Тут мы создаем `id` третью сущность из сущности `left b right`.
+Sometimes, to create unique entities, you can use the concatenation of two other entity `ids`, for example ``let id = left.id.concat(right.id)``. Here we create a third entity `id` from the `left` and `right` entities.
 
-Мы узнали как создать сущность в схеме сабграфа, но какие еще типы (scalars) полей сущности могут быть?
+We've learned how to create an entity in the subgraph schema, but what other types (scalars) of entity fields can there be?
 
-| Type  | Description|
-| ----- | --------- |
-| Bytes    | Массив байтов, представленный в виде шестнадцатеричной строки. Обычно используется для хэшей и адресов блокчейна|
-| String     | Скаляр для строковых значений. Нулевые символы не поддерживаются и автоматически удаляются.         |
-| Boolean     | Скаляр для логических значений|
-| Int     | Спецификация GraphQL определяет размер Int как 32 байта |
-| BigInt     | Большие целые числа. Используется для типов  uint32, int64, uint64, ..., uint256. Примечание: Все, что ниже uint32, например int32, uint24 или int8, представляется как i32|
-| BigDecimal    | BigDecimal Десятичные числа высокой точности, представленные в виде мантиссы и экспоненты. Диапазон показателей составляет от -6143 до +6144.|
+| Type        | Description|
+| ----------- | ----------- |
+| Bytes       | An array of bytes, represented as a hexadecimal string. Typically used for blockchain hashes and addresses.|
+| String      | Scalar for string values. Null characters are not supported and are automatically removed.|
+| Boolean     | Scalar for boolean values.|
+| Int         | The GraphQL specification defines the size of Int as 32 bits.|
+| BigInt      | Large integers. Used for types uint32, int64, uint64, ..., uint256. Note: Everything below uint32, such as int32, uint24, or int8, is represented as i32.|
+| BigDecimal  | High precision decimal numbers, represented as mantissa and exponent. The range of exponents is from -6143 to +6144.|
 
-Также при определении сабграфа можно использовать `enum`, например, давайте определим:
+When defining a subgraph, you can also use `enum`, for example, let's define:
+
 ```javascript
 enum WikiType {
-  small
-  averange
+  small,
+  average,
   big
 }
 
-И можем указать поле сущности в виде enum
+And we can specify an entity field as an enum
 
 type Wiki @entity {
   id: ID!
@@ -205,16 +212,16 @@ type Wiki @entity {
   type: WikiType!
 }
 ```
-Но самое интересное, что сущности могут иметь взаимосвязь с другими сущностями.
+But the most interesting thing is that entities can have relationships with other entities.
 
-#### **Взаимосвязь  сущностей**
+#### **Entity Relationships**
 
-Взаимосвязь определяются для сущностей так же, как и любое другое поле, за исключением того, что указанный тип относится к другой сущности, например:
+Relationships are defined for entities just like any other field, except that the specified type refers to another entity, for example:
 
  - **One-To-One Relationships**
 
-Представим ситуацию, когда у нас есть человек и его паспорт. В большинстве стран у каждого человека может быть только один действующий паспорт, и у каждого паспорта может быть только один владелец. Это хороший пример связи "один к одному".
-Создадим две новые сущности:
+Imagine a situation where we have a person and their passport. In most countries, each person can have only one valid passport, and each passport can have only one owner. This is a good example of a "one-to-one" relationship.
+Let's create two new entities:
 
 ```javascript
 type Person @entity {
@@ -230,11 +237,11 @@ type Passport @entity {
 }
 ```
 
-Каждый человек `(Person)` имеет уникальный идентификатор `(id)`, имя `(name)` и может быть связан с одним паспортом `(Passport)` через поле passport.
+Each person `(Person)` has a unique identifier `(id)`, a name `(name)`, and can be associated with one passport `(Passport)` through the passport field.
 
-Каждый паспорт `(Passport)` имеет уникальный идентификатор `(id)`, номер паспорта `(passportNumber)` и связан с одним конкретным человеком `(Person)` через поле owner.
+Each passport `(Passport)` has a unique identifier `(id)`, a passport number `(passportNumber)`, and is associated with one specific person `(Person)` through the owner field.
 
-Таким образом, у нас есть чёткая связь "один к одному" между человеком и его паспортом.
+Thus, we have a clear "one-to-one" relationship between a person and their passport.
 
  - **One-To-Many Relationships**
 
@@ -251,31 +258,31 @@ type Book @entity {
 }
 ```
 
-`Author` является сущностью, представляющей автора. У каждого автора есть уникальный идентификатор `(id)` и имя `(name)`.
+`Author` is an entity representing an author. Each author has a unique identifier `(id)` and a name `(name)`.
 
-`Book` является сущностью, представляющей книгу. У каждой книги есть уникальный идентификатор `(id)`, название `(title)` и ссылка на автора этой книги `(author: Author!)`.
+`Book` is an entity representing a book. Each book has a unique identifier `(id)`, a title `(title)`, and a reference to the author of this book `(author: Author!)`.
 
-Связь `author: Author!` в `Book` означает, что каждая книга обязательно связана с одним автором. Это и есть однонаправленная связь "один ко многим" (one-to-many): один Author может быть автором множества книг, но каждая `Book` связана только с одним `Author`.
+The `author: Author!` relationship in `Book` means that each book is necessarily associated with one author. This is a unidirectional "one-to-many" relationship: one Author can be the author of many books, but each `Book` is associated with only one `Author`.
 
-Пример в реальной жизни:
+Real-life example:
 
-Представьте, что у нас есть автор с именем "Лев Толстой" и у него есть идентификатор `ID = "AUTHOR_1"`. Этот автор написал много произведений, таких как "Война и мир", "Анна Каренина" и так далее. Каждое из этих произведений будет представлено отдельной записью `Book`, но все они будут ссылаться на одну и ту же запись `Author с ID = "AUTHOR_1"`.
+Imagine we have an author named "Leo Tolstoy" with an identifier `ID = "AUTHOR_1"`. This author has written many works, such as "War and Peace," "Anna Karenina," and so on. Each of these works would be represented by a separate `Book` entry, but they would all refer to the same `Author` entry with `ID = "AUTHOR_1"`.
 
 
  - **Reverse Lookups**
 
-Задача:
-Представьте, что у нас есть онлайн-магазин, который продает различные товары. У каждого товара есть производитель. Нам нужно иметь возможность быстро определить все товары, которые были произведены определенным производителем.
+Task:
+Imagine we have an online store selling various products. Each product has a manufacturer. We need to be able to quickly identify all the products manufactured by a particular manufacturer.
 
-Сущности:
+Entities:
 
- - `Product` (Товар)
+ - `Product`
 
-У каждого товара есть уникальный `ID`, название, цена и производитель.
+Each product has a unique `ID`, a name, a price, and a manufacturer.
 
- - `Manufacturer` (Производитель)
+ - `Manufacturer`
 
-У каждого производителя есть уникальный ID и название. Мы также хотим иметь возможность быстро узнать все товары, произведенные этим производителем.
+Each manufacturer has a unique ID and a name. We also want to be able to quickly find out all the products manufactured by this manufacturer.
 
 ```javascript
 type Product @entity {
@@ -293,16 +300,17 @@ type Manufacturer @entity {
 
 ```
 
-Принцип работы:
-В сущности `Product`, мы имеем поле manufacturer, которое указывает на сущность `Manufacturer`.
-В сущности `Manufacturer`, мы имеем поле `products`, которое является списком всех Product, произведенных этим производителем. Используя директиву `@derivedFrom`, мы указываем, что это поле выводится из связи поля `manufacturer` в сущности `Product`.
-Таким образом, при запросе определенной сущности Manufacturer, вы можете получить список всех `Product`, произведенных этим производителем, без необходимости явного хранения этой связи в сущности Manufacturer. Это и есть концепция **Reverse Lookups** в действии.
+How it works:
+In the `Product` entity, we have a field `manufacturer`, which points to the `Manufacturer` entity.
+In the `Manufacturer` entity, we have a field `products`, which is a list of all `Product` manufactured by this manufacturer. Using the `@derivedFrom` directive, we specify that this field is derived from the relationship of the `manufacturer` field in the `Product` entity.
+Thus, when querying a particular Manufacturer entity, you can get a list of all `Product` manufactured by this manufacturer, without the need to explicitly store this relationship in the Manufacturer entity. This is the concept of **Reverse Lookups** in action.
 
 - **Many-To-Many Relationships⁠**
 
-Как вы могли заметить, когда мы разбирали "один к одному", там одна книга может быть написана только одним автором, что не является совсем верно, так как один автор может написать множество книг, и одна книга может быть написана несколькими авторами. Давайте это исправим. Отношения "многие ко многим" могут быть представлены в виде массивов в каждой из двух задействованных сущностей.
+As you may have noticed when we discussed "one-to-one", there each book can be written by only one author, which isn't quite true, as one author can write many books, and one book can be written by several authors. Let's correct this. "Many-to-many" relationships can be represented as arrays in each of the two involved entities.
 
-Простой способ:
+A simple way:
+
 ```javascript
 type Author @entity {
   id: ID!
@@ -317,14 +325,14 @@ type Book @entity {
 }
 ```
 
-Здесь каждый автор имеет список книг, которые он написал, и каждая книга имеет список авторов, которые ее написали.
+Here, each author has a list of books they've written, and each book has a list of authors who wrote it.
 
-В сущности `Author` есть массив `books`, который содержит книги `(Book)`.
-В сущности `Book` есть виртуальное поле authors, которое получено через `@derivedFrom(field: "books")`. Это означает, что при запросах, поле `authors` в сущности `Book` будет выдавать результат поиска всех сущностей `Author`, у которых поле `books` будет включать идентификатор `(id)` сущности `Book`. Тем самым мы можем узнать список авторов книги - сущностей `Author` в которых есть наша `Book`.
+In the `Author` entity, there is an array `books`, which contains books (`Book`).
+In the `Book` entity, there is a virtual field `authors`, which is derived through `@derivedFrom(field: "books")`. This means that during queries, the `authors` field in the `Book` entity will yield results by searching for all `Author` entities whose `books` field includes the identifier `(id)` of the `Book` entity. Thus, we can find out the list of authors of the book - `Author` entities in which our `Book` is included.
 
-Этот подход прост и непосредственен, но он может быть менее эффективным, особенно если у вас много данных.
+This approach is straightforward and direct, but it can be less efficient, especially if you have a lot of data.
 
-Более производительный способ:
+A more performance-efficient way:
 
 ```javascript
 type Author @entity {
@@ -346,13 +354,13 @@ type AuthorBook @entity {
 }
 ```
 
-Вместо того чтобы прямо связывать `Author` и `Book`, используется отдельная сущность `AuthorBook` как "таблица связей". Она имеет поля `author` и `book`, каждое из которых связывается с одной из основных сущностей.
+Instead of directly linking `Author` and `Book`, a separate entity `AuthorBook` is used as a "relationship table." It has fields `author` and `book`, each of which is linked to one of the main entities.
 
-У `Author` и `Book` есть виртуальные поля, которые выводятся из соответствующих полей в `AuthorBook`.
+Both `Author` and `Book` have virtual fields that are derived from the corresponding fields in `AuthorBook`.
 
-При выполнении запросов необходимо "спуститься" на один дополнительный уровень, чтобы получить информацию. Например, чтобы узнать книги конкретного автора, вы сначала получите AuthorBook для этого автора, а затем из этого запроса получите книгу.
+When performing queries, it's necessary to "descend" one additional level to retrieve information. For example, to find out the books of a specific author, you first get the AuthorBook for that author, and then from this query, you obtain the book.
 
-Например:
+For example:
 ```javascript
 query authorsAndTheirBooks {
   authors {
@@ -367,15 +375,15 @@ query authorsAndTheirBooks {
 }
 ```
 
-Этот подход является более сложным, но он обычно более производителен. С точки зрения базы данных, это экономит пространство и уменьшает объем данных, который необходимо индексировать и запрашивать, что делает процесс индексации и выполнения запросов быстрее.
+This approach is more complex but is usually more performant. From a database perspective, it saves space and reduces the amount of data that needs to be indexed and queried, making the indexing and query execution process faster.
 
-Когда вы моделируете свои данные, выбор способа представления отношений зависит от ваших потребностей. Если производительность является ключевым приоритетом и у вас есть много данных, рекомендуется использовать подход с отдельной "таблицей связей".
+When you model your data, the choice of how to represent relationships depends on your needs. If performance is a key priority and you have a lot of data, it's recommended to use the approach with a separate "relationship table".
 
-Но каким образом мы можем сделать запрос к схеме сущностей, чтобы найти сущности, поля которых содержат определенные текстовые значения?
-Тут нам поможет [Fulltext Search Fields](https://thegraph.com/docs/en/developing/creating-a-subgraph/#experimental-features).
->Важно: Этот тип поиска относится к Experimental features и поэтому, чтобы эти запросы работали, начиная с версии specVersion 0.0.4 и выше, в s`ubgraph.yaml` необходимо  указать - `fullTextSearch` в разделе features сабграф манифеста, как мы это делали при составлении манифеста.
+But how can we query the entity schema to find entities whose fields contain certain text values?
+Here, [Fulltext Search Fields](https://thegraph.com/docs/en/developing/creating-a-subgraph/#experimental-features) can help.
+>Important: This type of search is part of Experimental features, and thus, for these queries to work, starting from version specVersion 0.0.4 and above, in `subgraph.yaml`, it is necessary to specify `fullTextSearch` in the features section of the subgraph manifest, as we did when composing the manifest.
 
-Например, составим для нашей сущности `Author`
+For example, let's create for our entity `Author`
 
 ```javascript
 type _Schema_
@@ -386,31 +394,30 @@ type _Schema_
     include: [{ entity: "Author", fields: [{ name: "name" }] }]
   )
 ```
-Пример поля authorSearch можно использовать в запросах для фильтрации сущностей Author на основе текста в полях имени. [Тут](https://thegraph.com/docs/en/querying/graphql-api/#fulltext-search-queries) можно посмотреть подробности составления запросов.
+An example of the `authorSearch` field can be used in queries for filtering `Author` entities based on text in name fields. You can view the details of composing queries [here](https://thegraph.com/docs/en/querying/graphql-api/#fulltext-search-queries).
 
 ```javascript
 query {
-  authorSearch(text: "Толстой") {
+  authorSearch(text: "Tolstoy") {
     id
     name
   }
 }
 ```
-На данный момент, у нас должны быть сущности как в этой [схеме](./examples/schema.graphql). Можете поправить манифест и обновить там сущности. После написания, можно запустить команду генерации типов - graph codegen , позже расскажу подробней для чего это нужно.
+At this point, we should have entities as in this [schema](./examples/schema.graphql). You can correct the manifest and update the entities there. After writing, you can run the command to generate types - `graph codegen`, I'll explain in more detail later what this is for.
 
-### **3.Написание AssemblyScript Mappings**
+### **3. Writing AssemblyScript Mappings**
 
-Последняя важная часть при  написании сабграфа, это умение обработать данные полученные с ивентов/функций и создать/обновить сущность схемы сабграфа.
+The last important part in writing a subgraph is the ability to process data received from events/functions and create/update an entity in the subgraph schema.
 
-Для этого существует маппинг. Маппинги написаны на подмножестве TypeScript под названием [AssemblyScript](https://www.assemblyscript.org/), которое можно скомпилировать в WASM ([WebAssembly](https://webassembly.org/)).
-AssemblyScript более строгий, чем обычный TypeScript, но обеспечивает знакомый синтаксис. В нашем случае маппинги будут храниться в src/имяКотороеВыДали.ts
+For this purpose, we use mappings. Mappings are written in a subset of TypeScript known as [AssemblyScript](https://www.assemblyscript.org/), which can be compiled into WASM ([WebAssembly](https://webassembly.org/)).
+AssemblyScript is more strict than regular TypeScript but offers a familiar syntax. In our case, mappings will be stored in src/YourFileName.ts
 
 #### Event Handlers
 
-Для каждого `event handler` который определен в subgraph.yaml в разделе `mapping.eventHandlers` необходимо создать экспортирующую функцию с таким же названием, причем каждая функция должен принимать один параметр event, тип которого должен соответствовать названию ивента.
+For each `event handler` defined in `subgraph.yaml` in the `mapping.eventHandlers` section, you need to create an exporting function with the same name, and each function should take one parameter `event`, the type of which should correspond to the name of the event.
 
-Составим маппинги для [нашего](#1-определение-subgraphyaml) сабграфа:
-
+Let's compose mappings for [our](#1-определение-subgraphyaml) subgraph:
 ```javascript
 //src/wiki.ts
 import {
@@ -436,39 +443,39 @@ export function handleNewPerson(event: NewPerson): void {}
 
 export function handleNewProduct(event: NewProduct): void {}
 ```
-Как мы видим из примера, в функции handleNewWiki, создается новая сущность WikiEntity  с ```event.params.id + "-" + event.logIndex.toString()```, далее, в нашу созданные сущности записываем параметры события, которые произошли при вызове метода createWiki в соответствующем [смарт-контракте](https://sepolia.etherscan.io/address/0x90d092977ad098E1E0382fbD5Cc2D07D458369f3#code). Если нам необходимо, мы можем не только сохранять новые сущности, но и пытаться загрузить старые по их id.
+As we can see from the example, in the `handleNewWiki` function, a new `WikiEntity` is created with ```event.params.id + "-" + event.logIndex.toString()```, and then we record the event parameters that occurred when the `createWiki` method was called in the corresponding [smart contract](https://sepolia.etherscan.io/address/0x90d092977ad098E1E0382fbD5Cc2D07D458369f3#code). If necessary, we can not only save new entities but also try to load old ones by their id.
 
-Попробуйте сами дописать остальные 3 функции. Если не получится - [вот](./examples/wiki.ts) заполненный пример.
+Try writing the other 3 functions yourself. If you can't, [here](./examples/wiki.ts) is a filled-in example.
 
-Как мы ранее говорили, каждая сущность должна иметь уникальный id среди сущностей одинакового типа. id присваивается при создании сущности и должно быть типа string.
-Рекомендуется создавать id таким образом:
+As we discussed earlier, each entity must have a unique id among entities of the same type. The id is assigned when creating the entity and must be of the string type.
+It's recommended to create ids in this way:
 event.params.id.toHex()
 event.transaction.from.toHex()
 event.transaction.hash.toHex() + "-" + event.logIndex.toString()
 
-Вы наверное заметили, откуда мы берем типы ивентов и что за папка generated?
+You might have noticed, where do we get the event types from and what is the `generated` folder?
 
-Да, для того, чтобы упростить и обеспечить безопасность типов работы со смарт-контрактами, событиями и сущностями,  Graph CLI(команда graph codegen) может генерировать типы AssemblyScript из схемы GraphQL сабграфа и ABI контракта, включенных в data sources сабграф манифеста.
+Yes, to simplify and ensure type safety when working with smart contracts, events, and entities, the Graph CLI (command `graph codegen`) can generate AssemblyScript types from the GraphQL schema of the subgraph and the contract ABI included in the subgraph manifest data sources.
 
-Таким образом, когда мы вызываем `graph codegen` происходит три важные генерации типов:
- - Класс AssemblyScript для каждого смарт-контракта в файлах ABI, упомянутых в subgraph.yaml, что позволяет привязывать эти инстансы контрактов к определенным адресам при написании маппингов и вызывать методы контракта только для чтения.
-  - Класс для каждого события контракта, чтобы обеспечить легкий доступ к параметрам события, а также к блоку и транзакции, из которых возникло событие.
-  - В дополнение к этому для каждого типа сущности в схеме GraphQL сабграфа создается один класс. Эти классы обеспечивают типобезопасную загрузку сущностей, доступ для чтения и записи к полям сущностей, а также метод `save()` для записи сущностей для хранения. Все классы сущностей записываются в `<OUTPUT_DIR>/schema.ts`, что позволяет импортировать в маппингах.
+Thus, when we call `graph codegen`, three important types of generation occur:
+ - An AssemblyScript class for each smart contract in the ABI files mentioned in subgraph.yaml, allowing these contract instances to be bound to specific addresses when writing mappings and invoking contract read-only methods.
+ - A class for each contract event, to provide easy access to event parameters, as well as to the block and transaction from which the event arose.
+ - In addition to this, one class is created for each entity type in the GraphQL schema of the subgraph. These classes provide type-safe loading of entities, read and write access to entity fields, and a `save()` method to record entities for storage. All entity classes are written to `<OUTPUT_DIR>/schema.ts`, allowing them to be imported in mappings.
 
->Важно: Генерацию кода необходимо выполнять заново после каждого изменения схемы GraphQL или ABI, включенных в манифест. Это также необходимо выполнить хотя бы один раз перед созданием или развертыванием подграфа.
+>Important: Code generation must be performed again after any changes to the GraphQL schema or ABI included in the manifest. This also needs to be done at least once before creating or deploying the subgraph.
 
->Важно: Генерация кода не проверяет ваш код маппингов, если вам нужно проверить прежде чем деплоить сабграф, вы можете вызывать `npm build` и выявить любые синтаксические ошибки, которые может обнаружить компилятор TypeScript.
+>Important: Code generation does not check your mapping code, if you need to verify before deploying the subgraph, you can call `npm build` to identify any syntactic errors that the TypeScript compiler can detect.
 
-Таким образом, мы можем импортировать из вновь сгенерированой папки generated, типы ивентов, сущность схемы, или контракт который можем привязать к нужному адресу и вызвать методы чтения.
+Thus, we can import from the newly generated `generated` folder, event types, the schema entity, or the contract which we can bind to the required address and invoke read methods.
 
 #### Call Handlers
 
-Вы уже видели как задавать call handlers которые будут обрабатываться при вызове функции  [тут](#1-определение-subgraphyaml).
+You've already seen how to set call handlers that will be processed when a function is called [here](#1-определение-subgraphyaml).
 
-Разница от event handlers в том, что в манифесте вы указываете ```callHandlers```, в котором прописываете функцию при вызове которой будут срабатывать обработчики в маппинге.
-И в самом маппинге, указываете тип входящего аргумента функции - ```createGravatarCall```, которая генерируется через команду ```graph codegen```.
+The difference from event handlers is that in the manifest, you specify `callHandlers`, in which you write down the function whose invocation will trigger handlers in the mapping.
+And in the mapping itself, you specify the type of the incoming argument of the function - `createGravatarCall`, which is generated through the `graph codegen` command.
 
-Например, допишим наши маппинги:
+For example, let's complete our mappings:
 ```javascript
 export function handleCreateWiki(call: CreateWikiCall): void {
   let wiki = new WikiEntity(call.transaction.hash.toString());
@@ -478,21 +485,21 @@ export function handleCreateWiki(call: CreateWikiCall): void {
   wiki.save();
 }
 ```
-Таким образом, в случае если в смарт-контрате необходимо получить данные которые нельзя получить через события, мы можем прибегнуть к такому методу.
+Thus, in cases where it's necessary to retrieve data from the smart contract that can't be obtained through events, we can resort to this method.
 
 #### Block Handlers
 
-Возможно вам необходимо вызывать handler на каждый блок сети или только когда происходит вызов вашего смарт-контракта? В этом вам поможет block handlers, но следует учитывать что не все сети поддерживают данный тип обработчиков, например BNB chain  и Arbitrum.
+Do you need to invoke a handler on every block of the network or only when your smart contract is called? Block handlers can help with this, but it's important to note that not all networks support this type of handler, for example, BNB chain and Arbitrum.
 
-Для того, чтобы handler работал только когда в блоке вызывали ваш смарт-контракт, не забудьте указать данную настройку в вашем манифесте:
+To ensure that the handler works only when your smart contract is called within a block, don't forget to specify this setting in your manifest:
 
 ```javascript
 filter:
  kind: call
 ```
 
-Пример маппинга для обработки информации.
-Сперва добавим в нашу схему и повторно запустим graph codegen.
+Example of a mapping for processing information.
+First, let's add to our schema and then rerun `graph codegen`.
 ```javascript
 type Block @entity(immutable: true) {
   id: ID!
@@ -501,7 +508,7 @@ type Block @entity(immutable: true) {
   updatedAtBlock: BigInt!
 }
 ```
-Далее в маппингах пропишем создание этой сущности:
+Next, in the mappings, we'll specify the creation of this entity:
 ```javascript
 import { ethereum } from '@graphprotocol/graph-ts'
 
@@ -513,23 +520,24 @@ export function handleBlock(block: ethereum.Block): void {
   entity.save()
 }
 ```
-После такой большой проделанной работы, предлагаю закрепить важные знания - задеплоить наш сабграф и проверить, как можно делать запросы через веб-сервис.
-Для этого заходим на [сайт](https://thegraph.com/hosted-service/). В раздел dashboards находите свой сабграф и выполняете команды в разделе "Deploy". Таким образом, у вас на странице сабграфа появится playground в котором вы можете сделать пробные запросы и посмотреть что данные действительно проиндексированы и хранятся сабграфом.
+After all the significant work we've done, I suggest solidifying our knowledge - deploying our subgraph and testing how to make requests through the web service. To do this, go to the [website](https://thegraph.com/hosted-service/). In the dashboards section, find your subgraph and follow the commands in the "Deploy" section. This way, you'll have a playground on your subgraph's page where you can make trial requests and see if the data is truly indexed and stored by the subgraph.
 ![playground](./images/playground.png)
-Теперь необходимо дождаться синхронизации и создание сущностей и можно делать запросы. Если хотите проверить, как он обрабатывает новые данные с контракта, вы можете зайти на сам контракт в сети Sepolia, вызвать пару методов и посмотреть как новые данные появятся в вашем сабграфе.
 
-Мы научились писать сабграф манифест, схему сабграфа, маппинги которые их обрабатывают. Так же теперь мы умеем деплоить и делать запросы к сабграфу через playground.
+Now, you need to wait for synchronization and entity creation before you can start making requests. If you want to check how it handles new data from the contract, you can access the contract on the Sepolia network, call a couple of methods, and observe how new data appears in your subgraph.
 
-Но есть несколько важных моментов, которые следует знать. Если вы хорошо знакомы с DeFi, то у вас возникнет вопрос, а если нам не всегда заранее известно, какой адрес будет у контракта? Ведь часто в смарт-контрактах используется такой тип контрактов как registry или factory, где один контракт создает, управляет или ссылается на произвольное количество других контрактов, каждый из которых имеет свое собственное состояние и события. Получается, что адреса этих субконтрактов могут быть не известны заранее, что означает мы не можем определить заранее источники данных и необходим более динамичный подход
+We've learned how to write a subgraph manifest, the subgraph schema, and the mappings that process them. Additionally, we now know how to deploy and make requests to the subgraph through the playground.
 
-Верно, тут нам на помощь пришли шаблонные типы источников, о которых сейчас расскажу.
+However, there are some important points to consider. If you are familiar with DeFi, you might wonder what if we don't always know in advance what address the contract will have? Often, smart contracts use types like registries or factories, where one contract creates, manages, or references an arbitrary number of other contracts, each with its own state and events. This means that the addresses of these subcontracts may not be known in advance, which requires a more dynamic approach.
+
+That's where template data sources come to our rescue, and I'll explain them now.
 
 #### Data Source Templates
 
-Тут будет теоретическая часть не связанная нашим кодом. Вы можете поэкспериментировать и написать такой пример для настоящего Uniswap.
-Для примера возьмем Uniswap Factory, который каждый раз деплоит новый контракт NewExchange.
+This will be a theoretical part unrelated to our code. You can experiment and write such an example for a real Uniswap.
 
-Для начала, мы создаем data source для основного контракта Factory, как указано в примере:
+For example, let's take the Uniswap Factory, which deploys a new contract NewExchange every time.
+
+To begin with, we create a data source for the main Factory contract, as outlined in the example:
 
 ```javascript
 dataSources:
@@ -553,9 +561,9 @@ dataSources:
         - event: NewExchange(address,address)
           handler: handleNewExchange
 ```
-Как мы видим, у нас есть ивент NewExchange, который генерируется, когда через фабрику создают новый контракт.
+As we can see, we have the NewExchange event that is generated when a new contract is created through the factory.
 
-Затем, вы добавляете в манифест источник данных ```templates```. Этот источник данных идентичен ```dataSources```, только отсутствует заранее указанный адрес контракта.
+Next, you add a data source called ```templates``` to the manifest. This data source is similar to ```dataSources``` but lacks the pre-specified address of the smart contract.
 
 ```javascript
 dataSources:
@@ -589,9 +597,11 @@ templates:
           handler: handleRemoveLiquidity
 ```
 
-Как можете заметить, под этот источник можно указать свой маппинг, abi контракта, eventHandlers- ```./src/mappings/exhange.ts```.
+As you can see, under this data source, you can specify your own mapping, the contract's ABI, and event handlers.
+```./src/mappings/exhange.ts```.
 
-Теперь, необходимо сгенерировать код через команду ```graph codegen```, в маппингах контракта фабрики ```./src/mappings/factory.ts``` импортировать Exchange template из папки generated, и добавить строку ```Exchange.create(event.params.exchange)``` которая позволяет начать индексировать новый контракт.
+Now, you need to generate code using the command ```graph codegen```. In the contract's factory mappings ```./src/mappings/factory.ts```, import the Exchange template from the generated folder and add the line ```Exchange.create(event.params.exchange)```, which allows you to start indexing a new smart contract.
+
 
 ```javascript
 
@@ -604,29 +614,27 @@ export function handleNewExchange(event: NewExchange): void {
   Exchange.create(event.params.exchange)
 }
 ```
-При инициализации нового контракта, так же можно передать дополнительную информацию, через [data source context](https://thegraph.com/docs/en/developing/creating-a-subgraph/#data-source-context).
+During the initialization of a new contract, you can also pass additional information through [data source context](https://thegraph.com/docs/en/developing/creating-a-subgraph/#data-source-context).
 
-Таким образом, каждый раз когда наша фабрика будет деплоить новый контракт, по нашему шаблону будет создаваться новый контракт, который будет обрабатываться и индексироваться согласно указанным параметрам в манифесте.
+This way, every time our factory deploys a new contract according to our template, a new contract will be created, processed, and indexed based on the specified parameters in the manifest.
 
 #### File Data Sources⁠
 
-Одна из новых функциональностей сабграфа, это возможность чтения IPFS во время обработки маппингов.
+One of the new subgraph features is the ability to read from IPFS during mapping execution.
 
-**Что это нам дает?**
-Теперь, например, мы можем не только индексировать события токенов ERC-721, но и читать IPFS хеш данных токенов, т.е прямо во время обработки событий контракта. Мы можем читать данные с IPFS только что сминченного токена, и тут же создавать новые сущности в сабграфе.
-Более детально, можно прочитать [тут](https://thegraph.com/docs/en/developing/creating-a-subgraph/#file-data-sources).
+**What does this provide us with?**
+Now, for example, we can not only index ERC-721 token events but also read the IPFS data hash of token data during contract event processing. We can read data from IPFS about a just-minted token and immediately create new entities in the subgraph.
+For more details, you can read [here](https://thegraph.com/docs/en/developing/creating-a-subgraph/#file-data-sources).
 
 ## Unit Test Framework
 
-Компания LimeChain создала фреймворк [Matchstick](https://thegraph.com/docs/en/developing/unit-testing-framework/), который позволяет разработчикам тестировать логику их маппингов, тем самым с уверенностью деплоить сабграф.
+LimeChain has created the [Matchstick](https://thegraph.com/docs/en/developing/unit-testing-framework/) framework, which allows developers to test their mapping logic, thus enabling confident subgraph deployment.
 
+## Links
 
-## Ссылки
-
--   [Основная документация по протоколу The Graph](https://thegraph.com/docs/en/)
--   [Документация по graphQL](https://graphql.org/learn/)
--   [Hosted service](https://thegraph.com/hosted-service)
--   [Graph explorer](https://thegraph.com/explorer)
--   [Модули для индексации openzeppelin контрактов](https://docs.openzeppelin.com/subgraphs/0.1.x/)
--   [Информация о децентрализованном сабграфе](https://coinmarketcap.com/alexandria/article/a-deep-dive-into-the-graph)
-
+- [The Graph Protocol Main Documentation](https://thegraph.com/docs/en/)
+- [GraphQL Documentation](https://graphql.org/learn/)
+- [Hosted Service](https://thegraph.com/hosted-service)
+- [Graph Explorer](https://thegraph.com/explorer)
+- [Modules for Indexing OpenZeppelin Contracts](https://docs.openzeppelin.com/subgraphs/0.1.x/)
+- [Information about Decentralized Subgraphs](https://coinmarketcap.com/alexandria/article/a-deep-dive-into-the-graph)
