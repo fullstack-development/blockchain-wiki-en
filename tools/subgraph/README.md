@@ -1,6 +1,6 @@
 # The Graph
 
-**Author:** [Kutsenko Aleksei](https://github.com/bimkon144) 👨‍💻
+**Author:** [Aleksei Kutsenko](https://github.com/bimkon144) 👨‍💻
 
 ## What is The Graph?
 
