@@ -1,5 +1,7 @@
 # The Aave DeFi Protocol
 
+**Author:** [Naydanov Pavel](https://github.com/PavelNaydanov) 🕵️‍♂️
+
 "The secret of success is constancy to purpose." - Benjamin Disraeli (1804-1881), Prime Minister of the United Kingdom in 1868 and 1874-80, writer.
 
 It's time for an adventure with **Aave**! In this article, we will learn:

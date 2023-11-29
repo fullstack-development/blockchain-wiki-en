@@ -1,17 +1,6 @@
 # zkSync
 
-- [Prerequisites](#prerequisites)
-- [Layer 2](#layer-2)
-- [What is ZKP](#what-is-zero-knowledge-proof)
-- [Transaction lifecycle in zkSync](#transaction-lifecycle-in-zksync)
-- [Differences between zkEVM and EVM](#differences-between-zkevm-and-evm)
-- [Features of zkEVM](#features-of-zkevm)
-- [Account Abstraction](#account-abstraction)
-- [zkSync Infrastructure](#zksync-infrastructure)
-- [Hyperchains](#hyperchains)
-- [Pros and cons of zkSync](#pros-and-cons-of-zksync)
-- [Conclusion](#conclusion)
-- [References](#references)
+**Author:** [Yarlykov Roman](https://github.com/rlkvrv) 🧐
 
 zkSync is a second layer blockchain (Layer 2 - L2) for Ethereum, designed to address high transaction fees and low throughput (Transaction Per Second - TPS) in Ethereum. It uses ZK-Rollups - rollups with zero-knowledge proofs (ZKP) to bundle transactions off the main network (L1). Only the cryptographic proof that the transactions are processed correctly and compressed data about these transactions are sent to L1.
 
@@ -79,7 +68,7 @@ Regarding economics:
 ### User Experience
 
 -   **Withdrawal time from L2 back to L1**. It can take from just a few minutes up to weeks. This point definitely does not favor Optimistic Rollups and Plasma (which use similar mechanisms).
--   **Time to Subjective Finality**. How fast can a transaction reach a state where it's impossible to revert on L1 within the security assumptions of the protocol? 
+-   **Time to Subjective Finality**. How fast can a transaction reach a state where it's impossible to revert on L1 within the security assumptions of the protocol?
     By "subjective finality" it means that external observers can be convinced of a transaction's irreversibility, even if L1 smart contracts can't rely on this yet. For example, in optimistic rollups, you need 1 confirmation on Ethereum to achieve L1 finality, while full finality takes about a week.
 -   **Verifiability of Subjective Finality using client code**. Can the time to subjective finality (see previous point) be checked using light clients (browsers/mobile wallets)?
     Continuing with the optimistic rollups example, although you need 1 Ethereum confirmation to achieve L1 finality, to make sure your transaction is final, you would need to download the entire rollup state and execute all transactions for the past week to ensure all blocks are valid.
@@ -264,7 +253,7 @@ _Important!_ The protocol is under active development, always refer to the curre
 -   When deploying smart contracts in zkSync era, it's recommended to use the proxy template for several months after the initial deployment, even if you plan to transition to an immutable contract later. It's unclear how long this recommendation will remain relevant, but the reality is that compiler errors are entirely possible.
 
 -   The gas calculation logic differs from Ethereum (details [here](https://era.zksync.io/docs/reference/concepts/fee-model.html)):
-    
+
     -   Gas prices in zkSync depend on the gas prices in L1 (Ethereum)
     -   zkEVM uses a different set of opcodes, meaning the "gas" indicator for the same operations might differ in zkSync and Ethereum
     -   The calculation model is still undergoing modifications, so it's not advised to set fixed gas values, as this could lead to future issues.

@@ -1,5 +1,7 @@
 # Oracles
 
+**Author:** [Naydanov Pavel](https://github.com/PavelNaydanov) 🕵️‍♂️
+
 An oracle is a service (or device) that provides a set of data for use in a blockchain. Once the data is posted on the network, it becomes available for use in smart contracts.
 
 Essentially, oracles act as a bridge between two worlds: the decentralized world and the centralized world, the smart contract and the external data provider. The main purpose of oracles is to provide reliable information to smart contracts.

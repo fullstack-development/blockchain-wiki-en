@@ -1,5 +1,7 @@
 # Algorithms and Data Structures
 
+**Author:** [Naydanov Pavel](https://github.com/PavelNaydanov) 🕵️‍♂️
+
 > This article is based on the book "Grokking Algorithms" by Aditya Bhargava.
 
 Code examples from the book can be found in this [repository](https://github.com/egonSchiele/grokking_algorithms/tree/master/02_selection_sort).

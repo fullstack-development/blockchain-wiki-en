@@ -1,5 +1,7 @@
 # ERC-4337: Account Abstraction Using Alt Mempool
 
+**Author:** [Naydanov Pavel](https://github.com/PavelNaydanov) 🕵️‍♂️
+
 > ERC-4337 is an Ethereum standard that provides **account abstraction** in the protocol without any changes at the consensus level.
 
 The standard was proposed by Ethereum co-founder Vitalik Buterin and other developers in 2021. In March 2023, it was deployed on the Ethereum mainnet.

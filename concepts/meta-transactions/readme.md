@@ -1,5 +1,7 @@
 # Meta Transactions
 
+**Author:** [Naydanov Pavel](https://github.com/PavelNaydanov) 🕵️‍♂️
+
 A meta transaction is a regular transaction that contains information about another transaction, which is signed by the original signer. In other words, it is a second-level transaction whose purpose is to execute the initial transaction. It is often used to replace the wallet that pays for the transaction gas.
 
 The idea behind implementing meta transactions is simple: a third party sends transactions on behalf of the user and pays for the gas cost. This third party is called a relayer.
@@ -20,19 +22,19 @@ The process happening in the scheme can be described as follows:
 
 ## Use Cases
 
-**Gasless Transactions**: 
+**Gasless Transactions**:
 The primary and most well-known use case of meta transactions is to make transactions gasless for the primary user. This doesn't mean that gas is free; it means that someone else pays for the user's gas. This is particularly relevant for services where users don't have a native currency to pay for gas and decentralization is not the primary focus. For example, in games, where the gameplay is of paramount importance, simplifying the onboarding process for new players is crucial, and the game can cover the gas fees on their behalf.
 
-**Transaction Acceleration**: 
-For a single account in the network, there is a limit on the total number of transactions in the pending state. Furthermore, transactions are processed sequentially. Meta transactions can help solve this problem. 
+**Transaction Acceleration**:
+For a single account in the network, there is a limit on the total number of transactions in the pending state. Furthermore, transactions are processed sequentially. Meta transactions can help solve this problem.
 
-**Confidentiality**: 
+**Confidentiality**:
 Meta transactions can be used for privacy purposes. They can mask the initiator of the transaction and hide the recipient of tokens. For example, in the classic "claim rewards" scenario, where a user calls the `claim()` function on a smart contract, passing the recipient address to receive the rewards, there is a link between the `msg.sender` and the `recipient` addresses. To avoid this, the concept of meta transactions can be applied, and the user's address as the initiator can be hidden. Only the `recipient` address will be visible on the blockchain, while the initiator of the transaction will be the platform's address.
 
-**Onboarding**: 
+**Onboarding**:
 Meta transactions can be used to provide access to the functionality of a decentralized application (DApp) to new users in demo or learning mode. This can be done by facilitating gas payment through the concept of meta transactions.
 
-**ERC20 Gas Payment**: 
+**ERC20 Gas Payment**:
 It is possible to implement gas payment for users in ERC20 tokens. A service can accept any token as payment for gas and then use its own wallet to invoke the target transactions and pay for the gas in Ether. It is worth noting that meta transactions are often used in conjunction with the **Permit** extension for ERC20 tokens. This token extension allows users to give permission for the transfer of their ERC20 tokens to another address through a digital signature. One advantage of this approach is that users do not need to have the native currency of the network or incur additional costs for signing the `approve()` transactions.
 
 ## ERC-2771 Standard

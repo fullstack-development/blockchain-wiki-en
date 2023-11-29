@@ -1,5 +1,10 @@
 # OrderBook
 
+**Authors:**
+[Naydanov Pavel](https://github.com/PavelNaydanov) 🕵️‍♂️
+[Yarlykov Roman](https://github.com/rlkvrv) 🧐
+[Kutsenko Aleksei](https://github.com/bimkon144) 👨‍💻
+
 Originally, an **order book** is an approach from the world of centralized exchanges (CEX) and traditional financial instruments. If we apply this concept to DEX, it may initially seem impractical. A fully on-chain order book would require gas fees for every trade data recorded on the network, which can be costly. However, implementing an order book for DEX can provide additional functionality to the exchange.
 
 > Let's first recall the main idea of AMM to understand why implementing an order book for DEX is relevant.

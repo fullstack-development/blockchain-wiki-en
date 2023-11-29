@@ -1,5 +1,10 @@
 # Pitfalls of Decentralized Trading
 
+**Authors:**
+[Naydanov Pavel](https://github.com/PavelNaydanov) 🕵️‍♂️
+[Yarlykov Roman](https://github.com/rlkvrv) 🧐
+[Kutsenko Aleksei](https://github.com/bimkon144) 👨‍💻
+
 Let's discuss important aspects of decentralized finance, including:
 
 - Price slippage during transaction execution
@@ -271,7 +276,7 @@ Selling a large number of tokens can significantly crash the price of a new, une
 
 ## Sandwich
 
-> This attack combines both front-running and back-running.    
+> This attack combines both front-running and back-running.
 
 Let's jump straight to an example. Alice wants to buy a token on a decentralized exchange that uses an automated market maker model.
 

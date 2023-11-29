@@ -1,5 +1,7 @@
 # Event argument indexing
 
+**Author:** [Naydanov Pavel](https://github.com/PavelNaydanov) 🕵️‍♂️
+
 Before diving into argument indexing in events, let's define what Events are in Solidity. Prior to reading this article, we recommend familiarizing yourself with the functioning of the Ethereum Virtual Machine (EVM) by Luit Hollander in his article ["The Ethereum Virtual Machine — How does it work?"](https://medium.com/mycrypto/the-ethereum-virtual-machine-how-does-it-work-9abac2b7c9e).
 
 ## Events

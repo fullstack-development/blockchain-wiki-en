@@ -1,5 +1,7 @@
 # ERC-1363: Payable Token
 
+**Author:** [Naydanov Pavel](https://github.com/PavelNaydanov) 🕵️‍♂️
+
 The ERC-1363 standard extends the functionality of the ERC-20 token by allowing the execution of code immediately after the `transfer()`, `transferFrom()`, or `approve()` functions within a single transaction. This standard helps to avoid double gas payment, as the additional call is made within the same transaction of the token transfer or approval.
 
 Important! The ERC-1363 standard is an extension of the ERC-20 standard and is fully backward compatible. This means it does not override the standard functions `transfer()`, `transferFrom()`, or `approve()`.

@@ -1,25 +1,6 @@
 # Bitwise Operations
 
--   [A Bit of Computer Science](#a-bit-of-computer-science)
--   [Unsigned Numbers](#unsigned-numbers-positive)
--   [Signed Numbers](#signed-numbers-positive-and-negative)
-    -   [Direct Code](#direct-code)
-    -   [Inverse Code](#inverse-code)
-    -   [Two's Complement](#twos-complement)
--   [Bitwise Operations](#bitwise-operations)
-    -   [Logical Gates](#logical-gates)
-    -   [Basic Actions with Bitwise Operators](#basic-actions-with-bitwise-operators)
-        -   [Bit Checking](#bit-checking)
-        -   [Changing Value of One or Several Bits](#changing-value-of-one-or-several-bits-using-or-and-and)
-        -   [Inverting Specific Bits](#inverting-specific-bits)
-    -   [Bit Shifts](#bit-shifts)
-        -   [Arithmetic Shift](#arithmetic-shift)
-        -   [Logical Shift](#logical-shift)
-        -   [Circular Shift](#circular-shift)
-    -   [Code Examples in Solidity](#code-examples-in-solidity)
--   [Use Cases](#use-cases)
--   [Conclusion](#conclusion)
--   [References](#references)
+**Author:** [Yarlykov Roman](https://github.com/rlkvrv) 🧐
 
 Before delving into bitwise operations, it's essential to understand what a bit and a byte actually are. So yes, this harks back to those school computer science lessons during which I played Counter-Strike with classmates and the teacher. And I have a feeling I wasn't the only one.
 
@@ -169,19 +150,19 @@ The tables for AND, OR, NOT operate in the same way as with logical operations, 
 
 ### Logic Gates
 
-Indeed, bitwise operations combined with memory elements form the foundation of all computing hardware at the lowest level. These basic elemental logic operations, also known as logic gates, are directly handled by the processor using voltage and various circuit configurations. 
+Indeed, bitwise operations combined with memory elements form the foundation of all computing hardware at the lowest level. These basic elemental logic operations, also known as logic gates, are directly handled by the processor using voltage and various circuit configurations.
 For instance, this is what the NOT operator circuit looks like:
-![not-gate](./img/not-gate.png)  
+![not-gate](./img/not-gate.png)
 _Diagram of the elementary logic operation NOT at the electronics level_
 
 If we consider the **light bulb** as representing the presence of voltage or a 1 output, and `X` is the **switch**, then when the **switch** is closed, the current doesn't flow to the light bulb, resulting in a 0; otherwise, it's a 1.
 
 The OR looks like this, meaning if at least one **switch** (`x` or `y`) is closed, we'll get an output voltage:
-![or-gate](./img/or-gate.png)  
+![or-gate](./img/or-gate.png)
 _Diagram of the elementary logic operation OR at the electronics level_
 
 For AND, **both switches** must be closed:
-![and-gate](./img/and-gate.png)  
+![and-gate](./img/and-gate.png)
 _Diagram of the elementary logic operation AND at the electronics level_
 
 There's also an electrical circuit for XOR, but understanding it requires knowledge of electrical concepts like double-throw switches, inverters, etc. If you're interested, you can read more [here](https://en.wikipedia.org/wiki/XOR_gate).
@@ -190,7 +171,7 @@ There's also an electrical circuit for XOR, but understanding it requires knowle
 
 Before diving into the information below, I highly recommend watching [this video](https://www.youtube.com/watch?v=qewavPO6jcA).
 
-Now, let's move on to examples at the binary code level. 
+Now, let's move on to examples at the binary code level.
 Starting with a simple example, if we take the numbers 5 and 6 and apply the bitwise operator `&`, we get 4. To understand why this happens, we need to convert the decimal numbers to binary and perform the bitwise AND operation for each bit using the truth table for AND:
 
 ```js

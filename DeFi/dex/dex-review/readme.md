@@ -1,5 +1,10 @@
 # DEX Overview
 
+**Authors:**
+[Naydanov Pavel](https://github.com/PavelNaydanov) 🕵️‍♂️
+[Yarlykov Roman](https://github.com/rlkvrv) 🧐
+[Kutsenko Aleksei](https://github.com/bimkon144) 👨‍💻
+
 ## Uniswap V2
 
 Uniswap is one of the most successful AMM protocols in the DeFi world. It is a decentralized exchange protocol on Ethereum that enables direct token swaps without users needing to store their funds on the exchange. Using the protocol is straightforward: you send your tokens from your wallet to the Uniswap smart contract, and in return, the protocol directly sends the desired tokens back to your wallet from the smart contract.
