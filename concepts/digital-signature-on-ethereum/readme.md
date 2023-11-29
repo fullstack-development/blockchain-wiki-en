@@ -1,5 +1,7 @@
 # Digital Signatures on Ethereum
 
+**Author:** [Naydanov Pavel](https://github.com/PavelNaydanov) 🕵️‍♂️
+
 Cryptographic digital signatures are a key part of the blockchain. They are used to verify ownership of an address without revealing its private key. They are mainly used for signing transactions, but can also be used to sign arbitrary messages, opening up various possibilities for use in DApps.
 
 According to the Ethereum documentation, a digital signature is defined as follows:

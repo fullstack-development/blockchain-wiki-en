@@ -1,44 +1,6 @@
 # Yul
 
--   [Introduction](#introduction)
-    -   [Key Concepts](#key-concepts)
-    -   [Why Yul is Needed](#why-yul-is-needed)
-    -   [Getting Started](#getting-started)
--   [Language Features](#language-features)
-    -   [Scope](#scope)
-    -   [Syntax](#syntax)
-    -   [Types](#types)
-    -   [Literals](#literals)
-    -   [Control Flow](#control-flow)
--   [Instructions](#instructions)
-    -   [Comparison Operations](#comparison-operations)
-    -   [Bitwise Operations](#bitwise-operations)
-    -   [Other Useful Functions](#other-useful-functions)
--   [Working with Memory](#working-with-memory)
-    -   [Storage](#storage)
-        -   [Structures in Storage](#structures-in-storage)
-        -   [Fixed-Length Arrays](#fixed-length-arrays-in-storage)
-        -   [Dynamic Arrays](#dynamic-arrays-in-storage)
-        -   [Mappings](#mappings)
-        -   [Nested Mappings](#nested-mappings)
-        -   [Mappings with Arrays](#mappings-with-arrays)
-        -   [Byte Arrays and Strings](#byte-arrays-and-strings-in-storage)
-    -   [Memory](#memory)
-        -   [Structures in Memory](#structures-in-memory)
-        -   [Fixed-Length Arrays in Memory](#fixed-length-arrays-in-memory)
-        -   [Dynamic Arrays in Memory](#dynamic-arrays-in-memory)
-        -   [Byte Arrays and Strings in Memory](#byte-arrays-and-strings-in-memory)
-        -   [abi.encode](#abiencode)
-        -   [abi.encodePacked](#abiencodepacked)
-        -   [return](#return)
-        -   [revert](#revert)
-        -   [keccak256](#keccak256)
-    -   [Calldata](#calldata)
-        -   [Data Slicing](#data-slicing)
--   [Calling Other Smart Contracts](#calling-other-smart-contracts)
--   [Events](#events)
--   [Smart Contracts in Yul](#smart-contracts-in-yul)
--   [References](#references)
+**Author:** [Yarlykov Roman](https://github.com/rlkvrv) 🧐
 
 ## Introduction
 
@@ -164,7 +126,7 @@ The `leave` keyword can be placed anywhere within the body of an assembly functi
         function increment() -> result {
             let param := calldataload(4)
             result := add(param, 1)
-            // leave returns "result", but won't finish the code execution 
+            // leave returns "result", but won't finish the code execution
             // how it would happen with 'return'
             // Execution of assembly or Solidity code will continue.
             leave
@@ -917,7 +879,7 @@ _Important!_ Unlike storage, in memory, data will not be packed if it occupies l
 ```js
     struct S {
         uint128 a; // takes 32 bytes.
-        uint128 b; // takes 32 bytes. 
+        uint128 b; // takes 32 bytes.
     }
 ```
 
@@ -1010,7 +972,7 @@ _Important!_ When inspecting memory in a debugger, such arrays will always appea
 
 This representation imposes certain peculiarities when working with `bytes` in memory.
 
-Example: 
+Example:
 
 ```js
 contract Memory {
@@ -1419,7 +1381,7 @@ _Important!_ If the address passed as a parameter as the sub-context does not ha
 
 Here's a [link to the smart contract](./examples/Delegatecall.sol) with which you can test calling one contract from another. It is also done as an example of a proxy and implementation. You can interact with the proxy contract through low-level interactions in Remix.
 You can prepare data for it using `cast`, or you can use `abi.encode`.
-With a `cast` it looks like this: 
+With a `cast` it looks like this:
 ```bash
     cast calldata "increment(uint256)" 42
 

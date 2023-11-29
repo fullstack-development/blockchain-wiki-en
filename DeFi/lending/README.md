@@ -1,5 +1,7 @@
 # Lending
 
+**Author:** [Naydanov Pavel](https://github.com/PavelNaydanov) 🕵️‍♂️
+
 **Lending protocol** or lending platform. This is the next important section in the DeFi space after DEX (Decentralized exchange). A lending protocol allows users to borrow and lend cryptocurrencies.
 
 In other words, a lending protocol is a liquidity aggregator that is provided to borrowers. The protocol gathers potential lenders who are willing to lend their assets. Thus, the protocol acts as an intermediary between the borrower and the lender. It ensures the fairness of the transaction and allows the lender to receive interest while providing credit assets to the borrower. For lenders, this can be a form of passive income.

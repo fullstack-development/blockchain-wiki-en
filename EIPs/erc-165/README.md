@@ -1,5 +1,7 @@
 # ERC-165: Standard Interface Detection
 
+**Author:** [Yarlykov Roman](https://github.com/rlkvrv) 🧐
+
 Sometimes, when interacting with an external contract, it can be useful to determine whether the smart contract supports certain "standard interfaces," such as the ERC-721 token interface, and if it does, which version of the interface it supports. To achieve this there is the EIP-165: Standard Interface Detection, which defines how to perform such checks.
 
 

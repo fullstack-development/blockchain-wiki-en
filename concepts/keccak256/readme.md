@@ -1,5 +1,7 @@
 # Keccak256
 
+**Author:** [Yarlykov Roman](https://github.com/rlkvrv) 🧐
+
 Keccak256 is a cryptographic hash algorithm. It is a member of the SHA-3 family of hash functions and was selected as the standard hash function by NIST in 2012. While the algorithm's details are quite complex and involve cryptography, understanding a few key concepts about hash functions and the algorithm itself is sufficient.
 
 ## What is a Hash Function?

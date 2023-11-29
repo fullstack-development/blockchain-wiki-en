@@ -1,5 +1,7 @@
 # Stablecoin
 
+**Author:** [Naydanov Pavel](https://github.com/PavelNaydanov) 🕵️‍♂️
+
 A stablecoin is a type of cryptocurrency whose value is pegged to some asset (fiat currency, other cryptocurrencies, precious metals, etc.) and which remains stable relative to other market assets. Stable value is achieved through the holding of reserve assets or the use of algorithms that manage the supply and demand of the stablecoin.
 
 **Important!** Stablecoins help users hedge against cryptocurrency volatility and serve as a reliable means of exchange.

@@ -1,5 +1,7 @@
 # Smart Contract Upgrades
 
+**Author:** [Naydanov Pavel](https://github.com/PavelNaydanov) 🕵️‍♂️
+
 By default, smart contracts on the Ethereum network are immutable. However, there are scenarios where it is desirable to have the ability to modify them.
 
 A smart contract upgrade involves changing the business logic of the contract while preserving the contract's state. The codebase can be updated, while the contract's address, state, and balance remain unchanged.

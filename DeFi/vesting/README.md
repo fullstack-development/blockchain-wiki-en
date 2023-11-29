@@ -1,25 +1,6 @@
-# Vesting 
+# Vesting
 
--   [Vesting](#vesting)
-    -   [What is vesting?](#what-is-vesting)
-    -   [What types of vesting exist?](#what-types-of-vesting-exist)
-        -   [Calendar-based Vesting](#calendar-based-vesting)
-        -   [Phased Vesting](#phased-vesting)
-    -   [Token Payouts](#token-payouts)
-    -   [Questions about Technical Implementation](#questions-about-technical-implementation)
-    -   [Vesting Implementation Options](#vesting-implementation-options)
-        -   [**1. On ERC20 Token Smart Contract**](#1-on-erc20-token-smart-contract)
-        -   [Outcome:](#outcome)
-            -   [Pros:](#pros)
-            -   [Cons:](#cons)
-        -   [**2. Vesting Implementation through Smart Contract System**](#2-vesting-implementation-through-smart-contract-system)
-        -   [Outcome:](#outcome-1)
-        -   [Pros:](#pros-1)
-        -   [Cons:](#cons-1)
-        -   [**3. Vesting on a Separate Smart Contract**](#3-vesting-on-a-separate-smart-contract)
-        -   [Outcome:](#outcome-2)
-    -   [Conclusion](#conclusion)
-    -   [References](#references)
+**Author:** [Yarlykov Roman](https://github.com/rlkvrv) 🧐
 
 ## What is Vesting?
 

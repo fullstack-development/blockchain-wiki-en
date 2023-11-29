@@ -1,5 +1,7 @@
 ## Margin trading
 
+**Author:** [Naydanov Pavel](https://github.com/PavelNaydanov) 🕵️‍♂️
+
 _Margin trading_ is a trading tool that involves using borrowed funds from a third party. The loan must be repaid within a specified period with interest.
 
 Think of margin trading as taking out a loan, which increases the size of your trade and the potential for higher profits with a smaller initial investment. In the world of CeFi (Centralized Finance), exchanges often serve as the source of these loans, allowing users to access additional assets and use them for intra-exchange trading.

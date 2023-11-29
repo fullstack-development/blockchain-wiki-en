@@ -1,5 +1,7 @@
 # EVM Opcodes
 
+**Author:** [Naydanov Pavel](https://github.com/PavelNaydanov) 🕵️‍♂️
+
 Before diving into the study of opcodes, let's recall what the EVM is and how it works. Take a look at our [intro](https://github.com/fullstack-development/blockchain-wiki-en/blob/main/ethereum-virtual-machine/intro/readme.md) for a deeper understanding of virtual machine architecture and its specifics. If you already have sufficient knowledge about the EVM, you can skip reading the intro.
 
 ## What are Opcodes?

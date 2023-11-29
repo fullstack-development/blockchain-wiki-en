@@ -1,5 +1,7 @@
 # The Compound DeFi Protocol
 
+**Author:** [Naydanov Pavel](https://github.com/PavelNaydanov) 🕵️‍♂️
+
 > "Compound interest is the eighth wonder of the world. He who understands it, earns it … he who doesn’t … pays it." — Albert Einstein
 
 _**Note!**_ **Compound** is one of the earliest lending protocols in DeFi. It is used for lending and borrowing without intermediaries like traditional banks.

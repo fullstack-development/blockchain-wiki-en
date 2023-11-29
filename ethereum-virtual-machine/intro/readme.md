@@ -1,5 +1,7 @@
 # Intro
 
+**Author:** [Naydanov Pavel](https://github.com/PavelNaydanov) 🕵️‍♂️
+
 If you are completely new to blockchain development, I suggest starting from the very beginning and reading the article "How does Ethereum work?" by Preethi Kasireddy. However, even experienced developers may find it useful. I'm sure they can find interesting things in this article. 🙃
 
 ## Ethereum

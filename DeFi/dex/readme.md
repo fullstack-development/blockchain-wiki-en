@@ -1,5 +1,10 @@
 # DEX
 
+**Authors:**
+[Naydanov Pavel](https://github.com/PavelNaydanov) 🕵️‍♂️
+[Yarlykov Roman](https://github.com/rlkvrv) 🧐
+[Kutsenko Aleksei](https://github.com/bimkon144) 👨‍💻
+
 > In this article, I'm gonna talk about how decentralized exchanges work. If you're not familiar with the concept of "Decentralization," I suggest reading a [short article](https://medium.com/@juliomacr/centralized-vs-decentralized-vs-distributed-a-quick-overview-1f3bd17b8468) or a [more detailed article](https://medium.com/hackernoon/centralization-vs-decentralization-the-best-and-worst-of-both-worlds-7bfdd628ad09).
 
 **DEX** (Decentralized exchange) is a decentralized trading platform. The management and administration of such a service don't belong to anyone or are in the hands of the community. Access to assets is done without the help of intermediaries, so you can call such an exchange peer-to-peer or P2P. Smart contracts deployed on the blockchain network monitor transactions between users, which helps reduce transaction fees.

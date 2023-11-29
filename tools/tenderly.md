@@ -1,7 +1,6 @@
 # Overview of Tenderly Tool
 
-Author: [Pavel Naydanov](https://github.com/PavelNaydanov)
-Reading time: 5 minutes.
+**Author:** [Naydanov Pavel](https://github.com/PavelNaydanov) 🕵️‍♂️
 
 [Tenderly](https://docs.tenderly.co/) is a comprehensive Web3 development platform that includes tools for smart contract debugging, testing, and development. It also provides a variety of other useful tools. The platform can be used as a dashboard for collecting analytical data on deployed contracts. The following tools are included in Tenderly:
 
