@@ -1,9 +1,9 @@
 # Pitfalls of Decentralized Trading
 
 **Authors:**
-[Naydanov Pavel](https://github.com/PavelNaydanov) 🕵️‍♂️
-[Yarlykov Roman](https://github.com/rlkvrv) 🧐
-[Kutsenko Aleksei](https://github.com/bimkon144) 👨‍💻
+[Pavel Naydanov](https://github.com/PavelNaydanov) 🕵️‍♂️
+[Roman Yarlykov](https://github.com/rlkvrv) 🧐
+[Aleksei Kutsenko](https://github.com/bimkon144) 👨‍💻
 
 Let's discuss important aspects of decentralized finance, including:
 

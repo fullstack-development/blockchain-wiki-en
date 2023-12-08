@@ -1,6 +1,6 @@
 # ERC-4337: Account Abstraction Using Alt Mempool
 
-**Author:** [Naydanov Pavel](https://github.com/PavelNaydanov) 🕵️‍♂️
+**Author:** [Pavel Naydanov](https://github.com/PavelNaydanov) 🕵️‍♂️
 
 > ERC-4337 is an Ethereum standard that provides **account abstraction** in the protocol without any changes at the consensus level.
 

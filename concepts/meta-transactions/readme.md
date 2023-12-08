@@ -1,6 +1,6 @@
 # Meta Transactions
 
-**Author:** [Naydanov Pavel](https://github.com/PavelNaydanov) 🕵️‍♂️
+**Author:** [Pavel Naydanov](https://github.com/PavelNaydanov) 🕵️‍♂️
 
 A meta transaction is a regular transaction that contains information about another transaction, which is signed by the original signer. In other words, it is a second-level transaction whose purpose is to execute the initial transaction. It is often used to replace the wallet that pays for the transaction gas.
 

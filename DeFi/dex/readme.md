@@ -1,9 +1,9 @@
 # DEX
 
 **Authors:**
-[Naydanov Pavel](https://github.com/PavelNaydanov) 🕵️‍♂️
-[Yarlykov Roman](https://github.com/rlkvrv) 🧐
-[Kutsenko Aleksei](https://github.com/bimkon144) 👨‍💻
+[Pavel Naydanov](https://github.com/PavelNaydanov) 🕵️‍♂️
+[Roman Yarlykov](https://github.com/rlkvrv) 🧐
+[Aleksei Kutsenko](https://github.com/bimkon144) 👨‍💻
 
 > In this article, I'm gonna talk about how decentralized exchanges work. If you're not familiar with the concept of "Decentralization," I suggest reading a [short article](https://medium.com/@juliomacr/centralized-vs-decentralized-vs-distributed-a-quick-overview-1f3bd17b8468) or a [more detailed article](https://medium.com/hackernoon/centralization-vs-decentralization-the-best-and-worst-of-both-worlds-7bfdd628ad09).
 

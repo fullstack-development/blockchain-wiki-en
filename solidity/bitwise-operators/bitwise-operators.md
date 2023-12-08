@@ -1,6 +1,6 @@
 # Bitwise Operations
 
-**Author:** [Yarlykov Roman](https://github.com/rlkvrv) 🧐
+**Author:** [Roman Yarlykov](https://github.com/rlkvrv) 🧐
 
 Before delving into bitwise operations, it's essential to understand what a bit and a byte actually are. So yes, this harks back to those school computer science lessons during which I played Counter-Strike with classmates and the teacher. And I have a feeling I wasn't the only one.
 

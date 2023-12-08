@@ -1,6 +1,6 @@
 # zkSync
 
-**Author:** [Yarlykov Roman](https://github.com/rlkvrv) 🧐
+**Author:** [Roman Yarlykov](https://github.com/rlkvrv) 🧐
 
 zkSync is a second layer blockchain (Layer 2 - L2) for Ethereum, designed to address high transaction fees and low throughput (Transaction Per Second - TPS) in Ethereum. It uses ZK-Rollups - rollups with zero-knowledge proofs (ZKP) to bundle transactions off the main network (L1). Only the cryptographic proof that the transactions are processed correctly and compressed data about these transactions are sent to L1.
 

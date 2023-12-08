@@ -1,9 +1,9 @@
 # AMM - Automated Market Maker
 
 **Authors:**
-[Naydanov Pavel](https://github.com/PavelNaydanov) 🕵️‍♂️
-[Yarlykov Roman](https://github.com/rlkvrv) 🧐
-[Kutsenko Aleksei](https://github.com/bimkon144) 👨‍💻
+[Pavel Naydanov](https://github.com/PavelNaydanov) 🕵️‍♂️
+[Roman Yarlykov](https://github.com/rlkvrv) 🧐
+[Aleksei Kutsenko](https://github.com/bimkon144) 👨‍💻
 
 > An automated market maker can be thought of as a smart computer that is always ready to calculate the value of one asset relative to another.
 

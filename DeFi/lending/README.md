@@ -1,6 +1,6 @@
 # Lending
 
-**Author:** [Naydanov Pavel](https://github.com/PavelNaydanov) 🕵️‍♂️
+**Author:** [Pavel Naydanov](https://github.com/PavelNaydanov) 🕵️‍♂️
 
 **Lending protocol** or lending platform. This is the next important section in the DeFi space after DEX (Decentralized exchange). A lending protocol allows users to borrow and lend cryptocurrencies.
 

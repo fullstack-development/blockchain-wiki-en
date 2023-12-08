@@ -1,6 +1,6 @@
 # Flash Loans and Their Practical Applications
 
-**Author:** [Naydanov Pavel](https://github.com/PavelNaydanov) 🕵️‍♂️
+**Author:** [Pavel Naydanov](https://github.com/PavelNaydanov) 🕵️‍♂️
 
 _Alert!_ **Flash loans** are a type of lending that doesn't require collateral to secure the loan. In other words, it's a quick loan. The primary condition for such a loan is that the borrower must repay the debt within a single transaction. This means that the borrower borrows assets and must return the debt by the end of the transaction. Failure to do so will result in the protocol canceling the transaction.
 
