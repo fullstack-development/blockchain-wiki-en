@@ -1,6 +1,6 @@
 # Vesting
 
-**Author:** [Yarlykov Roman](https://github.com/rlkvrv) 🧐
+**Author:** [Roman Yarlykov](https://github.com/rlkvrv) 🧐
 
 ## What is Vesting?
 

@@ -1,6 +1,6 @@
 ## Margin trading
 
-**Author:** [Naydanov Pavel](https://github.com/PavelNaydanov) 🕵️‍♂️
+**Author:** [Pavel Naydanov](https://github.com/PavelNaydanov) 🕵️‍♂️
 
 _Margin trading_ is a trading tool that involves using borrowed funds from a third party. The loan must be repaid within a specified period with interest.
 

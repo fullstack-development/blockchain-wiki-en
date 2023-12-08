@@ -1,6 +1,6 @@
 # Uniswap TWAP vs. Oracle
 
-**Author:** [Naydanov Pavel](https://github.com/PavelNaydanov) 🕵️‍♂️
+**Author:** [Pavel Naydanov](https://github.com/PavelNaydanov) 🕵️‍♂️
 
 An **oracle** or price oracle is a tool for fetching asset prices. An oracle aggregates **off-chain** data from multiple sources and solves the problem of securely delivering data into a blockchain network. Decentralized exchanges, lending protocols, and other DApps can use such data for various purposes, such as obtaining average asset prices, address balances, or forecasts.
 

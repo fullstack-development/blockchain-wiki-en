@@ -1,6 +1,6 @@
 # Smart Contract Upgrades
 
-**Author:** [Naydanov Pavel](https://github.com/PavelNaydanov) 🕵️‍♂️
+**Author:** [Pavel Naydanov](https://github.com/PavelNaydanov) 🕵️‍♂️
 
 By default, smart contracts on the Ethereum network are immutable. However, there are scenarios where it is desirable to have the ability to modify them.
 

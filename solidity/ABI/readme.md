@@ -1,6 +1,6 @@
 # ABI
 
-**Author:** [Naydanov Pavel](https://github.com/PavelNaydanov) 🕵️‍♂️
+**Author:** [Pavel Naydanov](https://github.com/PavelNaydanov) 🕵️‍♂️
 
 The Contract Application Binary Interface (ABI) is a standard way to interact with contracts in the Ethereum ecosystem. Interaction can occur both from outside the blockchain and within the ecosystem among contracts.
 

@@ -1,6 +1,6 @@
 # Yul
 
-**Author:** [Yarlykov Roman](https://github.com/rlkvrv) 🧐
+**Author:** [Roman Yarlykov](https://github.com/rlkvrv) 🧐
 
 ## Introduction
 

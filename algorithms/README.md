@@ -1,6 +1,6 @@
 # Algorithms and Data Structures
 
-**Author:** [Naydanov Pavel](https://github.com/PavelNaydanov) 🕵️‍♂️
+**Author:** [Pavel Naydanov](https://github.com/PavelNaydanov) 🕵️‍♂️
 
 > This article is based on the book "Grokking Algorithms" by Aditya Bhargava.
 
