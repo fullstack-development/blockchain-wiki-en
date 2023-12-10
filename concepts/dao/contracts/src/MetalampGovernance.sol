@@ -8,21 +8,22 @@ import {GovernorVotes, IVotes} from "@openzeppelin/contracts/governance/extensio
 import {GovernorVotesQuorumFraction} from "@openzeppelin/contracts/governance/extensions/GovernorVotesQuorumFraction.sol";
 
 /**
- * @title Система голосования Metalamp
- * @notice Реализует самую базовую систему голосования на базе смарт контрактов OpenZeppelin
- * @dev Используется 4 базовых расширения:
- * - GovernorSettings. Для управления настройками
- * - GovernorCountingSimple. Для подсчета вариантов голосования
- * - GovernorVotes. Для подсчета веса голосов
- * - GovernorVotesQuorumFraction. Для управления кворумом
+ * @title Metalamp voting system
+ * @notice Implements the most basic voting system based on OpenZeppelin smart contracts
+ * @dev Uses 4 basic extensions:
+ * - GovernorSettings. For managing settings
+ * - GovernorCountingSimple. For counting voting options
+ * - GovernorVotes. For calculating the weight of votes
+ * - GovernorVotesQuorumFraction. For managing the quorum
+
  */
 contract MetalampGovernance is Governor, GovernorSettings, GovernorCountingSimple, GovernorVotes, GovernorVotesQuorumFraction {
     uint48 public constant INITIAL_VOTING_DELAY = 1 days;
     uint32 public constant INITIAL_VOTING_PERIOD = 30 days;
 
-    /// Означает, что разрешается любому аккаунту создавать предложения
+    /// Indicates that any account is allowed to create proposals
     uint256 public constant INITIAL_PROPOSAL_THRESHOLD = 0;
-    /// Означает, что кворум значение не учитывается в подсчете результатов
+    /// Indicates that the quorum value is not considered in the calculation of results
     uint256 public constant INITIAL_QUORUM_NUMERATOR_VALUE = 0;
 
     constructor(IVotes token)
