@@ -1,38 +1,38 @@
-# OpenZeppelin governance
+# OpenZeppelin Governance
 
-**Автор:** [Найданов Павел](https://github.com/PavelNaydanov) 🕵️‍♂️
+**Author:** [Pavel Naydanov](https://github.com/PavelNaydanov) 🕵️‍♂️
 
-Библиотека [OpenZeppelin](https://www.openzeppelin.com/) предоставляет решение для реализации системы **governance** on-chain в виде смарт-контрактов.
+The [OpenZeppelin](https://www.openzeppelin.com/) library offers a solution for implementing an **on-chain governance** system in the form of smart contracts.
 
-_Важно!_ В этой статьей рассматриваются [смарт-контракты](https://github.com/OpenZeppelin/openzeppelin-contracts/tree/v5.0.0/contracts/governance) OpenZeppelin версии 5.0.0.
+_Important!_ This article discusses the [smart contracts](https://github.com/OpenZeppelin/openzeppelin-contracts/tree/v5.0.0/contracts/governance) of OpenZeppelin version 5.0.0.
 
-До появление смарт-контрактов **governance** от OpenZeppelin долгое время популярными были контракты протокола [Compound](https://compound.finance/): [GovernorAlpha](https://github.com/compound-finance/compound-protocol/blob/master/contracts/Governance/GovernorAlpha.sol), [GovernorBravo](https://github.com/compound-finance/compound-protocol/blob/master/contracts/Governance/GovernorBravoDelegator.sol). Децентрализованные протоколы достаточно успешно использовали, дорабатывая код под свои нужды.
+Before the emergence of OpenZeppelin's **governance** smart contracts, the [Compound](https://compound.finance/) protocol's contracts like [GovernorAlpha](https://github.com/compound-finance/compound-protocol/blob/master/contracts/Governance/GovernorAlpha.sol) and [GovernorBravo](https://github.com/compound-finance/compound-protocol/blob/master/contracts/Governance/GovernorBravoDelegator.sol) were popular for a long time. Decentralized protocols used them quite successfully, modifying the code to suit their needs.
 
-OpenZeppelin постарался переработать опыт Compound в модульную систему собственных контрактов, чтобы создать гибкую систему для сборки голосования на столько, на сколько это возможно. Наиболее массовые функциональные требования к системе голосования работают из коробки, но доработать новые, не должно составить труда.
+OpenZeppelin aimed to rework Compound's experience into a modular system of its own contracts, creating a flexible system for assembling a voting system as much as possible. The most common functional requirements for a voting system work out of the box, but it should not be difficult to make new ones.
 
-_Важно!_ Система **governance** от OpenZeppelin разработана с учетом совместимости для уже существующих систем голосования на базе контрактов Compound. Поэтому некоторые контракты, внутри библиотеки, могут дублироваться. Например: [GovernorTimelockControl](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/governance/extensions/GovernorTimelockControl.sol) и [GovernorTimelockCompound](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/governance/extensions/GovernorTimelockCompound.sol).
+_Important!_ OpenZeppelin's **governance** system is designed with compatibility for existing voting systems based on Compound contracts. Therefore, some contracts within the library might be duplicated. For example: [GovernorTimelockControl](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/governance/extensions/GovernorTimelockControl.sol) and [GovernorTimelockCompound](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/governance/extensions/GovernorTimelockCompound.sol).
 
-## Архитектура
+## Architecture
 
 ![](./images/governance-content.png)
 
-Для реализации системы голосования необходимо реализовать две подсистемы:
-1. **Token** - для контроля возможности голосовать. Например, наличие у пользователя EC-721 или ERC-20 токена разрешает принимать участие в голосовании.
-2. **Governor** - будет определять настройки, правила и жизненный цикл голосования.
+To implement a voting system, two subsystems need to be implemented:
+1. **Token** - to control the ability to vote. For example, the user's possession of an EC-721 or ERC-20 token allows them to participate in voting.
+2. **Governor** - will determine the settings, rules, and lifecycle of the voting.
 
 ### Token
 
-На данный момент библиотека поддерживает два вида токена, которые можно использовать в системе **governance**:
-1. **Взаимозаменяемый токен**. [Стандарт ERC-20](https://github.com/OpenZeppelin/openzeppelin-contracts/tree/v5.0.0/contracts/token/ERC20).
-2. **Невзаимозаменяемый токен**. [Стандарт ERC-721](https://github.com/OpenZeppelin/openzeppelin-contracts/tree/v5.0.0/contracts/token/ERC721).
+Currently, the library supports two types of tokens that can be used in the **governance** system:
+1. **Fungible Token**. [ERC-20 Standard](https://github.com/OpenZeppelin/openzeppelin-contracts/tree/v5.0.0/contracts/token/ERC20).
+2. **Non-Fungible Token**. [ERC-721 Standard](https://github.com/OpenZeppelin/openzeppelin-contracts/tree/v5.0.0/contracts/token/ERC721).
 
-Для того, чтобы применить любой из этих видов токенов в системе голосования, необходимо использовать расширения токена: [ERC20Votes.sol](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/token/ERC20/extensions/ERC20Votes.sol) или [ERC721Votes.sol](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/token/ERC721/extensions/ERC721Votes.sol). Эти два контракта в свою очередь наследуются от контракта [Votes.sol](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/governance/utils/Votes.sol) из группы контрактов системы голосования.
+To apply either of these types of tokens in the voting system, token extensions must be used: [ERC20Votes.sol](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/token/ERC20/extensions/ERC20Votes.sol) or [ERC721Votes.sol](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/token/ERC721/extensions/ERC721Votes.sol). These two contracts, in turn, are inherited from the [Votes.sol](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/governance/utils/Votes.sol) contract from the group of governance system contracts.
 
 ![](./images/governance-token.png)
 
-_Важно!_ Пока библиотека не предлагает возможности использовать токен стандарта ERC-1155 для системы голосования.
+_Important!_ The library does not yet offer the ability to use the ERC-1155 standard token for the voting system.
 
-Простой пример ERC-20 токена для голосования.
+A simple example of an ERC-20 token for voting.
 
 ```solidity
 // SPDX-License-Identifier: UNLICENSED
@@ -63,9 +63,10 @@ contract VotesToken is ERC20, ERC20Permit, ERC20Votes {
 }
 ```
 
-Хочу обратить внимание, что контракт **VotesToken.sol**, по мимо других наследований, наследуется от контракта **ERC20Permit.sol**. Это необходимо, потому что, наследуясь от контракта **ERC20Votes.sol**, наследуется функционал **делегирования голосов по подписи**. Этот функционал находится глубже в цепочке наследований, в контракте [Votes.sol](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/governance/utils/Votes.sol#L142). Контракт **Votes.sol** реализует интерфейс контракта [EIP712](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/utils/cryptography/EIP712.sol), но не инициализирует конструктор EIP712. Поэтому инициализация конструктора EIP712 выполняется в [ERC20Permit.sol](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/token/ERC20/extensions/ERC20Permit.sol#L39).
+I want to highlight that the **VotesToken.sol** contract, in addition to other inheritances, inherits from the **ERC20Permit.sol** contract. This is necessary because, by inheriting from the **ERC20Votes.sol** contract, it inherits the functionality of **delegating votes via signature**. This functionality is deeper in the inheritance chain, in the [Votes.sol](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/governance/utils/Votes.sol#L142) contract. The **Votes.sol** contract implements the interface of the [EIP712](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/utils/cryptography/EIP712.sol) contract, but does not initialize the EIP712 constructor. Therefore, the initialization of the EIP712 constructor is carried out in [ERC20Permit.sol](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/token/ERC20/extensions/ERC20Permit.sol#L39).
 
-Если нет необходимости добавлять функционал permit для своего токена, то можно наследовать контракт токена сразу от контракта [EIP712](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/utils/cryptography/EIP712.sol), а не от **ERC20Permit.sol**.
+If there is no need to add permit functionality to your token, you can inherit your token contract directly from the [EIP712](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/utils/cryptography/EIP712.sol) contract, instead of from **ERC20Permit.sol**.
+
 
 ```solidity
 // SPDX-License-Identifier: UNLICENSED
@@ -75,7 +76,7 @@ import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {ERC20Votes} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol";
 import {EIP712} from "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 
-/// Контракт наследуется от ERC20Votes и EIP712 напрямую
+/// The contract inherits directly from ERC20Votes and EIP712
 contract VotesToken is ERC20, EIP712, ERC20Votes {
     constructor(uint256 totalSupply) ERC20("Metalamp votes", "MTV") EIP712("Metalamp votes", "1") {
         _mint(msg.sender, totalSupply);
@@ -87,21 +88,21 @@ contract VotesToken is ERC20, EIP712, ERC20Votes {
 }
 ```
 
-_Важно!_ Быстро сгенерировать код токена для голосования можно воспользовавшись инструментом "[Contracts Wizard](https://docs.openzeppelin.com/contracts/5.x/wizard)" библиотеки OpenZeppelin. Для этого нужно выбрать пункт "Votes" при настройке.
+_Important!_ You can quickly generate token code for voting using the "[Contracts Wizard](https://docs.openzeppelin.com/contracts/5.x/wizard)" tool of the OpenZeppelin library. To do this, select the "Votes" option when setting up.
 
-_Не менее важно!_ Если у протокола уже есть свой токен, который успешно применяется и выполняет свои задачи. Для того, чтобы его можно было применить в системе голосования библиотека предлагает выпустить еще один токен обертку на базе своих контрактов: [ERC20Wrapper](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/token/ERC20/extensions/ERC20Wrapper.sol) и [ERC721Wrapper.sol](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/token/ERC721/extensions/ERC721Wrapper.sol). Это похожая история на токен WETH (обернутый эфир). Это позволит владельцем токенов обменивать свой первоначальный токен на обернутый и участвовать в системе голосования. Чуть подробнее в [документации](https://docs.openzeppelin.com/contracts/5.x/governance#token).
+_No less important!_ If the protocol already has its own token that is successfully applied and fulfills its tasks, the library offers to issue another wrapper token based on its contracts: [ERC20Wrapper](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/token/ERC20/extensions/ERC20Wrapper.sol) and [ERC721Wrapper.sol](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/token/ERC721/extensions/ERC721Wrapper.sol). This is a similar story to the WETH token (wrapped ether). This will allow token holders to exchange their original token for the wrapped one and participate in the voting system. More details can be found in the [documentation](https://docs.openzeppelin.com/contracts/5.x/governance#token).
 
-_И еще важного!_ Для токена голосования на базе ERC-721 используется аналогичный подход.
+_And another important point!_ For voting tokens based on ERC-721, a similar approach is used.
 
 ### Governor
 
-Для того, чтобы реализовать подсистему **Governor**, необходимо ответить на несколько ключевых вопросов:
-1. Как определять "**количество**" или "**вес**" голосов?
-2. Сколько голосов необходимо для достижения [кворума](https://ru.wikipedia.org/wiki/%D0%9A%D0%B2%D0%BE%D1%80%D1%83%D0%BC), чтобы можно было считать голосование успешным?
-3. Какие **варианты голосования** предоставляются пользователям и как эти голоса считаются?
-4. Какой **тип токена** будет использован в качестве валидации пользователей на возможность голосования?
+To implement the **Governor** subsystem, you need to answer several key questions:
+1. How to define the "**number**" or "**weight**" of votes?
+2. How many votes are needed to reach a [quorum](https://en.wikipedia.org/wiki/Quorum) to consider the voting successful?
+3. What **voting options** are provided to users and how are these votes counted?
+4. What **type of token** will be used to validate users' ability to vote?
 
-Библиотека OpenZeppelin считает эти вопросы ключевыми и закрепляет необходимость ответа на эти вопросу путем предоставления абстрактного базового контракта [Governor.sol](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/governance/Governor.sol). По сути это базовый смарт-контракт для реализации **Governor** подсистемы.
+The OpenZeppelin library considers these questions crucial and enforces the need to answer them by providing an abstract base contract [Governor.sol](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/governance/Governor.sol). Essentially, this is the basic smart contract for implementing the **Governor** subsystem.
 
 ```solidity
 // SPDX-License-Identifier: UNLICENSED
@@ -110,45 +111,46 @@ pragma solidity 0.8.20;
 import "@openzeppelin/contracts/governance/Governor.sol";
 
 contract MyGovernor is Governor {
-    /// Реализация подсистемы Governor
+    /// Implementation of the Governor subsystem
 }
 ```
 
-Наследование от контракта **Governor** не позволит скомпилироваться и потребует реализации необходимого функционала (ответа на 4 вопроса выше). Ответом на каждый из вопросов выше является небольшой модуль-контракт:
-1. [GovernorVotes.sol](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/governance/extensions/GovernorVotes.sol). Используется в качестве определения "количества" или "веса" голосов.
-2. [GovernorVotesQuorumFraction.sol](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/governance/extensions/GovernorVotesQuorumFraction.sol). Используется для определения правил достижения кворума.
-3. [GovernorCountingSimple.sol](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/governance/extensions/GovernorCountingSimple.sol). Используется для реализации простой системы вариантов выбора для участников голосования. Реализует возможность единичного выбора для пользователя из вариантов: "против", "за", "воздержался".
-4. Расширение токенов [ERC20Votes](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/token/ERC20/extensions/ERC20Votes.sol) или [ERC721Votes](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/token/ERC721/extensions/ERC721Votes.sol).
+_Important!_ You can quickly generate the code for a voting token using the "[Contracts Wizard](https://docs.openzeppelin.com/contracts/5.x/wizard)" tool from the OpenZeppelin library. To do this, select the "Votes" option during configuration.
+
+_Equally important!_ If the protocol already has its own token that is being successfully used and fulfilling its tasks, the library offers to issue an additional wrapper token based on its contracts: [ERC20Wrapper](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/token/ERC20/extensions/ERC20Wrapper.sol) and [ERC721Wrapper.sol](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/token/ERC721/extensions/ERC721Wrapper.sol). This is similar to the WETH token (wrapped ether) scenario. It allows token holders to exchange their original token for the wrapped one and participate in the voting system. More details can be found in the [documentation](https://docs.openzeppelin.com/contracts/5.x/governance#token).
+
+_And yet another important point!_ A similar approach is used for voting tokens based on ERC-721.
+
+### Governor
+
+To implement the **Governor** subsystem, several key questions need to be answered:
+1. How to determine the "**number**" or "**weight**" of votes?
+2. How many votes are required to achieve a [quorum](https://en.wikipedia.org/wiki/Quorum) to consider the voting successful?
+3. What **voting options** are available to users and how are these votes counted?
+4. What **type of token** will be used for user validation in the voting process?
+
+The OpenZeppelin library considers these questions fundamental and enforces the need for answers by providing the abstract base contract [Governor.sol](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/governance/Governor.sol). Essentially, this is the basic smart contract for implementing the **Governor** subsystem.
+
+Inheriting from the **Governor** contract will not allow compilation and will require the implementation of necessary functionality (answers to the 4 questions above). The answer to each of the questions above is a small module contract:
+1. [GovernorVotes.sol](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/governance/extensions/GovernorVotes.sol). Used as a definition of "quantity" or "weight" of votes.
+2. [GovernorVotesQuorumFraction.sol](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/governance/extensions/GovernorVotesQuorumFraction.sol). Used to define the rules for achieving a quorum.
+3. [GovernorCountingSimple.sol](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/governance/extensions/GovernorCountingSimple.sol). Used to implement a simple system of voting options for participants. Implements the possibility of a single choice for the user from the options: "against", "for", "abstain".
+4. The token extensions [ERC20Votes](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/token/ERC20/extensions/ERC20Votes.sol) or [ERC721Votes](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/token/ERC721/extensions/ERC721Votes.sol).
 
 ![](./images/governance-governor.png)
 
-Минимально требуемый функционал контрактом **Governor.sol** может быть заменен собственным или расширен дальше. Например в рамках системы голосования можно реализовать задержку исполнения принятых решений (Timelock), систему поощрения за участие в голосовании (Rewards system) и так далее.
+The minimal functionality required by the **Governor.sol** contract can be replaced or further extended. For example, within the voting system, one can implement a delay in the execution of accepted decisions (Timelock), a reward system for participating in the vote (Rewards system), and so on.
 
-_Важно!_ Минимально жизнеспособные контракты для системы **governance** можно собрать при помощи инструмента "[Contracts Wizard](https://docs.openzeppelin.com/contracts/5.x/wizard)" библиотеки OpenZeppelin.
+_Important!_ Minimally viable contracts for the **governance** system can be assembled using the "[Contracts Wizard](https://docs.openzeppelin.com/contracts/5.x/wizard)" tool from the OpenZeppelin library.
 
-## Полный список смарт-контрактов библиотеки OpenZeppelin для организации governance
+## Full List of OpenZeppelin Library Smart Contracts for Organizing Governance
 
-Ниже представлен список смарт-контрактов библиотеки OpenZeppelin для реализации **Governor** из [репозитория](https://github.com/OpenZeppelin/openzeppelin-contracts/tree/v5.0.0/contracts/governance):
+Below is a list of OpenZeppelin library smart contracts for implementing **Governor** from their [repository](https://github.com/OpenZeppelin/openzeppelin-contracts/tree/v5.0.0/contracts/governance):
 
-1. **Governor.sol**. Основной контракт, который содержит минимально необходимую логику для реализации системы голосования. Контракт является **абстрактным**, поэтому для использования необходимо от него наследоваться.
-2. **Extensions**. Смарт-контракты, которые позволяют расширить функционал основного контракта Governor.sol
-    - **GovernorCountingSimple.sol**. Реализует механизм простого голосования. Позволяет выбрать один вариант из трех: "против", "за", "воздержался".
-    - **GovernorSettings.sol**. Реализует управление **настройками** голосования: voting delay, voting period duration, and proposal threshold.
-    - **GovernorStorage.sol**. Сохраняет детали предложений для голосования внутри сети блокчейн. Это дает перечисляемость предложений на смарт-контрактах. Может быть полезным в L2 сетях, где стоимость газа не имеет сильного значения.
-    - **GovernorTimelockAccess.sol**. Реализует механизм отложенного выполнения принятого решения после успешного голосования. Работает в связке с контрактом [AccessManager](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/access/manager/AccessManager.sol).
-    - **GovernorTimelockCompound.sol**. Реализует механизм отложенного выполнения принятого решения после успешного голосования. Работает в связке с контрактом [Timelock](https://github.com/compound-finance/compound-protocol/blob/master/contracts/Timelock.sol) от Compound
-    - **GovernorTimelockControl.sol**. Реализует механизм отложенного выполнения принятого решения после успешного голосования. Работает в связке с контрактом [TimelockController.sol](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/governance/TimelockController.sol).
-    - **GovernorVotes.sol**. Реализует механизм голосования, в котором вводится понятие **"вес голоса"**. Например, владение пользователем **одним** токеном протокола приравнивается к **двум** голосам в системе голосования.
-    - **GovernorVotesQuorumFraction.sol**. Вводит понятие **кворум**. Следит за выполнением того, чтобы количество проголосовавших было не меньше установленного значения. Обычно это процент от всех, кто может голосовать. Например, кворум равный 50% означает, что голосование завершается успешно, только в случае, если 50%, от всех кто мог проголосовать, голосуют "за".
-    - **GovernorPreventLateQuorum.sol**. Обеспечивает минимальный период голосования при достижение кворума.
-3. **Utils**. Список смарт-контрактов для вспомогательного применения в системе голосования.
-    - **Votes.sol**. Абстрактный контракт для отслеживания единиц голосования. Реализует механизм делегирования голосов. Применяется в токена ERC20Votes и ERC721Votes.
+1. **Governor.sol**. The main contract that contains the minimum necessary logic for implementing a voting system. The contract is **abstract**, so inheritance is required for use.
+2. **Extensions**. Smart contracts that allow extending the functionality of the main Governor.sol contract.
+    - **GovernorCountingSimple.sol**. Implements a simple voting mechanism. Allows choosing one of three options: "against", "for", "abstain
 
-## Основные сценарии работы системы голосования
-
-В этом разделе я покажу, какие функции и на каких смарт-контрактах необходимо вызывать для основных пользовательских сценариев системы голосования.
-
-Предположим, что мы реализовали самую простую систему голосования на базе контрактов **governance** библиотеки OpenZeppelin.
 
 ```solidity
 // SPDX-License-Identifier: UNLICENSED
@@ -161,21 +163,22 @@ import {GovernorVotes, IVotes} from "@openzeppelin/contracts/governance/extensio
 import {GovernorVotesQuorumFraction} from "@openzeppelin/contracts/governance/extensions/GovernorVotesQuorumFraction.sol";
 
 /**
- * @title Система голосования Metalamp
- * @notice Реализует самую базовую систему голосования на базе смарт контрактов OpenZeppelin
- * @dev Используется 4 базовых расширения:
- * - GovernorSettings. Для управления настройками
- * - GovernorCountingSimple. Для подсчета вариантов голосования
- * - GovernorVotes. Для подсчета веса голосов
- * - GovernorVotesQuorumFraction. Для управления кворумом
+ * @title Metalamp Voting System
+ * @notice Implements the most basic voting system based on OpenZeppelin smart contracts
+ * @dev Uses 4 basic extensions:
+ * - GovernorSettings. For managing settings
+ * - GovernorCountingSimple. For counting voting options
+ * - GovernorVotes. For calculating the weight of votes
+ * - GovernorVotesQuorumFraction. For managing the quorum
  */
+
 contract MetalampGovernance is Governor, GovernorSettings, GovernorCountingSimple, GovernorVotes, GovernorVotesQuorumFraction {
     uint48 public constant INITIAL_VOTING_DELAY = 1 days;
     uint32 public constant INITIAL_VOTING_PERIOD = 30 days;
 
-    /// Означает, что разрешается любому аккаунту создавать предложения
+    /// Indicates that any account is allowed to create proposals
     uint256 public constant INITIAL_PROPOSAL_THRESHOLD = 0;
-    /// Означает, что кворум значение не учитывается в подсчете результатов
+    /// Indicates that the quorum value is not considered in the calculation of results
     uint256 public constant INITIAL_QUORUM_NUMERATOR_VALUE = 0;
 
     constructor(IVotes token)
@@ -196,38 +199,41 @@ contract MetalampGovernance is Governor, GovernorSettings, GovernorCountingSimpl
 }
 ```
 
-Для деплоя смарт-контракта **MetalampGovernance.sol** в сеть необходимо указать токен голосования. Пример кода токена приводить не буду. Предположим, что это будет стандартный токен ERC20 (расширенный функционалом ERC20Votes). Теперь остается понять, каким образом необходимо взаимодействовать с задеплоенным контрактом.
+To deploy the **MetalampGovernance.sol** smart contract to the network, a voting token must be specified. I won't provide an example code for the token. Let's assume it will be a standard ERC20 token (enhanced with ERC20Votes functionality). Now, we need to understand how to interact with the deployed contract.
 
-### Создание предложения
+### Creating a Proposal
 
-Для того чтобы создать новое предложение в системе голосования необходимо вызвать функцию `propose()` на смарт-контракте **MetalampGovernance.sol**. Реализация функции находится в основном абстрактном смарт-контракте [Governor.sol](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/governance/Governor.sol#L275).
+To create a new proposal in the voting system, you need to call the `propose()` function on the **MetalampGovernance.sol** smart contract. The implementation of this function can be found in the main abstract smart contract [Governor.sol](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/governance/Governor.sol#L275).
 
 ```solidity
 /**
- * @notice Позволяет внести предложение на голосование
- * @param targets Список адресов контрактов на которых будет исполняться вызовы calldatas
- * @param values Список значения нативной валюты которое должно быть передано с вызовом каждой calldata на каждом адресе (target)
- * @param calldatas Список закодированных вызовов функций с аргументами
- * @param description Текстовое описание предложения
+ * @notice Allows submitting a proposal for voting
+ * @param targets List of contract addresses on which the calldatas calls will be executed
+ * @param values List of native currency values to be sent with each calldata call on each address (target)
+ * @param calldatas List of encoded function calls with arguments
+ * @param description Textual description of the proposal
  */
+
 function propose(
     address[] memory targets,
     uint256[] memory values,
     bytes[] memory calldatas,
     string memory description
 ) public virtual returns (uint256) {
-    /// Считаем, что вызывающий функцию является автором предложения
+    /// Assumes the function caller is the author of the proposal
     address proposer = _msgSender();
 
-    /// Проверяет разрешено ли это предложение вносить на голосование вызывающему адресу.
-    /// В конце description можно указать адрес предлагающего (`[description]#proposer=0x`). Если proposer указан, то только этот адрес может вносить предложение на голосование.
-    /// Это позволяет создать действительно уникальное предложение, так как description участвует в генерации proposalId, а эта проверка не позволит клонировать предложение
+    /// Checks if this proposal is allowed to be submitted for voting by the calling address.
+    /// At the end of the description, the proposer's address can be specified (`[description]#proposer=0x`). If a proposer is specified, only this address can submit the proposal for voting.
+    /// This allows for the creation of a truly unique proposal, as the description is part of the generation of the proposalId, and this check prevents cloning of the proposal
+
     if (!_isValidDescriptionForProposer(proposer, description)) {
         revert GovernorRestrictedProposer(proposer);
     }
 
-    /// Проверяем, что автор предложения имеет достаточно прав для создания.
-    /// Для этого вес голосов автора должны превышать значение возвращаемое функцией proposalThreshold()
+    /// Checks that the proposal's author has sufficient rights to create it.
+    /// For this, the weight of the author's votes must exceed the value returned by the function proposalThreshold()
+
     uint256 proposerVotes = getVotes(proposer, clock() - 1);
     uint256 votesThreshold = proposalThreshold();
     if (proposerVotes < votesThreshold) {
@@ -238,7 +244,7 @@ function propose(
 }
 ```
 
-Дальше вызов уходит в приватную функцию `_propose()`.
+The call then proceeds to the private function `_propose()`.
 
 ```solidity
 function _propose(
@@ -248,25 +254,25 @@ function _propose(
     string memory description,
     address proposer
 ) internal virtual returns (uint256 proposalId) {
-    /// Генерируется уникальный идентификатор предложения
+    /// Generates a unique identifier for the proposal
     proposalId = hashProposal(targets, values, calldatas, keccak256(bytes(description)));
 
-    /// Проверяется правильность переданных параметров предложения
+    /// Validates the correctness of the submitted proposal parameters
     if (targets.length != values.length || targets.length != calldatas.length || targets.length == 0) {
         revert GovernorInvalidProposalLength(targets.length, calldatas.length, values.length);
     }
 
-    /// Проверяется, что такого предложения еще не было
+    /// Checks that the proposal has not already been made
     if (_proposals[proposalId].voteStart != 0) {
         revert GovernorUnexpectedProposalState(proposalId, state(proposalId), bytes32(0));
     }
 
-    /// Время на которое будут проверяться балансы голосов проголосовавших.
-    /// Совпадает с временем начала голосования по предложению
+    /// The time at which the vote balances of the voters will be checked.
+    /// Coincides with the time when voting on the proposal begins
     uint256 snapshot = clock() + votingDelay();
     uint256 duration = votingPeriod();
 
-    /// Записывается информация о предложении, которая будет храниться в сети
+    /// Records information about the proposal, which will be stored in the network
     ProposalCore storage proposal = _proposals[proposalId];
     proposal.proposer = proposer;
     proposal.voteStart = SafeCast.toUint48(snapshot);
@@ -286,11 +292,10 @@ function _propose(
 }
 ```
 
-На схеме можно представить этот процесс следующим образом:
+The process can be represented in the diagram as follows:
 ![](./images/propose-process.png)
 
-
-Пример вызова функции `propose()` из другого смарт-контракта. Предлагаем вынести на голосование вызов функции `set(address)` для смарт-контракта whitelist. Предполагаем, что функция не payable, поэтому нет необходимости заполнять массив values.
+Example of calling the `propose()` function from another smart contract. We propose to put the call of the `set(address)` function for the whitelist smart contract to a vote. It is assumed that the function is not payable, therefore there is no need to fill the values array.
 
 ```solidity
 address account = 0x...;
@@ -306,51 +311,53 @@ calldatas[0] = abi.encodeWithSelector(Whitelist.set.selector, account);
 uint256 proposalId = governance.propose(targets, values, calldatas, description);
 ```
 
-После создания предложения можно получить со смарт-контракта:
-1. Время начала голосования `proposalSnapshot(uint256 proposalId)`.
-2. Время окончания голосования `proposalDeadline(uint256 proposalId)`
-3. Автора предложения `proposalProposer(uint256 proposalId)`
-4. Состояние предложения `state(uint256 proposalId)` (Pending, Active, Cancelled и так далее)
+After creating a proposal, you can obtain from the smart contract:
+1. The start time of the voting `proposalSnapshot(uint256 proposalId)`.
+2. The end time of the voting `proposalDeadline(uint256 proposalId)`
+3. The author of the proposal `proposalProposer(uint256 proposalId)`
+4. The state of the proposal `state(uint256 proposalId)` (Pending, Active, Cancelled, etc.)
 
-_Важно!_ Для получения списка созданных предложений за пределами сети необходимо реализовать "сервис-индексир" данных, который будет слушать событие `ProposalCreated()` и агрегировать все созданные предложения. Альтернативное решение может использовать расширение [GovernorStorage.sol](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/governance/extensions/GovernorStorage.sol) для хранения данных предложений в сети.
+_Important!_ To retrieve a list of created proposals outside the network, it is necessary to implement a "data indexing service" that will listen to the `ProposalCreated()` event and aggregate all created proposals. An alternative solution may use the extension [GovernorStorage.sol](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/governance/extensions/GovernorStorage.sol) for storing proposal data on the network.
 
-### Отмена предложения
+### Proposal Cancellation
 
-Предполагаем, что предложение было создано подобно разделу [выше](#создание-предложения).
+It is assumed that the proposal was created similarly to the section [above](#создание-предложения).
 
-Для того, чтобы отменить предложение необходимо вызвать функцию `cancel()` на смарт-контракте **MetalampGovernance.sol**. Реализация функции находится в основном абстрактном смарт-контракте [Governor.sol](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/governance/Governor.sol#L453).
+To cancel a proposal, it is necessary to call the `cancel()` function on the **MetalampGovernance.sol** smart contract. The implementation of the function is in the main abstract smart contract [Governor.sol](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/governance/Governor.sol#L453).
 
 ```solidity
 /**
- * @notice Позволяет отменить голосование по предложению
- * @param targets Список адресов контрактов на которых будет исполняться вызовы calldatas
- * @param values Список значения нативной валюты которое должно быть передано с вызовом каждой calldata на каждом адресе (target)
- * @param calldatas Список закодированных вызовов функций с аргументами
- * @param description Закодированное текстовое описание предложения
+ * @notice Allows the cancellation of the vote on a proposal
+ * @param targets List of contract addresses on which calldatas calls will be executed
+ * @param values List of native currency values that should be sent with each calldata call at each address (target)
+ * @param calldatas List of encoded function calls with arguments
+ * @param description Encoded textual description of the proposal
  */
+
 function cancel(
     address[] memory targets,
     uint256[] memory values,
     bytes[] memory calldatas,
     bytes32 descriptionHash
 ) public virtual returns (uint256) {
-    /// Генерируется идентификатор предложения для проверки статуса
+    /// Generates a proposal identifier for checking the status
     uint256 proposalId = hashProposal(targets, values, calldatas, descriptionHash);
 
-    /// Проверяется, что предложение все еще в статусе Pending
+    /// Checks that the proposal is still in the Pending state
     _validateStateBitmap(proposalId, _encodeStateBitmap(ProposalState.Pending));
 
-    /// Проверяется вызывающий. Только создатель предложения может отменить предложение
+    /// Checks the caller. Only the creator of the proposal can cancel it
+
     if (_msgSender() != proposalProposer(proposalId)) {
         revert GovernorOnlyProposer(_msgSender());
     }
 
-    /// Вызов приватной функции
+    /// Calls a private function
     return _cancel(targets, values, calldatas, descriptionHash);
 }
 ```
 
-Дальше вызов уходит в приватную функцию `_cancel()`. Она принимает одинаковые параметры, как в публичной функции `cancel()`.
+Next, the call goes to the private function `_cancel()`. It takes the same parameters as the public function `cancel()`.
 
 ```solidity
     function _cancel(
@@ -359,10 +366,10 @@ function cancel(
         bytes[] memory calldatas,
         bytes32 descriptionHash
     ) internal virtual returns (uint256) {
-        /// Генерируется идентификатор предложения
+        /// Generates a proposal identifier.
         uint256 proposalId = hashProposal(targets, values, calldatas, descriptionHash);
 
-        /// Для отмены статус предложения может быть любым, кроме
+        /// To cancel, the proposal status can be anything except.
         /// Canceled, Expired, Executed
         _validateStateBitmap(
             proposalId,
@@ -372,49 +379,54 @@ function cancel(
                 _encodeStateBitmap(ProposalState.Executed)
         );
 
-        /// В storage проставляется значение canceled
-        /// По этому значению функция state() будет определять статус canceled
+        /// The value "canceled" is set in storage.
+        /// Based on this value, the state() function will determine the status as "canceled."
+
         _proposals[proposalId].canceled = true;
 
         emit ProposalCanceled(proposalId);
 
-        /// Возвращает идентификатор отмененного предложения
+        /// Returns declined porposal's id
         return proposalId;
     }
 ```
 
-_Важно!_ Хочу обратить внимание, что все функции с модификатором **virtual**. Это означает, что поведение по умолчанию может быть изменено.
+**Important!** I want to draw your attention to the fact that all functions are marked as **virtual**. This means that the default behavior can be changed.
 
-### Отправка голоса
+### Voice Casting
 
-Для того, чтобы была возможность голосовать участникам необходимы следующий условия:
-1. **Предложение** было **создано** в систему голосования. Смотри пункт [выше](#создание-предложения).
-2. **Голосование** должно **начаться**, то есть текущий **номер блока** должен превышать время начала голосования (voteStart). Время начала голосования совпадает со временем проверки голосов на токене(snapshot). Получить snapshot можно вызвав функцию `proposalSnapshot(proposalId)`.
-3. У голосующего участника должно быть право голоса, то есть у него должны быть в наличие токены голосования. Для того, чтобы эти токены учитывались при голосовании, участник должен **делегировать токены** на свой адрес или адрес другого участника, который получит право голосования. Для делегирования, голосующий участник должен вызвать функцию `delegate(address voter)` на контракте токена голосования (который наследует функционал библиотеки ERC20Votes или ERC721Votes), где **voter** адрес аккаунта, кому будет передано право голоса.
+In order for participants to be able to vote, the following conditions must be met:
+1. The **proposal** must have been **created** in the voting system. See the section [above](#creating-a-proposal).
+2. The **voting** must have **started**, meaning the current **block number** must exceed the voting start time (voteStart). The voting start time coincides with the time of checking votes on the token (snapshot). To obtain a snapshot, you can call the `proposalSnapshot(proposalId)` function.
+3. The voting participant must have the right to vote, which means they must have voting tokens available. To have these tokens counted during voting, the participant must **delegate tokens** to their own address or the address of another participant who will have the voting right. To delegate, the voting participant must call the `delegate(address voter)` function on the voting token contract (which inherits functionality from the ERC20Votes or ERC721Votes library), where **voter** is the address of the account to whom the voting right will be delegated.
 
-Если все описанные условия выполнены, то голосующий участник должен вызвать функцию `castVote(proposalId, support)` на смарт-контракте **MetalampGovernance.sol**. Реализация находится в абстрактном смарт-контракте [Governor.sol](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/governance/Governor.sol#L522C14-L522C22).
+If all the conditions described are met, the voting participant should call the `castVote(proposalId, support)` function on the **MetalampGovernance.sol** smart contract. The implementation can be found in the abstract smart contract [Governor.sol](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/governance/Governor.sol#L522C14-L522C22).
+
 
 ```solidity
 /**
- * @notice Функция голосования
- * @param proposalId Идентификатор предложения
- * @param support Закодированное решение в uint8 (например, "за", "против" или "воздержался")
+ * @notice Voting function
+ * @param proposalId Proposal identifier
+ * @param support Encoded decision in uint8 (e.g., "for," "against," or "abstain")
  */
+
 function castVote(uint256 proposalId, uint8 support) public virtual returns (uint256) {
-    /// Голосующим считается вызывающий функцию
+    /// The caller of the function is considered the voter
     address voter = _msgSender();
 
     return _castVote(proposalId, voter, support, "");
 }
 ```
 
-По-мимо функции `castVote()`, для того чтобы проголосовать контракт предлагает дополнительные функции:
-1. [`castVoteWithReason()`](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/governance/Governor.sol#L530) - дает возможность добавить описание к принятому решению
-2. [`castVoteWithReasonAndParams()`](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/governance/Governor.sol#L542C14-L542C41) - дает возможность добавить описание к принятому решению и передать произвольные параметры для использования в дополнительной логике голосования
-3. [`castVoteBySig()`](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/governance/Governor.sol#L555C14-L555C27) - дает возможность проголосовать на основании подписи участника голосования
-4. [`castVoteWithReasonAndParamsBySig()`](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/governance/Governor.sol#L577C14-L577C46) - объединяет все три варианта в одном: описание принятого решение, произвольные параметры, голосование по подписи
+Apart from the `castVote()` function, the contract offers additional functions for voting:
 
-Независимо от выбора любой из предложенных функций для голосования, под капотом, будет вызвана приватная функция голосования [`_castVote()`](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/governance/Governor.sol#L631C1-L650C6).
+1. [`castVoteWithReason()`](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/governance/Governor.sol#L530) - Allows adding a description to the cast vote decision.
+2. [`castVoteWithReasonAndParams()`](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/governance/Governor.sol#L542C14-L542C41) - Enables adding a description to the cast vote decision and passing arbitrary parameters for use in additional voting logic.
+3. [`castVoteBySig()`](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/governance/Governor.sol#L555C14-L555C27) - Allows voting based on a participant's signature.
+4. [`castVoteWithReasonAndParamsBySig()`](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/governance/Governor.sol#L577C14-L577C46) - Combines all three options into one: description of the decision, arbitrary parameters, and voting by signature.
+
+Regardless of which of these functions you choose for voting, the underlying mechanism will call the private voting function [`_castVote()`](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/governance/Governor.sol#L631C1-L650C6).
+
 
 ```solidity
 function _castVote(
@@ -424,17 +436,18 @@ function _castVote(
     string memory reason,
     bytes memory params
 ) internal virtual returns (uint256) {
-    /// Проверяется, что предложение сейчас в активном статусе,
-    /// что позволяет голосовать за предложение
-    _validateStateBitmap(proposalId, _encodeStateBitmap(ProposalState.Active));
+    /// It is verified that the proposal is currently in an active state,
+    /// allowing votes to be cast for the proposal.
+_validateStateBitmap(proposalId, _encodeStateBitmap(ProposalState.Active));
 
-    /// Рассчитывается вес голоса
-    uint256 weight = _getVotes(account, proposalSnapshot(proposalId), params);
+    /// The vote weight is calculated.
+uint256 weight = _getVotes(account, proposalSnapshot(proposalId), params);
 
-    /// Учитывается голос
-    _countVote(proposalId, account, support, weight, params);
+    /// The vote is recorded.
+_countVote(proposalId, account, support, weight, params);
 
-    /// Отправка события об успешности голосования
+    /// An event is emitted to indicate the successful vote.
+
     if (params.length == 0) {
         emit VoteCast(account, proposalId, support, weight, reason);
     } else {
@@ -445,65 +458,67 @@ function _castVote(
 }
 ```
 
-На схеме можно представить этот процесс следующим образом:
-![](./images/cast-vote-process.png)
+The process can be represented in the following diagram:
+![Vote Casting Process](./images/cast-vote-process.png)
 
-Расчет "веса" голоса (**_getVotes**) и учет голоса (**_countVotes**) - это настраиваемая модульная история, которая может быть реализована согласно потребностям системы голосования. При этом библиотека OpenZeppelin предлагает базовые решение, которые можно посмотреть в смарт-контрактах [GovernorVotes.sol](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/governance/extensions/GovernorVotes.sol#L57) и [GovernorCountingSimple.sol](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/governance/extensions/GovernorCountingSimple.sol#L76) соответственно.
+Calculating the "vote weight" (_getVotes) and recording the vote (_countVotes) is a customizable modular process that can be implemented according to the needs of the voting system. The OpenZeppelin library provides basic solutions, which can be found in the smart contracts [GovernorVotes.sol](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/governance/extensions/GovernorVotes.sol#L57) and [GovernorCountingSimple.sol](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/governance/extensions/GovernorCountingSimple.sol#L76), respectively.
 
-### Отправка голоса с подписью
+### Voting with a Signature
 
-Подробнее узнать что такое подпись можно [тут](https://ethereum.org/en/glossary/#digital-signatures).
+To learn more about what a signature is, you can check [here](https://ethereum.org/en/glossary/#digital-signatures).
 
-Основной плюс использования подписи заключается в том, что участник дает цифровую подпись и ему **не обязательно платить газ** за исполнение транзакции при отправке голоса. Эту роль может брать на себя off-chain сервис и с подписью участника отправлять голос, выполняя только саму транзакцию за него.
+The main advantage of using a signature is that the participant provides a digital signature, and they **do not necessarily need to pay gas** for executing the transaction when casting their vote. An off-chain service can take on this role and submit the vote with the participant's signature, only performing the transaction itself.
 
-Для того, чтобы была возможность участникам голосовать с использованием подписи, должны быть выполнены все условия, описанные в разделе ["отправка голоса"](#отправка-голоса).
+For participants to be able to vote using a signature, all the conditions described in the ["Vote Casting" section](#vote-casting) must be met.
 
-Однако для того, чтобы делегировать токены классическим способом вызывая функцию `delegate(address voter)` голосующий все равно должен заплатить за газ. В этом случае у участника голосования есть возможность воспользоваться подобным механизмом и вызывать функцию `delegateBySig()`. Это позволит не платить газ полностью на всем этапе отправки голоса. Реализована эта функция в контракте [Votes.sol](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/governance/utils/Votes.sol#L142).
+However, to delegate tokens in the traditional way by calling the `delegate(address voter)` function, the voter still needs to pay gas. In this case, voting participants have the option to use a similar mechanism by calling the `delegateBySig()` function. This allows them to avoid paying gas for the entire process of casting a vote. This function is implemented in the [Votes.sol](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/governance/utils/Votes.sol#L142) contract.
 
-Если все описанные условия выполнены, то голосующий участник должен вызвать функцию `castVoteBySig(uint256 proposalId, uint8 support, address voter, bytes memory signature)` на смарт-контракте **MetalampGovernance.sol**. Реализация находится в абстрактном смарт-контракте [Governor.sol](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/governance/Governor.sol#L555C1-L572C6).
+If all the described conditions are met, the voting participant should call the `castVoteBySig(uint256 proposalId, uint8 support, address voter, bytes memory signature)` function on the **MetalampGovernance.sol** smart contract. The implementation can be found in the abstract smart contract [Governor.sol](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/governance/Governor.sol#L555C1-L572C6).
+
 
 ```solidity
 /**
- * @notice Функция голосования с использованием подписи
- * @param proposalId Идентификатор предложения
- * @param support Закодированное решение в uint8 (например, "за", "против" или "воздержался")
- * @param voter Адрес голосующего участника
- * @param signature Подпись от имени адреса voter
+ * @notice Voting function using a signature
+ * @param proposalId — Proposal identifier
+ * @param support — Encoded decision in uint8 (e.g., "for," "against," or "abstain")
+ * @param voter — Address of the voting participant
+ * @param signature — Signature on behalf of the voter's address
  */
+
 function castVoteBySig(
     uint256 proposalId,
     uint8 support,
     address voter,
     bytes memory signature
 ) public virtual returns (uint256) {
-    /// Проверка подписи для адреса voter
+    /// Signature verification for the address voter
     bool valid = SignatureChecker.isValidSignatureNow(
         voter,
         _hashTypedDataV4(keccak256(abi.encode(BALLOT_TYPEHASH, proposalId, support, voter, _useNonce(voter)))),
         signature
     );
 
-    /// Если подпись невалидна, то откатить транзакцию
+    /// If the signature is invalid, roll back the transaction
     if (!valid) {
         revert GovernorInvalidSignature(voter);
     }
 
-    /// Вызов приватной функции отправки голоса
+    /// Calling the private vote submission function
     return _castVote(proposalId, voter, support, "");
 }
 
 ```
 
-На этом отличия для отправки голоса с подписью заканчиваются, дальше вызов уходит в приватную функцию `_castVote()`, которую я разобрал в разделе ["отправка голоса"](#отправка-голоса).
+The differences for voting with a signature end here. Further, the call goes to the private function `_castVote()`, which I explained in the ["Vote Casting" section](#vote-casting).
 
-### Выполнение предложения
+### Proposal Execution
 
-Для того, чтобы была возможность применить предложение должны быть выполнены следующие условия:
+To apply a proposal, the following conditions must be met:
 
-1. **Предложение** было **создано** в систему голосования. Смотри пункт [выше](#создание-предложения).
-2. Голосование **прошло** и было **успешно завершено** по одному из условий: истекло время или указанный кворум был достигнут. Процесс голосования описан [выше](#отправка-голоса). Для того, что узнать время окончания можно вызвать функцию `proposalDeadline(uint256 proposalId)`.
+1. The **proposal** must have been **created** in the voting system. See the section [above](#creating-a-proposal).
+2. The **voting** process has **completed successfully** according to one of the conditions: the time has elapsed or the specified quorum has been reached. The voting process is described [above](#vote-casting). To find out the end time, you can call the `proposalDeadline(uint256 proposalId)` function.
 
-При выполнение условий, по умолчанию для адреса, появляется возможность применить предложение. Для этого необходимо вызвать функцию `execute()` на смарт-контракте **MetalampGovernance.sol**. Реализация находится в абстрактном смарт-контракте [Governor.sol](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/governance/Governor.sol#L393).
+When these conditions are met, by default, the address gains the ability to execute the proposal. To do this, you need to call the `execute()` function on the **MetalampGovernance.sol** smart contract. The implementation can be found in the abstract smart contract [Governor.sol](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/governance/Governor.sol#L393).
 
 ```solidity
 function execute(
@@ -512,19 +527,19 @@ function execute(
     bytes[] memory calldatas,
     bytes32 descriptionHash
 ) public payable virtual returns (uint256) {
-    /// Определяется идентификатор предложения
+    /// The proposal identifier is determined.
     uint256 proposalId = hashProposal(targets, values, calldatas, descriptionHash);
 
-    /// Проверяется статус предложения
+    /// checks porposal status
     _validateStateBitmap(
         proposalId,
         _encodeStateBitmap(ProposalState.Succeeded) | _encodeStateBitmap(ProposalState.Queued)
     );
 
-    /// Предложение помечается выполненным
+    /// proposal marks as completed
     _proposals[proposalId].executed = true;
 
-    /// Выполнение предложения добавляется в очередь
+    /// The execution of the proposal is added to the queue.
     if (_executor() != address(this)) {
         for (uint256 i = 0; i < targets.length; ++i) {
             if (targets[i] == address(this)) {
@@ -533,10 +548,10 @@ function execute(
         }
     }
 
-    /// Выполнение предложения
+    /// proposal execution
     _executeOperations(proposalId, targets, values, calldatas, descriptionHash);
 
-    /// Очищение очереди
+    /// Clearing the queue
     if (_executor() != address(this) && !_governanceCall.empty()) {
         _governanceCall.clear();
     }
@@ -547,35 +562,33 @@ function execute(
 }
 ```
 
-Непосредственно выполнение происходит в функции [`_executeOperations()`](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/governance/Governor.sol#L437C14-L437C32). Нам оттуда интересна строчка:
+The actual execution takes place in the function [`_executeOperations()`](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/governance/Governor.sol#L437C14-L437C32). What we are interested in from there is the line:
 
 ```solidity
 (bool success, bytes memory returndata) = targets[i].call{value: values[i]}(calldatas[i]);
 ```
 
+It can be noticed that the `call()` function is used with all the parameters that were involved in forming the proposal.
 
-Можно заметить, что с вызовом `call()` были использованы все параметры, которые участвовали в формирование предложения.
+This process can be represented in the following diagram:
+![Execution Process](./images/execute-process.png)
 
-На схеме можно представить этот процесс следующим образом:
-![](./images/execute-process.png)
+## Conclusion
 
-## Вывод
+I have shown how to build governance using the OpenZeppelin library. The contract system is not the simplest, but it is flexible enough to allow for the definition of the required set of functions, rules, and results for voting.
 
-Я показал, как можно построить governance на базе библиотеки OpenZeppelin. Система контрактов не самая простая, но при этом достаточно гибкая, позволяет определять необходимый набор функций, правил и результат для голосования.
+The simplest voting process includes **three stages**: creating a proposal, voting, and executing the proposal in case of a successful vote. To perform these three stages, I implemented only two contracts:
 
-Самый простой процесс голосования включает в себя **три этапа**:
-создание предложения, голосование, выполнение предложения в случае успешного голосования.
-Для выполнения этих трех этапов я реализовал всего два контракта:
 1. [MetalampGovernance.sol](../contracts/src/MetalampGovernance.sol)
 2. [VotesToken.sol](../contracts/src/VotesToken.sol)
 
-[Три теста](../contracts/test/MetalampGovernance.t.sol), описывающие три этапа хорошо могут дополнить картину происходящего.
+[Three tests](../contracts/test/MetalampGovernance.t.sol) describing the three stages can complement the understanding of what is happening.
 
-В качестве целевого контракта использовался простой контракт [Whitelist.sol](../contracts/test/mocks/Whitelist.sol). Именно на этом контракте в тестах через **MetalampGovernance** контракт вызывалась функция `set()` в качестве применения предложения после успешного результата голосования.
+A simple contract [Whitelist.sol](../contracts/test/mocks/Whitelist.sol) was used as the target contract in the tests. In these tests, the `set()` function was called through the **MetalampGovernance** contract as the execution of the proposal after a successful vote.
 
-_Важно!_ Не стоит забывать, что реальная система голосования может быть гораздо сложнее и включать в себя механизм TimeLock, реализовывать другую систему подсчета голосов или расчета "веса" и так далее.
+**Important!** It's essential to remember that a real voting system can be much more complex and include mechanisms such as TimeLock, implement a different vote counting system or weight calculation, and so on.
 
 ## Links
 
 1. [Governance docs](https://docs.openzeppelin.com/contracts/5.x/api/governance)
-2. [OpenZeppelin contracts. Repository](https://docs.openzeppelin.com/contracts/5.x/api/governance)
+2. [OpenZeppelin contracts Repository](https://docs.openzeppelin.com/contracts/5.x/api/governance)
