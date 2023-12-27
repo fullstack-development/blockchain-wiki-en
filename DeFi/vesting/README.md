@@ -161,7 +161,13 @@ Our vesting implementation is a combination of several smart contracts:
 **Private Sale Contract:** Its main task is to sell tokens through a whitelist. Additionally, it manages sales parameters and payment receipts. However, what's most important for us in this case is handling the issuance of share tokens to buyers. The key here is that during the sale, the tokens purchased are transferred not to the user, but to the share token smart contract, where they are locked. Share tokens are minted for the user in return.
 I won't provide an example of such a smart contract here, as it could essentially be an ordinary EOA. All that's needed is to grant approval for the base token to the share token, after which it can be minted.
 
+![](./img/buy_tokens.png)
+
 In the future, the user will be able to claim the base token from this contract, but they will need to burn their share tokens, which can be done according to the set vesting schedule.
+
+![](./img/burn_tokens.png)
+
+It's important to mention that only the start time of the sales is being set, while the end time will be the start time of the vesting, which was established in the share-token contract. Although the start time of the sales can still be changed, as well as some other sales parameters, the end time cannot be altered. This is done to protect users from manipulations. Their funds will be locked, and only the user themselves can withdraw them by burning their share-tokens. Additionally, the same share-token can be used in several sales rounds until the vesting itself begins.
 
 **Share Token Contract:** Or vesting token. It can have any name. The main thing is to understand its essence: it's a dummy token. It can't be sold or transferred to another wallet. All transfers of this token are prohibited, and there's no admin control over it.
 It has four main tasks:
@@ -178,6 +184,7 @@ Here's a simple example of a smart contract called [VestingToken](./examples/src
 This approach allows to create multiple share tokens for different sales rounds. Each share token will have its own vesting schedule. Plus, it will act as a pool for base tokens from the sales round. This approach gave us even more flexibility than we initially thought, but more on that later.
 
 The contract implements a very flexible feature for setting the vesting schedule. You can specify dates and times as regular timestamps (down to the second), set any number of payout periods with different intervals, and even adjust the payout percentages for each interval. The only condition is that the total adds up to 100%. This allows for various scenarios and vesting distribution graphs.
+
 Here's an example of a schedule that can be set up. This represents a vesting period of 2 years with a 6-month cliff and a changing percentage distribution (10% for the last two months, and 5% for all previous months):
 
 | Month | Percent % | Amount   |
