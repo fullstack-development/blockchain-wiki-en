@@ -106,7 +106,7 @@ Below is a comparative table of the main ZKP-based solutions:
 
 ![scale-solutions](./img/scale-solutions.webp)
 
-For a more detailed understanding of Zero-Knowledge Proofs (ZKP), I recommend referring to [this article](https://github.com/fullstack-development/blockchain-wiki/blob/main/cryptography/zero-knowledge-proof/README.md) in our [blockchain-wiki](https://github.com/fullstack-development/blockchain-wiki-en), created by developers for developers with a love for proofs and deep dives into details.
+For a more detailed understanding of Zero-Knowledge Proofs (ZKP), I recommend referring to [this article](https://github.com/fullstack-development/blockchain-wiki-en/blob/main/cryptography/zero-knowledge-proof/README.md) in our [blockchain-wiki](https://github.com/fullstack-development/blockchain-wiki-en), created by developers for developers with a love for proofs and deep dives into details.
 
 ## Transaction Lifecycle in zkSync
 

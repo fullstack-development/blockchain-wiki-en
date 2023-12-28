@@ -14,7 +14,7 @@ However, Ethereum, for example, also compiles a high-level language program, suc
 
 **EVM bytecode** is a compact representation of low-level instructions that are later interpreted by the Ethereum Virtual Machine (EVM).
 
-_Note!_ Before diving into Yul, it is recommended to understand how [bitwise operations](https://github.com/fullstack-development/blockchain-wiki/blob/main/solidity/bitwise-operators/bitwise-operators.md) work, how the [EVM stack machine](https://github.com/fullstack-development/blockchain-wiki/blob/main/ehtereum-virtual-machine/README.md) is structured, how [opcodes](https://github.com/fullstack-development/blockchain-wiki/blob/main/ehtereum-virtual-machine/evm-opcodes/README.md) function, and how [ABI encoding](https://github.com/fullstack-development/blockchain-wiki/blob/main/solidity/ABI/readme.md) is done. Understanding the workings of different types of memory in the EVM (storage, memory, calldata) and their specific considerations in use will also greatly aid in learning.
+_Note!_ Before diving into Yul, it is recommended to understand how [bitwise operations](https://github.com/fullstack-development/blockchain-wiki-en/blob/main/solidity/bitwise-operators/bitwise-operators.md) work, how the [EVM stack machine](https://github.com/fullstack-development/blockchain-wiki-en/blob/main/ethereum-virtual-machine/readme.md) is structured, how [opcodes](https://github.com/fullstack-development/blockchain-wiki-en/blob/main/ethereum-virtual-machine/evm-opcodes/README.md) function, and how [ABI encoding](https://github.com/fullstack-development/blockchain-wiki-en/blob/main/solidity/ABI/readme.md) is done. Understanding the workings of different types of memory in the EVM (storage, memory, calldata) and their specific considerations in use will also greatly aid in learning.
 
 ### Why Yul is Needed
 
@@ -1230,7 +1230,7 @@ Calldata can be considered the cheapest data storage type. This data is read-onl
 
 The main advantage is that we can take data from calldata and immediately place it on the stack for various operations. We can also load it into memory or storage. Calldata is allocated by the **calling** side, while memory is allocated by the **called** side. In other words, the calling side (EOA or smart contract) forms this data and sends it with the transaction, and the called side processes it in some way.
 
-Data for function calls is encoded according to the ABI, which you can read about [here](https://github.com/fullstack-development/blockchain-wiki/blob/main/solidity/ABI/readme.md) and in the [documentation](https://docs.soliditylang.org/en/latest/abi-spec.html).
+Data for function calls is encoded according to the ABI, which you can read about [here](https://github.com/fullstack-development/blockchain-wiki-en/blob/main/solidity/ABI/readme.md) and in the [documentation](https://docs.soliditylang.org/en/latest/abi-spec.html).
 
 Key points:
 
