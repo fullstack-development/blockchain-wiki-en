@@ -1,22 +1,23 @@
-# EIP-140: REVERT instruction
+# EIP-140: REVERT Instruction
 
-**Автор:** [Павел Найданов](https://github.com/PavelNaydanov) 🕵️‍♂️
+**Author:** [Pavel Naydanov](https://github.com/PavelNaydanov) 🕵️‍♂️
 
-Стандарт EIP-140 предлагает добавить инструкцию `REVERT` которая нашла широкое применение в смарт-контрактах на языке solidity. Использование этой инструкции позволяет **остановить** выполнение, **отменить** изменение состояния блокчейна и **вернуть** причину остановки.
+The EIP-140 standard proposes adding the `REVERT` instruction, which has found wide application in smart contracts written in Solidity. The use of this instruction allows to **halt** execution, **revert** changes to the blockchain state, and **return** the reason for the halt.
 
-_Знаете ли вы!?_ Инструкция `REVERT` была предложена только 6 февраля 2017 года. До этого момента подобной инструкции не существовало.
+_Did you know!?_ The `REVERT` instruction was only proposed on February 6, 2017. Prior to that, no such instruction existed.
 
-До внедрения стандарта разработчики использовали `assert()` для того, чтобы откатить выполнение транзакции при наступление некоторого условия. В отличие от `REVERT`, использование `assert()` потребляло весь оставшийся газ, независимо от места вызова в коде.
+Before the standard's implementation, developers used `assert()` to roll back transaction execution upon certain conditions. Unlike `REVERT`, using `assert()` consumed all the remaining gas, regardless of where it was called in the code.
 
-Инструкция `REVERT` представлена кодом операции [`0xfd`](https://www.evm.codes/#fd?fork=shanghai). Этот код операции принимает два параметра, которые находятся последними в стеке:
-- **offset**. Смещение в памяти, указывающее на возвращаемые данные
-- **size**. размер возвращаемых данных
+The `REVERT` instruction is represented by the operation code [`0xfd`](https://www.evm.codes/#fd?fork=shanghai). This operation code takes two parameters, which are the last ones on the stack:
+- **offset**. A memory offset indicating the returned data
+- **size**. The size of the returned data
 
-_Важно!_ Семантически использование `REVERT` относительно памяти и стоимости памяти идентично инструкции `RETURN` и принимает одинаковые параметры.
+_Important!_ Semantically, the use of `REVERT` in relation to memory and memory cost is identical to the `RETURN` instruction and takes the same parameters.
 
-### Варианты использования revert в коде solidity
+### Ways to use revert in Solidity code
 
-Возврат транзакции без информации об ошибке:
+Returning a transaction without error information:
+
 
 ```solidity
 function withdraw(uint256 amount) external {
@@ -27,7 +28,7 @@ function withdraw(uint256 amount) external {
 }
 ```
 
-Возврат транзакции с указанием текстовой ошибки:
+Returning the transaction with a specified text error:
 
 ```solidity
 function withdraw(uint256 amount) external {
@@ -38,7 +39,7 @@ function withdraw(uint256 amount) external {
 }
 ```
 
-Возврат транзакции с использованием [кастомной ошибки](https://soliditylang.org/blog/2021/04/21/custom-errors/):
+Returning the transaction using a [custom error](https://soliditylang.org/blog/2021/04/21/custom-errors/):
 
 ```solidity
 error InsufficientAmount();
@@ -53,6 +54,6 @@ function withdraw(uint256 amount) external {
 
 ## Links
 
-1. [EIP-140: REVERT instruction](https://eips.ethereum.org/EIPS/eip-140)
-2. [Документация](https://docs.soliditylang.org/en/v0.8.23/control-structures.html#revert) solidity по инструкции revert()
-3. Для тех кому интересна [история](https://github.com/ethereum/EIPs/pull/206/commits) обсуждения внедрения EIP
+1. [EIP-140: REVERT Instruction](https://eips.ethereum.org/EIPS/eip-140)
+2. Solidity [Documentation](https://docs.soliditylang.org/en/v0.8.23/control-structures.html#revert) on the revert() instruction
+3. For those interested in the [history](https://github.com/ethereum/EIPs/pull/206/commits) of the discussion on the implementation of EIP
