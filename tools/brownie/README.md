@@ -1,190 +1,185 @@
-# Обзор инструмента brownie
+# Overview of the Brownie Tool
 
-**Автор:** [Алексей Куценко](https://github.com/bimkon144) 👨‍💻
+**Author:** [Alexey Kutsenko](https://github.com/bimkon144) 👨‍💻
 
-[Brownie](https://eth-brownie.readthedocs.io/en/stable/index.html) - это фреимворк разработки и тестирования смарт-контрактов на основе Python, ориентированный на виртуальную машину Ethereum. 
+[Brownie](https://eth-brownie.readthedocs.io/en/stable/index.html) is a Python-based smart contract development and testing framework focused on the Ethereum Virtual Machine.
 
-Особенности:
-- Полная поддержка Solidity и Vyper
-- Контракты тестируются через [pythest](https://github.com/pytest-dev/pytest)
-- Существует консоль для быстрого взаимодействия с контрактами
-- Поддерживает [ethPM](https://www.ethpm.com/) пакеты
-- Тестирование на основе свойств и состояний через библиотеку [hypothesis](https://github.com/HypothesisWorks/hypothesis/tree/master/hypothesis-python)
-- Встроенный инструмент анализа безопасности контрактов MythX
+Features:
+- Full support for Solidity and Vyper
+- Contracts are tested using [pytest](https://github.com/pytest-dev/pytest)
+- A console is available for quick interaction with contracts
+- Supports [ethPM](https://www.ethpm.com/) packages
+- Property and state-based testing using the [hypothesis](https://github.com/HypothesisWorks/hypothesis/tree/master/hypothesis-python) library
+- Built-in MythX security analysis tool for contracts
 
-В этом обзоре мы рассмотрим как инициализировать проект, структуру проекта, узнаем с помощью какой библиотеки пишутся тесты а так же как возможно производить отладку при тестировании кода.
+In this overview, we will look at how to initialize a project, the project structure, learn which library is used for writing tests, and how to debug during code testing.
 
-_Важно!_ Для работы с Brownie потребуются базовые знания [web3.py](https://web3py.readthedocs.io/en/stable/index.html).
+_Important!_ Basic knowledge of [web3.py](https://web3py.readthedocs.io/en/stable/index.html) is required to work with Brownie.
 
-## Установка brownie
+## Installing Brownie
 
-До инициализации проекта необходимо установить согласно [документации](https://eth-brownie.readthedocs.io/en/stable/install.html).
+Before initializing a project, it must be installed according to the [documentation](https://eth-brownie.readthedocs.io/en/stable/install.html).
 
+_Important!_ For the framework to work properly without errors, you need to install:
+ - Python3 version 3.6 or higher, python3-dev
+ - ganache-cli - tested with version 6.12.2
 
-_Важно!_  Для полноценной работы фреимворка без ошибок, необходимо установить:
- - python3 версию 3.6 или выше, python3-dev
- - ganache-cli - проверенный с версией 6.12.2
+It should be mentioned that for the Brownie graphical interface to work, make sure the Tkinter library is installed. This can be done with the command ```python -m tkinter```. If for some reason it is not installed, you can read how to do it [here](https://tkdocs.com/tutorial/install.html).
 
-Следует упомянуть, что для работы графического интерфейса brownie следует убедиться, что библиотека Tkinter установлена. Это можно сделать через команду ```python -m tkinter```. Если по какой-то из причин не установлено, то [тут](https://tkdocs.com/tutorial/install.html) можно прочитать как это сделать.
+## Initializing a Project
 
-## Инициализация проекта
+To initialize a new project, use ```brownie init```.
+You can also use ready-made [templates](https://github.com/brownie-mix).
+The command to initialize a project from templates is ```brownie bake nameOfRepo```.
 
-Для инициализации нового проекта используем ```brownie init```.
-Мы также можем использовать уже готовые [шаблоны](https://github.com/brownie-mix).
-Команда для инициализации проекта с шаблонов ```brownie bake nameOfRepo```.
-
-## Структура проекта
+## Project Structure
 
 contracts/: 
-Сами контракты (код и библиотеки).
+The contracts themselves (code and libraries).
 
 interfaces/: 
-Интерфейсы контрактов.
+Contract interfaces.
 
 scripts/: 
-Python скрипты.
+Python scripts.
 
 tests/: 
-Тесты проекта.
+Project tests.
 
 build/: 
-Здесь хранится информация, полученная в результате сборки и деплоя.
+Information obtained as a result of building and deploying is stored here.
 
 reports/: 
-Отчёты в формате JSON.
+Reports in JSON format.
 
-Так же существует файл конфигурации **brownie-config.yaml** — в нём можно указать опции компилятора, данные для подключения к ноде или параметры тестирования. Варианты конфигурации можно посмотреть [тут](https://eth-brownie.readthedocs.io/en/stable/config.html).
+There is also a configuration file **brownie-config.yaml** — it can specify compiler options, data for connecting to a node, or testing parameters. Configuration options can be found [here](https://eth-brownie.readthedocs.io/en/stable/config.html).
 
-## Команды brownie
+## Brownie Commands
 
-Основные команды brownie:
+Main brownie commands:
 
- - ```init``` - инициализация нового проекта
- - ```bake``` - инициализация проекта из шаблона
- - ```pm``` - установка и управление внешними пакетами
- - ```compile``` - компилирование контрактов
- - ```console``` - запуск консоли для взаимодействия необходимой сетью (локальное тестовое окружение или подключение к мейннет/тестнетам)
- - ```test``` - запуск всех тестов в папке tests/
- - ```run``` - запуск скрипта в папке scripts/
- - ```accounts``` - позволяет управлять аккаунтами с которых будут происходить транзакции
- - ```networks``` - позволяет смотреть, добавлять/удалять список сетей
- - ```gui``` - запускает графический интерфейс который позволяет посмотреть отчеты test coverage и безопасности, а так же opcodes контрактов
- - ```analyze ``` - скрипт поиска уязвимостей смарт-контракта через инструмент MythX API
+ - `init` - initializes a new project
+ - `bake` - initializes a project from a template
+ - `pm` - installs and manages external packages
+ - `compile` - compiles contracts
+ - `console` - launches a console for interaction with the necessary network (local test environment or connection to mainnet/testnets)
+ - `test` - runs all tests in the tests/ folder
+ - `run` - executes a script in the scripts/ folder
+ - `accounts` - allows managing accounts from which transactions will occur
+ - `networks` - allows viewing, adding/removing networks
+ - `gui` - launches a graphical interface that allows viewing test coverage and security reports, as well as contract opcodes
+ - `analyze` - script for finding vulnerabilities in smart contracts through the MythX API tool
 
-Следует более детально рассказать как работают команды ```pm``` и ```gui```:
+Let's discuss in more detail how the `pm` and `gui` commands work:
 
 ### pm
-  - Brownie позволяет устанавливать другие проекта в виде пакетов, которые дают такие преимущества:
- - Легко импортировать и развивать идеи кода, написанные другими.
- - Уменьшение дублирования кода между проектами.
- - Написание unit тестов, которые проверяют взаимодействие между вашим проектом и другим проектом.
+  - Brownie allows you to install other projects as packages, offering advantages like:
+ - Easy import and development of code ideas written by others.
+ - Reducing code duplication between projects.
+ - Writing unit tests that check interactions between your project and another project.
 
-Возможно использовать только github репозитории и [ethpm](https://www.ethpm.com/).
+You can use only GitHub repositories and [ethpm](https://www.ethpm.com/).
 
-Более детальную информацию о том как устанавливать, управлять пакетами и импортировать их в тесты можно почитать [тут](https://eth-brownie.readthedocs.io/en/stable/package-manager.html).
+For more detailed information on how to install, manage packages and import them into tests, you can read [here](https://eth-brownie.readthedocs.io/en/stable/package-manager.html).
 
 ### gui
 
-Brownie включает в себя графический интерфейс для просмотра данных о тестовом покрытии и анализа скомпилированного байт-кода ваших контрактов.
+Brownie includes a graphical interface for viewing data on test coverage and analyzing the compiled bytecode of your contracts.
 
-Если вы не знакомы с opcodes, предлагаю вам ознакомиться с замечательной [статьей](https://github.com/fullstack-development/blockchain-wiki/blob/b062e3a0b385c05120a898eda485a509d5d1745e/ehtereum-virtual-machine/evm-opcodes/README.md#L1).
+If you're not familiar with opcodes, I suggest you read this excellent [article](https://github.com/fullstack-development/blockchain-wiki/blob/b062e3a0b385c05120a898eda485a509d5d1745e/ehtereum-virtual-machine/evm-opcodes/README.md#L1).
 
-_Важно!_ Если у вас проблемы с загрузкой gui, вы наверное не установили [Tkinter](#установка-brownie).
+_Important!_ If you have problems loading the gui, you probably haven't installed [Tkinter](#installing-brownie).
 
-После ввода команды ```brownie gui```, у вас запустится графический интерфейс, где вы сможете выбрать контракт, после чего у вас появятся вкладки всех контрактов и библиотек которые импортированы в ваш контракт. Помимо этого, справа в колонке, будут opcodes  и программные счетчики. 
+After entering the command `brownie gui`, a graphical interface will launch where you can select a contract. Then, tabs for all contracts and libraries imported into your contract will appear. In addition, on the right column, there will be opcodes and program counters.
 
 ![Alt text](./images/gui-1.png)
 
-Помимо этого, возможно выделять участки кода и смотреть соответствующие opcodes.
+Additionally, you can highlight sections of the code and view corresponding opcodes.
 
 ![Alt text](./images/gui-2.png)
 
-Для того, чтобы сгенерировать отчет покрытия тестами, необходимо вызвать команду ```brownie test --coverage```.
+To generate a test coverage report, you need to call the command `brownie test --coverage`.
 
-После чего, в графическом интерфейса можно выбрать отчет (Report) и указать режим - branches или statements.
+Afterwards, in the graphical interface, you can select the report (Report) and specify the mode - branches or statements.
 
-На картинке ниже можно увидеть как появилось покрытие тестами в нашем графическом интерфейсе:
+Below is an image showing how test coverage appeared in our graphical interface:
 
 ![Alt text](./images/gui-3.png)
 
-Более детально, можно прочитать [тут](https://eth-brownie.readthedocs.io/en/stable/gui.html).
+You can read more in detail [here](https://eth-brownie.readthedocs.io/en/stable/gui.html).
 
-## Тестирование
+## Testing
 
-Для запуска тестов необходимо вызвать команду ```brownie test```
+To run tests, use the command `brownie test`.
 
-При написании тестов следует выделить основные функции:
-- [Fixtures](https://docs.pytest.org/en/latest/explanation/fixtures.html) (это функция, которая применяется к одной или нескольким тестовым функциям и вызывается перед выполнением каждого теста)
-- [Markers](https://docs.pytest.org/en/stable/how-to/mark.html#mark) (Это декоратор который применяется к функции тестирования. Например, можно указать, чтобы тест выполнялся только при запуске в определенной сети)
-- [Parametrizing Tests](https://docs.pytest.org/en/latest/how-to/parametrize.html) (Это по сути тот же marker что мы указали выше, только его разновидность, которая позволяет задать нужны аргументы функции в виде массива. Можно задать несколько комплектов аргументов и тогда функция будет вызвана несколько раз с разными аргументами)
+When writing tests, it's important to focus on key functions:
+- [Fixtures](https://docs.pytest.org/en/latest/explanation/fixtures.html) (a function applied to one or several test functions, called before each test execution)
+- [Markers](https://docs.pytest.org/en/stable/how-to/mark.html#mark) (a decorator applied to a test function. For example, you can specify that a test should run only when launched in a certain network)
+- [Parametrizing Tests](https://docs.pytest.org/en/latest/how-to/parametrize.html) (essentially the same as the marker mentioned above, but it allows specifying function arguments as an array. You can set several sets of arguments, and the function will be called multiple times with different arguments)
 
-Так же следует отметить что имеется возможность установить пакет через команду ```pm```, после чего его возможно импортировать посредством fixtures и задеплоить определенный контракт. Таким образом можно тестировать взаимодействие вашего проекта с другими проектами.
+It's also worth noting that you can install a package using the `pm` command, after which it can be imported via fixtures and deploy a specific contract. This way, you can test the interaction of your project with other projects.
 
-### Тестирование на основе свойств
+### Property-Based Testing
 
-Тестирование на основе свойств — мощный инструмент для выявления крайних случаев и обнаружения ошибочных предположений в вашем коде.
+Property-based testing is a powerful tool for identifying edge cases and detecting erroneous assumptions in your code.
 
-Основная концепция тестирования на основе свойств заключается в том, что вместо написания теста для одного сценария вы пишете тесты, которые описывают ряд сценариев, а затем позволяете вашему компьютеру исследовать возможности за вас, вместо того, чтобы писать каждый из них вручную.
+The main concept of property-based testing is that instead of writing a test for one scenario, you write tests that describe a range of scenarios, and then let your computer explore the possibilities for you, instead of writing each one manually.
 
-Процесс состоит из шагов:
+The process consists of steps:
 
-- Выберите функцию в своем смарт-контракте, которую вы хотите протестировать.
-- Укажите диапазон входных данных для этой функции, который всегда должен давать один и тот же результат.
-- Вызовите функцию со случайными данными из вашей спецификации.
-- Провести проверку результатов теста
+- Choose a function in your smart contract you want to test.
+- Specify a range of input data for this function that should always produce the same result.
+- Call the function with random data from your specification.
+- Conduct a test result check.
 
-Используя этот метод, каждый тест выполняется много раз с разными произвольными данными. Если найден пример, в котором тест не прошел, делается попытка найти простейший возможный случай, который все еще вызывает проблему. Затем этот пример сохраняется в базе данных и повторяется в каждом последующем тесте, чтобы гарантировать, что после устранения проблемы она останется исправленной.
+Using this method, each test runs many times with different random data. If a case is found where the test fails, an attempt is made to find the simplest possible case that still causes the problem. This example is saved in a database and repeated in each subsequent test to ensure that once the problem is fixed, it stays fixed.
 
-Таким образом, можно проверить необходимые функции с разным диапазоном аргументов, найти уязвимости и исправить их. Более детально о настройке таких тестов можно почитать [тут](https://eth-brownie.readthedocs.io/en/stable/tests-hypothesis-property.html#what-is-property-based-testing).
+This way, you can test necessary functions with a range of arguments, find vulnerabilities, and fix them. You can read more about setting up such tests [here](https://eth-brownie.readthedocs.io/en/stable/tests-hypothesis-property.html#what-is-property-based-testing).
 
-### Тестирование на основе состояний 
+### Stateful Testing 
 
-Тестирование с сохранением состояния — это более продвинутый метод тестирования на основе свойств, используемый для тестирования сложных систем. Для этого используется [Hypothesis](https://github.com/HypothesisWorks/hypothesis). 
+Stateful testing is an advanced property-based testing method used for testing complex systems. It uses [Hypothesis](https://github.com/HypothesisWorks/hypothesis).
 
-Hypothesis — это библиотека для Python, используемая для автоматического. Она основана на методологии "property-based testing" (тестирование на основе свойств). В отличие от традиционного подхода к тестированию, где тесты написаны вручную для конкретных входных данных и ожидаемых результатов, Hypothesis автоматически генерирует тестовые случаи.
+Hypothesis is a library for Python, used for automatic "property-based testing". Unlike the traditional approach to testing, where tests are manually written for specific input data and expected results, Hypothesis automatically generates test cases.
 
-В Hypothesis вы определяете "свойства", которые должен удовлетворять ваш код, и библиотека пытается "опровергнуть" эти свойства, генерируя различные входные данные. Если библиотека находит входные данные, которые приводят к нарушению свойства, она сообщает об этом, предоставляя пример, вызывающий ошибку. Это позволяет разработчикам обнаруживать и исправлять потенциальные проблемы и граничные случаи в их коде, о которых они могли не подозревать при ручном написании тестов.
+In Hypothesis, you define "properties" that your code should satisfy, and the library attempts to "disprove" these properties by generating various input data. If the library finds input data that leads to a property violation, it reports this, providing an example that causes the error. This allows developers to discover and fix potential problems and edge cases in their code that they might not have suspected when manually writing tests.
 
-Hypothesis особенно полезен для тестирования функций с широким диапазоном возможных входных данных и для нахождения редких, но критических случаев, которые могут привести к сбоям или ошибкам в программе.
+Hypothesis is particularly useful for testing functions with a wide range of possible inputs and finding rare but critical cases that can lead to program failures or errors.
 
-_Важно!_ Этот функционал все еще находится на стадии разработки и считается экспериментальным 
+_Important!_ This feature is still in development and is considered experimental.
 
+You can learn more [here](https://eth-brownie.readthedocs.io/en/stable/tests-hypothesis-stateful.html).
 
-Более детально рекомендую посмотреть [тут](https://eth-brownie.readthedocs.io/en/stable/tests-hypothesis-stateful.html)
+### Security Analysis with MythX
 
-### Анализ безопасности с помощью MythX
+Brownie integrates the [MythX](https://mythx.io/) analysis tool, which allows for automated security checks of your project.
 
-Brownie имеет интегрированный инструмент анализа [MythX](https://mythx.io/), который позволяет автоматически проверять ваш проект на безопасность.
+MythX offers both free and paid services.
 
-MythX предлагает как бесплатные, так и платные услуги.
+First, you need to register at [MythX](https://dashboard.mythx.io/registration#/) and obtain an API key. After that, you need to specify this key using the command `export MYTHX_API_KEY=YourToken` or through the flag `brownie analyze --api-key=<string>`.
 
-Первым делом необходимо зарегистрироваться у [MythX](https://dashboard.mythx.io/registration#/) и получить API ключ. После этого, необходимо указать этот ключ через команду ```export MYTHX_API_KEY=YourToken``` или через флаг ```brownie analyze --api-key=<string>```.
+Next, to start the scanning, you can use the built-in command `brownie analyze`.
 
-Далее, для запуска сканирования, можно воспользоваться встроенной командой ```brownie  analyze```
+To view the result in the graphical interface immediately after scanning, use the command `brownie analyze --gui`.
 
-Чтобы посмотреть результат в графическом интерфейса сразу после сканирования, можно воспользоваться командой ```brownie analyze --gui```
+More details on how scanning works are explained [here](https://consensys.io/diligence/blog/2019/11/mythx-pro-security-analysis-explained/#more-37).
 
-Более детально, как работает сканирование рассказывают [тут](https://consensys.io/diligence/blog/2019/11/mythx-pro-security-analysis-explained/#more-37)
+## Using External Tools with Brownie
 
-## Использование сторонних инструментов вместе с Brownie
+- Brownie supports the popular Hardhat framework.
 
-- Brownie поддерживает популярный фреймворк Hardhat.
+    To use it, install it using the command `npm install --save-dev hardhat`.
 
-    Для того чтобы использовать, необходимо установить через команду ```npm install --save-dev hardhat```.
+    Now, when we want to use the local hardhat network, we can use the command `--network hardhat`. For example, launch the console with `brownie console --network hardhat`.
 
-    Теперь, когда мы захотим использовать локальную сеть hardhat, мы можем пользоваться командой ```--network hardhat```. Например, запустить консоль ```brownie console --network hardhat```.
+- Brownie supports the very fast local network [Anvil](https://github.com/foundry-rs/foundry/tree/master/crates/anvil), which is a tool of the [Foundry](https://book.getfoundry.sh/) framework.
+    See how to install it [here](https://github.com/foundry-rs/foundry/tree/master/crates/anvil).
+    After installation, we can use this network `--network anvil`.
 
-- Brownie поддерживает очень быструю локальную сеть [Anvil](https://github.com/foundry-rs/foundry/tree/master/crates/anvil), который является инструментом фреимворка [Foundry](https://book.getfoundry.sh/).
-    Посмотреть как установить можно [тут](https://github.com/foundry-rs/foundry/tree/master/crates/anvil).
-    После установки, мы можем использовать данную сеть ```--network anvil```.
-
-
-## Ссылки:
+## Links:
 
 - [Docs: Brownie](https://eth-brownie.readthedocs.io/en/stable/index.html)
-- [Docs: hypothesis](https://hypothesis.works/ )
+- [Docs: hypothesis](https://hypothesis.works/)
 - [Docs: stateful testing](https://hypothesis.works/articles/rule-based-stateful-testing/)
 - [Article: stateful testing article](https://hypothesis.works/articles/how-not-to-die-hard-with-hypothesis/)
-
-
 
