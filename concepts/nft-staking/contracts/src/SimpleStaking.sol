@@ -6,18 +6,18 @@ import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import {ERC721Holder} from "@openzeppelin/contracts/token/ERC721/utils/ERC721Holder.sol";
 
 /**
- * @title Простой контракт стейкинга NFT
- * @notice Контракт принимает NFT для хранения и
- * позволяет в любой момент владельцу вернуть NFT обратно
+ * @title Simple NFT Staking Contract
+ * @notice This contract accepts NFTs for storage and
+ * allows the owner to retrieve the NFT at any time
  */
 contract SimpleStaking is Ownable, ERC721Holder {
-    /// @notice NFT, которая может быть застейкана
+    /// @notice NFT that can be staked
     IERC721 private _nft;
 
-    /// @notice Хранение адресов владельцев для застейканных NFT
+    /// @notice Storage of addresses of owners for staked NFTs
     mapping(uint256 tokenId => address stakeholder) private _stakes;
 
-    /// @notice Хранение количества застейканных NFT для каждого адреса
+    /// @notice Storage of the number of staked NFTs for each address
     mapping(address stakeholder => uint256 counter) private _stakedNftBalance;
 
     event Staked(address account, uint256 tokenId);
@@ -26,7 +26,7 @@ contract SimpleStaking is Ownable, ERC721Holder {
     error StakeIsNotExist();
     error NotStaker();
 
-    /// @dev Модификатор проверки возможности забрать NFT
+    /// @dev Modifier to check the ability to retrieve the NFT
     modifier checkUnstake(uint256 tokenId) {
         address stakeholder = _stakes[tokenId];
 
@@ -46,12 +46,12 @@ contract SimpleStaking is Ownable, ERC721Holder {
     }
 
     /**
-     * @notice Позволяет передать NFT на хранение контракту
-     * @param tokenId Идентификатор NFT
-     * @dev Перед вызовов владелец должен дать approve()
+     * @notice Allows transferring an NFT to the contract for staking
+     * @param tokenId The identifier of the NFT
+     * @dev Before calling, the owner must grant approve()
      */
     function stake(uint256 tokenId) external {
-        /// Перевод NFT от владельца контракту
+        /// Transfer of the NFT from the owner to the contract
         _nft.safeTransferFrom(msg.sender, address(this), tokenId);
 
         /// Запись данных о владельце
@@ -62,15 +62,16 @@ contract SimpleStaking is Ownable, ERC721Holder {
     }
 
     /**
-     * @notice Позволяет забрать NFT владельцу
-     * @param tokenId Идентификатор NFT
-     * @dev Проверка владельца в модификаторе checkUnstake()
+        * @notice Allows the owner to claim the NFT
+        * @param tokenId NFT identifier
+        * @dev Owner verification within the checkUnstake() modifier
+
      */
     function unstake(uint256 tokenId) external checkUnstake(tokenId) {
-        /// Перевод NFT от контракта владельцу
+        /// Transferring NFT from the contract to the owner
         _nft.safeTransferFrom(address(this), msg.sender, tokenId);
 
-        /// Удаление данных о владельце
+        /// Removing owner data
         delete _stakes[tokenId];
         _stakedNftBalance[msg.sender] -= 1;
 
@@ -78,23 +79,24 @@ contract SimpleStaking is Ownable, ERC721Holder {
     }
 
     /**
-     * @notice Позволяет проверить застейкана ли NFT
-     * @param tokenId Идентификатор NFT
-     * @return Адрес владельца NFT
+        * @notice Allows checking if the NFT is staked
+        * @param tokenId NFT identifier
+        * @return Address of the NFT owner
+
      */
     function getStakerByTokenId(uint256 tokenId) external view returns (address) {
         return _stakes[tokenId];
     }
 
     /**
-     * @notice Позволяет получить количество застейканных NFT владельцем
-     * @param stakeholder Адрес владельца NFT
+     * @notice Allows obtaining the number of NFTs staked by the owner
+     * @param stakeholder NFT owner's adress
      */
     function getStakedNftBalance(address stakeholder) external view returns (uint256) {
         return _stakedNftBalance[stakeholder];
     }
 
-    /// @notice Возвращает адрес NFT коллекции
+    /// @notice Returns NFT collection's adress 
     function getNftAddress() external view returns (address) {
         return address(_nft);
     }
