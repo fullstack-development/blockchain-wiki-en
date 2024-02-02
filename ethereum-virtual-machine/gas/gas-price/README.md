@@ -1,129 +1,132 @@
 # Gas Price
 
-**Автор:** [Роман Ярлыков](https://github.com/rlkvrv) 🧐
+**Author:** [Roman Yarlykov](https://github.com/rlkvrv) 🧐
 
-Эта статья исследует механизмы расчета и составляющие цены газа в блокчейне Ethereum, описывает историческое развитие этих методов и их значимость, а также демонстрирует, как вычислить стоимость транзакции на основе ее газовых затрат.
+This article explores the mechanisms for calculating and the components of gas price in the Ethereum blockchain, describes the historical development of these methods and their significance, and demonstrates how to calculate the cost of a transaction based on its gas expenses.
 
-## Базовая концепция
+## Basic Concept
 
-Газ (gas) — это единица измерения количества вычислительных ресурсов, необходимых для выполнения определенных операций в блокчейне.
+Gas is a unit of measurement for the amount of computational resources required to execute certain operations on the blockchain.
 
-> Вычислительные ресурсы - это технические средства ЭВМ, в том числе процессор, объемы оперативной и внешней памяти, время, в течение которого программа занимает эти средства в ходе выполнения.
+> Computational resources are the technical means of a computer, including the processor, volumes of RAM and external memory, and the time during which the program occupies these resources in the course of execution.
 
-Если приводить аналогию из реального мира, то газ будет выступать в роли бензина для автомобиля (на что и намекает его название - "gas" от слова "gasoline").
+If we draw an analogy from the real world, gas acts like gasoline for a car (hinted by its name - "gas" from the word "gasoline").
 
-В привычном нам мире, мы не привыкли оплачивать вычислительные ресурсы, как отдельную услугу. Например, в случае онлайн-банкинга, банк берет на себя расходы за вычисления, производимые на его серверах. Это пример централизованной системы. В децентрализованных системах, пользователи оплачивают операции, потребляющие вычислительные ресурсы, поскольку эти операции напрямую служат их интересам.
+In the world we are accustomed to, we do not usually pay for computational resources as a separate service. For example, in online banking, the bank takes on the costs of the computations performed on its servers. This is an example of a centralized system. In decentralized systems, users pay for operations that consume computational resources, as these operations directly serve their interests.
 
-Газ служит не только в качестве меры вычислительных усилий в блокчейне, но и является ключевым инструментом защиты от спама и [DoS](https://en.wikipedia.org/wiki/Denial-of-service_attack)-атак. Поскольку каждая операция в сети требует оплаты газа, злоумышленникам становится экономически нецелесообразно проводить массовые и повторяющиеся транзакции с целью перегрузки сети. Лимиты блока на газ дополнительно ограничивают масштаб таких попыток, делая атаку непомерно дорогой и технически сложной. Это также стимулирует разработчиков писать более эффективный, чистый и оптимизированный код, поскольку более экономное использование газа напрямую влияет на снижение операционных расходов.
+Gas not only serves as a measure of computational effort in the blockchain but also is a key tool for protection against spam and [DoS](https://en.wikipedia.org/wiki/Denial-of-service_attack) attacks. Since each operation in the network requires payment of gas, it becomes economically impractical for attackers to conduct mass and repetitive transactions with the aim of overloading the network. Block gas limits further restrict the scale of such attempts, making the attack prohibitively expensive and technically complex. This also encourages developers to write more efficient, clean, and optimized code, as more economical use of gas directly affects the reduction of operational expenses.
 
-Наконец газ играет ключевую роль в регулировании спроса и предложения в блокчейне Ethereum. Цена газа измеряется в Gwei за единицу (пример - 50 Gwei), и при высоком спросе может существенно возрастать.
+Finally, gas plays a key role in regulating supply and demand in the Ethereum blockchain. The price of gas is measured in Gwei per unit (example - 50 Gwei), and can significantly increase with high demand.
 
-> Gwei - это деноминация криптовалюты эфир (ETH), используемая в сети Ethereum для покупки и продажи товаров и услуг.
+> Gwei is a denomination of the cryptocurrency ether (ETH), used in the Ethereum network for the purchase and sale of goods and services.
 
 ![gwei-infographic](./img/gwei-infographic.png)
 
-В Ethereum 1.0 этом могло приводить к сумасшедшим ценам на транзакции (как вам например идея заплатить 100-300$ за покупку USDT на Uniswap?).
+In Ethereum 1.0, this could lead to exorbitant transaction prices (how about the idea of paying $100-300 for buying USDT on Uniswap?).
 
-## Расчет комиссий за газ в Ethereum 1.0
+## Calculation of Gas Fees in Ethereum 1.0
 
-В Ethereum 1.0 каждая транзакция включала два ключевых элемента, связанных с газом:
+In Ethereum 1.0, each transaction included two key elements related to gas:
 
--   `gasPrice` - цена в ETH, указанная в Gwei за единицу газа
--   `gasLimit` - максимальное количество газа, которое пользователь готов заплатить в этой транзакции
+-   `gasPrice` - the price in ETH, specified in Gwei per unit of gas
+-   `gasLimit` - the maximum amount of gas that a user is willing to pay in this transaction
 
-Майнеры получали фиксированную награду за блок и всю комиссию за использованный газ.
+Miners received a fixed reward for the block and all the fees for the used gas.
 
-Комиссия для каждой транзакции рассчитывалась так:
+The fee for each transaction was calculated as follows:
+
 
 ```bash
     totalFee = gasPrice * gasUsed
 ```
 
-где `gasUsed` обозначает реально использованное количество газа. Объяснение из чего складывается `gasUsed` выходит за рамки данной статьи, но важно упомянуть, что любой неиспользованный газ (`gasLimit` - `gasUsed`) возвращался инициатору транзакции, поэтому `gasUsed` всегда был меньше или равен `gasLimit`.
+where `gasUsed` denotes the actual amount of gas used. An explanation of what constitutes `gasUsed` is beyond the scope of this article, but it's important to mention that any unused gas (`gasLimit` - `gasUsed`) was returned to the transaction initiator, hence `gasUsed` was always less than or equal to `gasLimit`.
+
 
 ```bash
     gasUsed <= gasLimit
 ```
 
-В этой модели пользователь сам устанавливал `gasPrice`.
+In this model, the user set the `gasPrice` themselves.
 
-Выглядело это так:
+It looked like this:
 
 ![gas_price_eth_1](./img/gas_price_eth_1.png)
 
-_Заметка:_ Пользователь мог выставить `gasPrice` равным нулю и такая транзакция технически могла быть включена в блок, майнер в таком случае получал бы только фиксированную награду за блок.
+_Note:_ The user could set the `gasPrice` to zero, and such a transaction could technically be included in a block, in which case the miner would only receive the fixed reward for the block.
 
-Фактически, `gasPrice` в Ethereum 1.0 был ключевым фактором, определяющим скорость включения транзакции в блок. Майнеры отбирали транзакции на основе системы "**аукциона первой цены**", где приоритет отдавался тем, кто предлагал более высокую плату за газ. Это создавало риск задержек или даже невозможности включения транзакции в блок, особенно при низком предложенном `gasPrice`.
+In fact, `gasPrice` in Ethereum 1.0 was a key factor determining the speed of transaction inclusion in a block. Miners selected transactions based on a "**first-price auction**" system, where priority was given to those offering a higher gas fee. This created a risk of delays or even failure to include the transaction in a block, especially with a low proposed `gasPrice`.
 
-У такого подхода был ряд недостатков:
+This approach had several disadvantages:
 
--   **Высокая волатильность комиссий**: Цены на газ часто колебались, что не отражало реальную стоимость обработки транзакций в сети.
+-   **High fee volatility**: Gas prices often fluctuated, which did not reflect the real cost of processing transactions in the network.
 
--   **Задержки в обработке транзакций**: Из-за ограниченного лимита газа на блок, транзакции могли долго ожидать включения в блокчейн.
+-   **Delays in transaction processing**: Due to the limited gas limit per block, transactions could wait a long time to be included in the blockchain.
 
--   **Неэффективность аукционов первой цены**: Система, при которой пользователи указывали максимальную стоимость газа, а майнеры выбирали самые выгодные предложения, была сложной и неэффективной.
+-   **Inefficiency of first-price auctions**: The system, where users indicated the maximum gas cost and miners chose the most profitable offers, was complex and inefficient.
 
--   **Переплата за газ**: Сложные механизмы оценки комиссий часто приводили к ненужной переплате за газ.
+-   **Overpayment for gas**: Complex mechanisms for estimating fees often led to unnecessary overpayment for gas.
 
-Эти проблемы были подняты в [EIP-1559](https://eips.ethereum.org/EIPS/eip-1559), как основание для перехода на новую модель расчета комиссий за газ, что и было реализовано в хардфорке [London](https://ethereum.org/en/history#london).
+These issues were raised in [EIP-1559](https://eips.ethereum.org/EIPS/eip-1559), as the basis for transitioning to a new model for calculating gas fees, which was implemented in the [London](https://ethereum.org/en/history#london) hard fork.
 
-## Расчет комиссий за газ в Ethereum 2.0
+## Calculation of Gas Fees in Ethereum 2.0
 
-EIP-1559 ввел ключевое нововведение — **base fee** (базовую стоимость), которая является обязательной платой за каждую транзакцию.
+EIP-1559 introduced a key innovation — **base fee**, which is a mandatory fee for each transaction.
 
-Это значительно изменило модель расчета комиссий:
+This significantly changed the fee calculation model:
 
-1. `base fee` определяется протоколом и алгоритмически корректируется в зависимости от загрузки сети.
-2. Размер блока стал динамическим. Он напрямую влияет на величину `base fee` и помогает регулировать спрос автоматически. Подробнее об этом можно узнать [здесь](https://ethereum.org/en/developers/docs/gas/#base-fee).
-3. `base fee` сжигается, а не достается майнерам/валидаторам, что потенциально делает эфир дефляционной монетой.
+1. `base fee` is determined by the protocol and algorithmically adjusted depending on network congestion.
+2. The block size became dynamic. It directly affects the `base fee` and helps regulate demand automatically. More about this can be found [here](https://ethereum.org/en/developers/docs/gas/#base-fee).
+3. `base fee` is burned, rather than going to miners/validators, potentially making ether a deflationary currency.
 
-> Дефляционная криптовалюта - это криптовалюта с уменьшающимся общим количеством монет, что увеличивает её ценность со временем.
+> A deflationary cryptocurrency is a cryptocurrency with a decreasing total number of coins, which increases its value over time.
 
-Для майнеров был добавлен новый параметр — **priority fee** или чаевые (tips), которые мотивируют быстрее включать транзакции в блок. Этот параметр, выраженный в Gwei, представляет собой дополнительное вознаграждение для майнера за добавление отдельной транзакции в блок. Прибавляется к базовому вознаграждению за весь блок.
+For miners, a new parameter was added — **priority fee** or tips, which motivate faster inclusion of transactions in the block. This parameter, expressed in Gwei, represents an additional reward for the miner for adding an individual transaction to the block. It is added to the basic reward for the entire block.
 
-Теперь, с введением **priority fee**, аукцион по-прежнему существует, но с ключевым отличием: для майнеров уже не так важно, сколько газа потребляет транзакция. Различие в газовых затратах между простой передачей эфира и развертыванием смарт-контракта стало менее значимым. Чаевые также обеспечивают стимул для майнеров включать транзакции в блоки, а не оставлять их пустыми. Более того, новая модель сделала расчет цен на газ более предсказуемым и менее подверженным волатильности.
+Now, with the introduction of **priority fee**, the auction still exists, but with a key difference: for miners, it's no longer as important how much gas a transaction consumes. The difference in gas costs between a simple ether transfer and deploying a smart contract has become less significant. Tips also provide an incentive for miners to include transactions in blocks, rather than leaving them empty. Moreover, the new model made gas pricing more predictable and less prone to volatility.
 
-Еще одним нововведением является параметр **`maxFeePerGas`** — максимальная сумма, которую пользователь готов заплатить за обработку своей транзакции (похоже на "проскальзывание цены" которое устанавливается при обменах на DEX, чтобы обезопаситься от колебания цен на актив). Этот параметр объединяет `base fee` и `priority fee`, обеспечивая защиту пользователя от колебаний `base fee`.
+Another innovation is the **`maxFeePerGas`** parameter — the maximum amount a user is willing to pay for processing their transaction (similar to "price slippage" set during exchanges on DEXs to protect against price fluctuations of the asset). This parameter combines `base fee` and `priority fee`, providing protection for the user from fluctuations in `base fee`.
 
-> Проскальзывание цены (англ. «price slippage») — это исполнение рыночного ордера по цене, которая отличается от цены указанной в заявке (order) на бирже. Это явление характерно для любых активов, в том числе криптовалют.
+> Price slippage is the execution of a market order at a price different from the price indicated in the exchange order. This phenomenon is characteristic of any assets, including cryptocurrencies.
 
-### Новые параметры газа в транзакции
+### New Gas Parameters in a Transaction
 
-В результате, структура параметров газа в транзакции претерпела следующие изменения:
+As a result, the structure of gas parameters in a transaction underwent the following changes:
 
-1. **`maxPriorityFeePerGas`** (чаевые в Gwei за единицу газа) — комиссия за приоритет, которая направляется валидатору, стимулируя быстрое включение транзакции в блок.
-2. **`maxFeePerGas`** — максимальная сумма в Gwei за единицу газа, выделенная на оплату газа, включая `base fee` и `maxPriorityFeePerGas`. Защищает в первую очередь от колебаний `base fee`.
-3. **`gasLimit`** — максимальное количество газа (в ед. газа), которое пользователь готов оплатить за выполнение этой транзакции.
+1. **`maxPriorityFeePerGas`** (tips in Gwei per unit of gas) — a priority fee that goes to the validator, stimulating the rapid inclusion of the transaction in the block.
+2. **`maxFeePerGas`** — the maximum amount in Gwei per unit of gas allocated for gas payment, including `base fee` and `maxPriorityFeePerGas`. Primarily protects against fluctuations in `base fee`.
+3. **`gasLimit`** — the maximum amount of gas (in units of gas) that the user is willing to pay for executing this transaction.
 
-Таким образом, поле `gasPrice` было убрано из транзакции, вместо него добавлены два новых параметра, связанных с газом. Фактически, они разделяют `gasPrice` на две части - обязательная плата протоколу и чаевые майнерам.
+Thus, the `gasPrice` field was removed from the transaction, and two new gas-related parameters were added instead. In effect, they split `gasPrice` into two parts - a mandatory fee to the protocol and tips for miners.
 
-Параметр `maxFeePerGas` может немного путать, поэтому в Metamask вы его не увидите, кошелек предлагает выставить "Max base fee", а `maxFeePerGas` кошелек рассчитает сам под капотом, прибавив чаевые для майнера (Priority fee в Metamask).
+The `maxFeePerGas` parameter can be a bit confusing, so in Metamask, you won't see it; the wallet offers to set "Max base fee", and `maxFeePerGas` is calculated under the hood by the wallet, adding tips for the miner (Priority fee in Metamask).
 
-В Metamask можно выбрать с какой скоростью транзакция будет выполнена. Кошелек сам рассчитывает и предлагает приблизительные параметры.
+In Metamask, you can choose the speed at which the transaction will be executed. The wallet itself calculates and suggests approximate parameters.
 
 ![gas-metamask-speed](./img/gas-metamask-speed.png)
 
-Разберем на примере скриншота справа. Рассчитаем предоплату, которую нужно внести для выполнения транзакции. Чтобы оплатить транзакцию "по рынку" (Market), кошелек предлагается нам следующие значения:
+Let's analyze the screenshot on the right. We will calculate the prepayment required to execute the transaction. To pay for the transaction "at market" (Market), the wallet suggests the following values:
 
--   **Max base fee**: 34.5899 Gwei (При этом реальный `base fee` система оценивает в 26 Gwei)
--   **Priority fee**: 0.1 Gwei (То есть это рекомендованный размер чаевых на данный момент)
--   **Gas limit**: 21000 (Это базовое количество газа, которого достаточно для перевода ETH между двумя аккаунтами EOA)
+-   **Max base fee**: 34.5899 Gwei (Meanwhile, the real `base fee` is estimated by the system at 26 Gwei)
+-   **Priority fee**: 0.1 Gwei (That is, this is the recommended size of the tips at the moment)
+-   **Gas limit**: 21000 (This is the basic amount of gas sufficient for transferring ETH between two EOA accounts)
 
-Посчитаем сколько средств нам нужно внести в качестве предоплаты:
+Let's calculate how much funds we need to deposit as a prepayment:
+
 
 ```bash
     prepay = maxFeePerGas * gasLimit
     prepay = (34.5899 + 0.1) * 21000 = 728487.9 Gwei
 ```
 
-Можем разделить это число на 1 млрд. (чтобы перевести в ETH) и умножить на цену эфира в долларах, чтобы получить значение комиссии в долларах. Например если взять цену эфира за 2500$, тогда:
+We can divide this number by 1 billion (to convert it to ETH) and multiply it by the price of ether in dollars to get the fee value in dollars. For example, if we take the price of ether at $2500, then:
 
 ```bash
     728487.9 Gwei / 1_000_000_000 = 0.0007284879 ETH
     0.0007284879 ETH * 2500$ = 1.82$
 ```
 
-Но т.к. реальный размер `base fee` 26 Gwei (предположим он будет таким же в момент выполнения транзакции) и `gasUsed` в данном случе будет ровно 21000, то результирующая цена транзакции будет считаться так:
+But since the real size of `base fee` is 26 Gwei (assuming it will be the same at the moment of transaction execution) and `gasUsed` in this case will be exactly 21000, the resulting price of the transaction will be calculated as follows:
 
 ```bash
     totalFee = (base fee + maxPriorityFeePerGas) * gasUsed
@@ -133,113 +136,115 @@ EIP-1559 ввел ключевое нововведение — **base fee** (б
     548100 Gwei / 1_000_000_000 * 2500$ = 1,37$
 ```
 
-То есть подписывая транзакцию вы одобрите `1.82$`, но фактически транзакция будет стоить `1.37$`, поэтому `0.45$` будет возвращено на ваш счет.
+This means that by signing the transaction you will approve $1.82, but in fact, the transaction will cost $1.37, so $0.45 will be returned to your account.
 
-### Metamask advanced
+### Metamask Advanced
 
-Можно настроить все параметры самостоятельно в режиме "Advanced".
+You can manually set all parameters in "Advanced" mode.
 
 ![gas-metamask-speed-advanced](./img/gas-metamask-advanced.png)
 
-Данный режим позволяет выставить три параметра, которые мы уже рассмотрели выше: "Max base fee", "Priority fee" и "Gas limit".
+This mode allows you to set the three parameters we have already discussed above: "Max base fee", "Priority fee", and "Gas limit".
 
-_Важно!_ Повторюсь, это упрощение. `maxFeePerGas` будет складываться из "Max base fee" + "Priority fee". Поэтому, косвенно, можно установить и параметр транзакции `maxFeePerGas`.
+_Important!_ To reiterate, this is a simplification. `maxFeePerGas` will consist of "Max base fee" + "Priority fee". Therefore, indirectly, you can also set the `maxFeePerGas` transaction parameter.
 
-Как видно на скриншоте, кошелек заботливо подскажет, что вы указываете параметры не совсем разумно. Это может привести к сбою транзакции или сильной переплате комиссии. Поэтому данный режим и называется "Advanced". Режим создан только для продвинутых юзеров.
+As seen in the screenshot, the wallet thoughtfully indicates if you are setting parameters that are not quite reasonable. This could lead to transaction failure or a significant overpayment of the fee. Therefore, this mode is called "Advanced". It is designed only for advanced users.
 
-Актуальные цены на газ можно посмотреть на [etherscan.io](https://etherscan.io/gastracker#chart_gasprice) для Ethereum и в подобных сервисах для других сетей.
+Current gas prices can be viewed on [etherscan.io](https://etherscan.io/gastracker#chart_gasprice) for Ethereum and similar services for other networks.
 
 ![gas-etherscan](./img/gas-etherscan.png)
 
-Примерные значения тут рассчитываются похожим образом. Обратите внимание, что значение в Gwei уже включает base fee и priority fee. То есть, чтобы узнать, какую комиссию вы заплатите в ETH, достаточно перемножить количество потребляемого транзакцией газа с этой величиной. Чтобы зафиксировать, покажу этот расчет еще раз, но уже на примере данных с etherscan.
+Approximate values here are calculated in a similar way. Note that the value in Gwei already includes the base fee and priority fee. Thus, to know what fee you will pay in ETH, simply multiply the amount of gas consumed by the transaction by this figure. To solidify this, I will show this calculation again, but using data from etherscan.
 
-Например, для перевода ETH это будет выглядеть так:
+For example, for an ETH transfer, it would look like this:
+
 
 ```bash
     totalFee = 25 Gwei * 21000 gas = 525000 Gwei
 ```
 
-Если хотим получить значение в ETH, достаточно разделить на 1 миллиард.
+If we want to get the value in ETH, we just need to divide by 1 billion.
 
 ```bash
     525000 Gwei / 1_000_000_000 = 0.000525 ETH
 ```
 
-Собственно, для получения цены в долларах, остается только умножить на текущий курс ETH. На момент написания он равен 2253$.
+Actually, to get the price in dollars, you just need to multiply by the current ETH rate. At the time of writing, it equals $2253.
 
 ```bash
     0.000525 ETH * 2253$ ≈ $1.18$
 ```
 
-Полная формула будет такая:
+The complete formula will be as follows:
 
 ```bash
     totalFeeInUsd = gasPrice * gasUsed / 1_000_000_000 * ethPriceInUsd
 ```
 
-### Типы транзакций в Ethereum
+### Types of Transactions in Ethereum
 
-В Ethereum на данный момент существует 3 типа транзакций:
+As of now, there are 3 types of transactions in Ethereum:
 
-1. **Тип 0**. Транзакции старого формата (Legacy). Имеют поле `gasPrice`.
-2. **Тип 1**. Транзакции включающие "список доступа". Подробнее [тут](https://eips.ethereum.org/EIPS/eip-2930).
-3. **Тип 2**. Транзакции нового формата (EIP-1559). Используют `maxPriorityFeePerGas` и `maxFeePerGas` вместо `gasPrice`.
+1. **Type 0**. Old format transactions (Legacy). They have a `gasPrice` field.
+2. **Type 1**. Transactions including an "access list." More details [here](https://eips.ethereum.org/EIPS/eip-2930).
+3. **Type 2**. New format transactions (EIP-1559). They use `maxPriorityFeePerGas` and `maxFeePerGas` instead of `gasPrice`.
 
-Для нас, в данном контексте, интерес представляют типы 0 и 2. Чтобы сохранить обратную совместимости EIP-1559 не отменяет транзакции старого формата (Legacy транзакции типа 0, где указывались только `gasPrice` и `gasLimit`).
+In this context, types 0 and 2 are of interest to us. To maintain backward compatibility, EIP-1559 does not eliminate old format transactions (Legacy transactions type 0, where only `gasPrice` and `gasLimit` were specified).
 
-Когда Legacy транзакция попадает в мемпул, весь указанный в ней `gasPrice` используется, но из него вычитается и сжигается **base fee**, а оставшаяся сумма становится **priority fee**. Хотя для выполнения транзакции технически достаточно только **base fee**, без достаточного **priority fee** транзакция вряд ли будет включена в блок, особенно если есть более выгодные предложения. В случае с Legacy-транзакциями крайне важно точно рассчитать комиссию, чтобы избежать недостатка средств на покрытие **base fee**.
+When a Legacy transaction enters the mempool, the entire `gasPrice` specified in it is used, but from it, the **base fee** is deducted and burned, and the remaining amount becomes the **priority fee**. Although technically only the **base fee** is sufficient for a transaction to be executed, without a sufficient **priority fee**, the transaction is unlikely to be included in a block, especially if there are more profitable offers. In the case of Legacy transactions, it is crucial to accurately calculate the fee to avoid a shortage of funds to cover the **base fee**.
 
-_Важно!_ **base fee** сжигается протоколом независимо от типа транзакции.
+_Important!_ The **base fee** is burned by the protocol regardless of the type of transaction.
 
-В случае с транзакциями типа 2 (EIP-1559), пользователи могут не беспокоиться о размере **base fee** (сеть сама предложит подходящее значение, достаточно указать его максимально значение) и при этом ставить очень низкие **priority fee.** В периоды низкого спроса такой подход может сработать, так как майнеры могут включать в блок даже транзакции с очень низкими чаевыми или без них вовсе, чтобы заполнить блок.
+In the case of type 2 transactions (EIP-1559), users do not have to worry about the size of the **base fee** (the network itself will suggest a suitable value, just indicate its maximum value) while setting very low **priority fees.** In periods of low demand, this approach can work, as miners may include even transactions with very low tips or none at all in the block to fill it.
 
-Рассмотрим на примерах.
+Let's look at some examples.
 
-### Legacy транзакция (тип 0)
+### Legacy Transaction (Type 0)
 
 ![legacy-tx-with-priority-fee](./img/legacy-tx-with-priority-fee.png)
 
-Это скриншот обычного трансфера ETH. В поле "Other Attributes" можно увидеть что тип транзакции - Legacy (тип 0). В данной транзакции пользователь "взял с запасом":
+This screenshot shows a standard ETH transfer. In the "Other Attributes" field, you can see that the transaction type is Legacy (type 0). In this transaction, the user "played it safe":
 
--   gasPrice выставлен в 25 Gwei
--   gasLimit 60,000 (при том, что на трансфер ETH всегда тратится 21000)
+-   gasPrice set at 25 Gwei
+-   gasLimit 60,000 (although only 21000 is always used for ETH transfers)
 
-Base fee равен 22.980329104 Gwei, для удобства округлим до 23 Gwei. Таким образом 23 Gwei были сожжены, а все что осталось 25 - 23 = 2 Gwei за единицу газа составляет чаевые валидатору.
+The base fee equals 22.980329104 Gwei, for convenience let's round it to 23 Gwei. Thus, 23 Gwei were burned, and all that remained, 25 - 23 = 2 Gwei per unit of gas, constitutes the validator's tips.
 
-### Legacy транзакция с минимальным priority fee (тип 0)
+### Legacy Transaction with Minimum Priority Fee (Type 0)
 
 ![legacy-tx-with-minimum-priority-fee](./img/legacy-tx-with-minimum-priority-fee.png)
 
-В этой транзакции пользователь выставил `gasPrice` всего 23 Gwei, что рисково, потому что было сожжено 22.98 Gwei, а майнер получил только 0.02 Gwei за единицу газа.
+In this transaction, the user set the `gasPrice` to just 23 Gwei, which is risky because 22.98 Gwei was burned, and the miner received only 0.02 Gwei per unit of gas.
 
-_Забавный факт:_ Обе эти транзакции были выполнены в одном блоке, рядом друг с другом.
+_Fun Fact:_ Both these transactions were executed in the same block, side by side.
 
-### Транзакция EIP-1559 (тип 2)
+### EIP-1559 Transaction (Type 2)
 
-Перейдем к транзакциям EIP-1559. С ними все гораздо интереснее.
+Let's move to EIP-1559 transactions. They are much more interesting.
 
 ![type2-tx-with-priority-fee](./img/type2-tx-with-priority-fee.png)
 
-Если пройтись по параметрам связанным с газом в транзакции, то:
+If we look at the parameters related to gas in the transaction:
 
--   `Max priority fee` инициатор транзакции выставил 0.029804932 Gwei
--   `Max base fee` равен 46.9162118 Gwei
--   `gasLimit` составляет стандартные 21000 Gwei
+-   `Max priority fee` set by the transaction initiator is 0.029804932 Gwei
+-   `Max base fee` is 46.9162118 Gwei
+-   `gasLimit` is the standard 21000 Gwei
 
-То есть здесь `base fee` с двухкратным запасом, но при этом `maxPriorityFeePerGas` довольно скромные и равны 0.03 Gwei за единицу газа.
+Here, the `base fee` is set with a double margin, but the `maxPriorityFeePerGas` is quite modest, at 0.03 Gwei per unit of gas.
 
-Обратите внимание, что в поле "Burnt & Txn Savings Fees" этого типа транзакции есть еще и "Txn Savings", это как раз те средства которые были возвращены пользователю потому, что не были использованы в транзакции.
+Note that in the "Burnt & Txn Savings Fees" field of this type of transaction, there is also "Txn Savings," which are the funds returned to the user because they were not used in the transaction.
 
-### Транзакция EIP-1559 без priority fee (тип 2)
+### EIP-1559 Transaction Without Priority Fee (Type 2)
 
 ![type2-tx-without-priority-fee](./img/type2-tx-without-priority-fee.png)
 
-Последний пример на сегодня. Ничего не смущает? Да, **priority fee** равно 0. Более того, `base fee` выставлен идеально точно, поэтому возврат средств тоже делать не пришлось.
+The last example for today. Notice anything? Yes, the **priority fee** is zero. Moreover, the `base fee` is set perfectly accurately, so there was no need for a refund.
 
-_Забавный факт №2:_ Третья транзакция взята из того же блока, что и две предыдущих.
+_Fun Fact #2:_ The third transaction is from the same block as the previous two.
 
-Важно отметить, что `base fee` сжигается во всех типах транзакций, не зависимо от их формата. Для наблюдения за процессом сжигания ETH в реальном времени можно воспользоваться ресурсом [beaconcha.in/burn](https://beaconcha.in/burn).
+It is important to note that the `base fee` is burned in all types of transactions, regardless of their format. To observe the process of ETH burning in real-time, you can use the resource [beaconcha.in/burn](https://beaconcha.in/burn).
 
-## Заключение
+## Conclusion
 
-Хотя расчет цен на газ сейчас во многом автоматизирован, пользователи все же несут ответственность за свои транзакции, т.к. это принцип децентрализации. Возможность отказаться от транзакции при высоких ценах на газ или увеличить комиссию для ее ускорения остается за пользователем. Но нужно быть осторожным, есть случаи, когда за транзакции по ошибки платили [немыслимо большие](https://decrypt.co/207263/bitcoin-sender-overpays-record-breaking-3-million-transaction-fee) комиссии.
+Although gas pricing is now largely automated, users still bear responsibility for their transactions, as this is a principle of decentralization. The ability to cancel a transaction when gas prices are high or to increase the fee to speed it up remains with the user. But one must be careful; there have been cases where transactions were [unimaginably overpaid](https://decrypt.co/207263/bitcoin-sender-overpays-record-breaking-3-million-transaction-fee) by mistake.
+
