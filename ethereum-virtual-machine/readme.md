@@ -1,6 +1,7 @@
 # Ethereum Virtual Machine (EVM)
 - [Introduction](./intro/README.md)
 - [EVM Opcodes](./evm-opcodes/README.md)
+- [Gas](./gas/README.md)
 
 ## For the Ambitious Ones
 
