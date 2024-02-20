@@ -307,7 +307,7 @@ Thus, when querying a particular Manufacturer entity, you can get a list of all 
 
 - **Many-To-Many Relationships⁠**
 
-As you may have noticed when we discussed "one-to-one", there each book can be written by only one author, which isn't quite true, as one author can write many books, and one book can be written by several authors. Let's correct this. "Many-to-many" relationships can be represented as arrays in each of the two involved entities.
+"Many-to-many" relationships can be represented as arrays in each of the two involved entities.
 
 A simple way:
 
