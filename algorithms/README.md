@@ -62,7 +62,7 @@ _Definition:_ A **stack** is a "last-in, first-out" (LIFO) data structure. The l
 
 ![](./images/stack.png)
 
-You can find the Solidity code implementation of a stack [here](./src/libraries/Stack.sol).
+You can find the Solidity code implementation of a stack [here](./contracts/src/libraries/Stack.sol).
 
 ## Queue
 
@@ -70,7 +70,7 @@ _Definition:_ A **queue** is a "first-in, first-out" (FIFO) data structure. The 
 
 ![](./images/queue.png)
 
-You can find the Solidity code implementation of a queue [here](./src/libraries/Queue.sol).
+You can find the Solidity code implementation of a queue [here](./contracts/src/libraries/Queue.sol).
 
 ## Runtime Complexity
 
@@ -91,7 +91,7 @@ A typical example is searching for a phone number in a phone book.
 
 **Important!** Binary search has a logarithmic runtime complexity, working in **log2n** steps. It only works if the list is sorted.
 
-You can find the Solidity code implementation of binary search [here](./src/BinarySearch.sol).
+You can find the Solidity code implementation of binary search [here](./contracts/src/BinarySearch.sol).
 
 ## Selection Sort
 
@@ -99,7 +99,7 @@ _Idea:_ Selection sort involves finding the minimum or maximum value in the unso
 
 **Important!** In Solidity, we add the found maximum or minimum value to a new sorted array.
 
-You can find the Solidity code implementation of selection sort [here](./src/SelectionSort.sol).
+You can find the Solidity code implementation of selection sort [here](./contracts/src/SelectionSort.sol).
 
 ## Quicksort
 
@@ -113,7 +113,7 @@ _Idea:_ In an array, a **pivot element a[i]** is selected. The array is divided 
 
 The implementation of quicksort for Solidity will be similar to that for C-like languages. Due to the memory handling specifics, the original array is not split into subsets. Instead, a variant of simultaneously traversing the array from both ends and swapping elements as needed is implemented.
 
-You can find the Solidity code implementation of quicksort [here](./src/QuickSort.sol).
+You can find the Solidity code implementation of quicksort [here](./contracts/src/QuickSort.sol).
 
 # Graphs
 
@@ -153,7 +153,7 @@ Breadth-First Search actively uses the concept of a **queue**. You cannot access
 
 **Important!** The algorithm's runtime is calculated as O(V + E), where V is the number of vertices, and E is the number of edges.
 
-You can find the Solidity code implementation of Breadth-First Search [here](./src/BreadthFirstSearch.sol).
+You can find the Solidity code implementation of Breadth-First Search [here](./contracts/src/BreadthFirstSearch.sol).
 
 For testing, we used the following graph. Node identifiers are in parentheses.
 ![](./images/breadth-first-search-test-graph.png)
@@ -180,7 +180,7 @@ To calculate the shortest path to any point in an unweighted graph, use the **br
 
 **Important!** Dijkstra's algorithm does not support graphs with negative weights. For such cases, you can use the [Bellman-Ford algorithm](https://www.geeksforgeeks.org/bellman-ford-algorithm-simple-implementation/).
 
-You can find the Solidity code implementation of Dijkstra's algorithm [here](./src/Dijkstra.sol).
+You can find the Solidity code implementation of Dijkstra's algorithm [here](./contracts/src/Dijkstra.sol).
 
 ## Greedy Algorithms
 
