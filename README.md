@@ -39,6 +39,7 @@ Join our TG-channel: [MetaLamp|Web3 DevTeam](https://t.me/metametalamp)
   - <details>
       <summary>Concepts</summary>
 
+      - [Commitment scheme](./concepts/commitment-scheme/README.md)
       - <details>
           <summary>DAO</summary>
 
