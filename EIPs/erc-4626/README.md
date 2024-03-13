@@ -179,7 +179,7 @@ emit Withdraw(msg.sender, receiver, owner, assets, shares);
 
 The most popular libraries have already implemented the minimal functionality for a vault contract. You can take these contracts, inherit from them, and develop your own **vault** contract.
 
-1. [Minimal implementation](https://github.com/transmissions11/solmate/blob/main/src/mixins/ERC4626.sol) of vault in the solmate library.
+1. [Minimal implementation](https://github.com/transmissions11/solmate/blob/main/src/tokens/ERC4626.sol) of vault in the solmate library.
 2. [Minimal implementation](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v5.0.0/contracts/token/ERC20/extensions/ERC4626.sol) of vault in the openZeppelin library.
 
 _Important!_ The standard is fully backward compatible with the ERC-20 standard.
