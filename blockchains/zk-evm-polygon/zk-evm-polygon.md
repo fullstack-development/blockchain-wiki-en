@@ -1,4 +1,4 @@
-# zkEVM Polygon
+# Polygon zkEVM
 
 **Author:** [Alexey Kutsenko](https://github.com/bimkon144) 👨‍💻
 

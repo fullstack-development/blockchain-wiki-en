@@ -15,11 +15,11 @@ _Important!_ Control over upgrades should be decentralized to avoid malicious ac
 
 There are several ways to modify the executable code:
 
-1. Creating multiple versions of smart contracts and migrating the state from the old contract to the new contract. [Learn more](./method-1/readme.md).
-2. Creating multiple smart contracts to separate state and business logic. [Learn more](./method-2/readme.md).
-3. Using **Proxy patterns** to delegate function calls from an immutable proxy contract to a mutable logic contract. [Learn more](./method-3/readme.md).
-4. Using the **Strategy pattern**. Creating an immutable main contract that interacts with flexible auxiliary contracts and relies on them to perform certain functions. [Learn more](./method-4/readme.md).
-5. Using the **Diamond pattern** to delegate function calls from a proxy contract to logical contracts. [Learn more](./method-5/readme.md).
+1. Creating multiple versions of smart contracts and migrating the state from the old contract to the new contract. [Learn more](./method-1/README.md).
+2. Creating multiple smart contracts to separate state and business logic. [Learn more](./method-2/README.md).
+3. Using **Proxy patterns** to delegate function calls from an immutable proxy contract to a mutable logic contract. [Learn more](./method-3/README.md).
+4. Using the **Strategy pattern**. Creating an immutable main contract that interacts with flexible auxiliary contracts and relies on them to perform certain functions. [Learn more](./method-4/README.md).
+5. Using the **Diamond pattern** to delegate function calls from a proxy contract to logical contracts. [Learn more](./method-5/README.md).
 
 ## Pros and Cons of Smart Contract Upgrades
 

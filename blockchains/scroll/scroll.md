@@ -16,7 +16,7 @@ It is assumed that you are already familiar with the terms [zkp](https://habr.co
 
 The technical principles that were fundamental and what influenced the design of the blockchain can be studied in detail in [this](https://scroll.mirror.xyz/N7cAie4ul0PdSxNdv2FTqgMV2JEkhOJocsxfeqe4SFE) article.
 
-## Architecture 
+## Architecture
 
 To understand how the blockchain works, you first need to understand what levels of architecture exist and what they consist of.
 
@@ -24,15 +24,15 @@ Let's look at the high-level general architecture according to the picture below
 
 ![Alt text](./images/scroll-architecture-1.png)
 
-### Settlement Layer 
+### Settlement Layer
 
 This layer is located in Ethereum and consists of two contracts - `Bridge Contract` and `Rollup Contract`.
 
-**Bridge Contract:** 
+**Bridge Contract:**
 
 - allows users and dapps to send messages, assets, transactions (if dapps in L1) to the Scroll network (L2) and back to L1.
 
-**Rollup Contract:** 
+**Rollup Contract:**
 
 - verifies grouped transactions (batch) sent from L2.
 - provides data availability (ensures that any network participant can access information about transactions and blocks).
@@ -134,11 +134,11 @@ Thus, as you might have noticed, there is a specific life cycle of transactions.
 
 ### Transaction Life Cycle
 
-1. **Confirmed**: Users send a transaction either to the L1 bridge contract or to the L2 sequencer (execution node). 
+1. **Confirmed**: Users send a transaction either to the L1 bridge contract or to the L2 sequencer (execution node).
 A transaction becomes Confirmed after it has been executed and included in an L2 block.
-2. **Committed**: Indicates that the transaction data of this block have been published on Ethereum. 
+2. **Committed**: Indicates that the transaction data of this block have been published on Ethereum.
 This doesn't prove they were executed correctly but guarantees block data availability.
-3. **Finalized**: Indicates that a validity proof has been sent and verified by the smart contract. The transaction has the status of Finalized. 
+3. **Finalized**: Indicates that a validity proof has been sent and verified by the smart contract. The transaction has the status of Finalized.
 After this step, the transaction is considered final.
 
 ### Transaction Batching
@@ -180,7 +180,7 @@ Scroll's infrastructure is rapidly gaining momentum and already includes dozens 
 
 ## Conclusion
 
-The Scroll protocol looks very promising. Developing for Scroll is currently easier than for blockchains that are less compatible with EVM. 
+The Scroll protocol looks very promising. Developing for Scroll is currently easier than for blockchains that are less compatible with EVM.
 
 ## Links
 

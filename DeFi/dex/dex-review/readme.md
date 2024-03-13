@@ -1,4 +1,4 @@
-# DEX Overview
+# DEXes Overview
 
 **Authors:**
 [Pavel Naydanov](https://github.com/PavelNaydanov) 🕵️‍♂️
