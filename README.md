@@ -130,8 +130,8 @@ Join our TG-channel: [MetaLamp|Web3 DevTeam](https://t.me/metametalamp)
       <summary>Tools</summary>
 
       - [Brownie](./tools/brownie/README.md)
-      - [Subgraph](./tools/subgraph/README.md)
       - [Tenderly](./tools/tenderly/README.md)
+      - [The graph](./tools/thegraph/README.md)
     </details>
 </details>
 
