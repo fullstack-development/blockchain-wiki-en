@@ -83,6 +83,7 @@ Join our TG-channel: [MetaLamp|Web3 DevTeam](https://t.me/metametalamp)
           - [Underwater rocks](./DeFi/dex/underwater-rocks/README.md)
           - [DEXes review](./DeFi/dex/dex-review/README.md)
         </details>
+      - [DEX aggregators](./DeFi/dex-aggregators/README.md)
       - <details>
           <summary>Lending</summary>
 
