@@ -1,30 +1,30 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.21;
 
-/// @notice A cantract with implementation logic
+/// @notice SC with a main logic
 contract Logic {
     address public initAddress;
     uint256 private _value;
 
     /**
-     * @notice Used to set data on the contract during initialization.
- * @dev In reality, it's simply a replacement for constructor().
+     * @notice Used to set data on the contract during initialization
+     * @dev Essentially a replacement for constructor()
      */
     function initialize(address _initAddress) public {
         initAddress = _initAddress;
     }
 
     /**
-     * @notice Allows writing a value to the state.
- * @param _newValue The new value to be written to the state.
+     * @notice Allows writing a value to the state
+     * @param _newValue New value to write to the state
      */
     function store(uint256 _newValue) public {
         _value = _newValue;
     }
 
     /**
-     * @notice Allows retrieving a value from the state.
-     * @return _value A value from state 
+     * @notice Allows getting a value from the state
+     * @return _value Value from the state
      */
     function retrieve() public view returns (uint256) {
         return _value;
@@ -33,9 +33,9 @@ contract Logic {
 
 /**
  * @notice Proxy Contract
- * @dev It does not have its own implementation. It will delegate calls to the logic contract.
- * The actual data storage will be on the proxy contract.
- * Interaction with the logic contract can only happen through calls to the proxy contract.
+ * @dev Has no implementation. Will delegate calls to the logic contract.
+ * The actual storage of data will be on the proxy contract.
+ * Interaction with the logic contract only through calls to the proxy contract
  */
 contract Proxy {
     struct AddressSlot {
@@ -43,9 +43,10 @@ contract Proxy {
     }
 
     /**
-     * @notice Internal variable used to determine the storage location for the address of the logic contract.
- * @dev According to EIP-1967, the slot can be calculated as bytes32(uint256(keccak256('eip1967.proxy.implementation')) - 1).
- * We choose a pseudo-random slot and store the address of the logic contract in this slot. The slot position should be random enough to ensure that no variable in the logic contract ever occupies this slot.
+     * @notice Internal variable to determine the location to store information about the logic contract address
+     * @dev According to EIP-1967, the slot can be calculated as bytes32(uint256(keccak256('eip1967.proxy.implementation')) - 1));
+     * We choose a pseudo-random slot and write the address of the logic contract to this slot. This slot position should be random enough
+     * so that no variable in the logic contract ever occupies this slot.
      */
     bytes32 internal constant _IMPLEMENTATION_SLOT = 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;
 
@@ -53,7 +54,7 @@ contract Proxy {
         _setImplementation(logic);
     }
 
-    /// @notice Returns the address of the set logic contract for the proxy contract.
+    /// @notice Returns the address of the logic contract set for the proxy contract.
     function getImplementation() external view returns (address) {
         return _getImplementation();
     }
@@ -64,19 +65,19 @@ contract Proxy {
     }
 
     function _delegate(address _implementation) internal {
-        // An assembly insertion is required because it is not possible to directly access the slot to return the value in regular Solidity.
+        // Assembly is required because it is impossible to access the return value slot in regular Solidity
         assembly {
-            // Copying msg.data and gain full control over the memory for this invocation.
+            // Copy msg.data to gain full control over the memory for this call.
             calldatacopy(0, 0, calldatasize())
 
-            // calling the implementation contract.
+            // Calling the implementation contract
             let result := delegatecall(gas(), _implementation, 0, calldatasize(), 0, 0)
 
-            // Copying the returned data.
+            // Copying the returned data
             returndatacopy(0, 0, returndatasize())
 
             switch result
-            // Do revert, If the returned data is equal to zero.
+            // Revert if the returned data is equal to zero.
             case 0 {
                 revert(0, returndatasize())
             }
@@ -87,24 +88,24 @@ contract Proxy {
     }
 
     /**
-     * @notice Returns the address of the set logic contract for the proxy contract.
- * @dev The logic address is stored in a specifically allocated slot to prevent accidentally overwriting the value.
+     * @notice Returns the address of the logic contract set for the proxy contract
+     * @dev The logic address is stored in a designated slot to prevent it from being accidentally overwritten
      */
     function _getImplementation() internal view returns (address) {
         return getAddressSlot(_IMPLEMENTATION_SLOT).value;
     }
 
     /**
-     * @notice Sets the address of the logic contract for the proxy contract.
- * @dev The logic address is stored in a specifically allocated slot to prevent accidentally overwriting the value.
+     * @notice Sets the address of the logic contract for the proxy contract
+     * @dev The logic address is stored in a designated slot to prevent it from being accidentally overwritten
      */
     function _setImplementation(address newImplementation) private {
         getAddressSlot(_IMPLEMENTATION_SLOT).value = newImplementation;
     }
 
     /**
-     * @notice Returns the content of an arbitrary storage memory slot.
- * @param slot Pointer to the storage memory slot.
+      * @notice Returns a storage slot of arbitrary type
+      * @param slot Pointer to the storage memory slot
      */
     function getAddressSlot(bytes32 slot) internal pure returns (AddressSlot storage r) {
         assembly {
@@ -112,8 +113,8 @@ contract Proxy {
         }
     }
 
-/// @dev Any calls to functions of the logic contract through the proxy will be delegated thanks to the handling inside the fallback function.
-fallback() external {
+    /// @dev Any calls to functions of the logic contract through the proxy will be delegated thanks to processing inside the fallback
+    fallback() external {
         _delegate(_getImplementation());
     }
 }

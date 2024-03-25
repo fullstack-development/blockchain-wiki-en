@@ -1,17 +1,18 @@
 
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.21;
 
 import "@openzeppelin/contracts/proxy/Clones.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 /**
+ * To understand the contracts, it's best to deploy them using Remix.
  * Deployment order:
-1. Deploy the Pair contract.
-2. Deploy the Factory contract with the address of the Pair contract as a parameter.
-3. Call the createPair method on the Factory contract. You can send any token addresses.
-4. Ensure that a new instance (clone) of the Pair contract is successfully created.
- */
+ * 1. Deploy the Pair contract
+ * 2. Deploy the Factory contract (address Pair)
+ * 3. Call the createPair method on the Factory contract. You can use any token addresses as parameters.
+ * 4. Ensure that a new instance (clone) of the Pair contract is successfully created
+
 
 interface IPair {
     function initialize(address _tokenA, address _tokenB) external;
@@ -49,11 +50,11 @@ contract Factory {
     function createPair(address _tokenA, address _tokenB) external returns (address pair) {
         require(getPair(_tokenA, _tokenB) == address(0), "Pair has been created already");
 
-// Using the Clones library to deploy the Pair contract based on the deployed Pair contract.
-bytes32 salt = keccak256(abi.encodePacked(_tokenA, _tokenB));
+        // Deploy the Pair contract based on the deployed Pair contract using the clones library
+        bytes32 salt = keccak256(abi.encodePacked(_tokenA, _tokenB));
         pair = Clones.cloneDeterministic(pairImplementation, salt);
 
-        // Initializing the Pair contract. Passing tokens and additionally setting the Factory address for the Pair.
+        // Initialize the Pair contract. Pass the tokens and additionally set the factory address for the Pair
         IPair(pair).initialize(_tokenA, _tokenB);
 
         _pairs[_tokenA][_tokenB] = pair;

@@ -1,40 +1,39 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.21;
 
 import {TransparentUpgradeableProxy} from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
+import {ERC1967Utils} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Utils.sol";
 import {ProxyAdmin} from "@openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol";
-import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
+import {Initializable} from "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 
 /**
- * To understand the contracts better, it's best to deploy them using Remix.
-
-Deployment order:
-
-1. Deploy the Logic contract. Try calling initialize() on the deployed contract, but our protection will prevent this action.
-2. Deploy the Admin contract.
-3. Deploy the LogicProxy contract with the addresses of Logic and Admin as parameters, and "0x" as the third parameter.
-4. Deploy the LogicProxy contract with the ABI of the Logic contract using the built-in Remix functionality "Deploy at address." This will enable calling methods of the Logic contract for the LogicProxy contract.
-5. Call the initialize() function on the last deployed LogicProxy contract (deployed with the ABI of the Logic contract). Ensure that the transaction is successful. Try calling the initialize() function again to verify that the transaction returns an error.
-
-To upgrade the implementation, call the upgrade() method on the Admin contract.
+ * To understand the contracts, it's best to deploy them using Remix.
+ * Deployment order:
+ *      1. Deploy the Logic contract. Try calling initialize() on the deployed contract.
+ *         Our protection will prevent this action
+ *      2. Deploy the LogicProxy contract (address Logic, address InitialOwner, 0x)
+ *      3. Connect the ABI of the Logic contract with LogicProxy using the built-in Remix functionality "Deploy at address".
+ *         To do this, select "Logic" in the CONTRACT field, and set the address of LogicProxy in "At Address". Click on the "At address" button.
+ *         This allows calling Logic contract methods for LogicProxy
+ *      4. Call the initialize() function on the Logic contract (from step 3, this contract allows the proxy to call Logic methods)
+ *         Ensure that the transaction is successful. Call the initialize() function again. Ensure that the transaction returns an error
  */
 
-/// Logic SC
+/// Logic Contract
 contract Logic is Initializable {
     uint256 private _defaultValue;
     uint256 private _value;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
-        /// This will not allow initializing the logic contract without using the proxy.
+        /// This prevents initializing the logic contract bypassing the proxy
         _disableInitializers();
     }
 
     /**
-     * @notice Initialization function.
- * @param defaultValue Default value.
- * @dev Uses a modifier from the Initializable.sol contract by OpenZeppelin.
-
+     * @noticeInitialization function.
+     * @param defaultValue Default value
+     * @dev Utilizes a modifier from the Initializable.sol contract by OpenZeppelin
      */
     function initialize(uint256 defaultValue) external initializer {
         _defaultValue = defaultValue;
@@ -53,16 +52,19 @@ contract Logic is Initializable {
     }
 }
 
-/// Proxy contract
+/// proxy smart contract
 contract LogicProxy is TransparentUpgradeableProxy {
-    constructor(address _logic, address admin_, bytes memory _data)
-        TransparentUpgradeableProxy(_logic, admin_, _data)
+    constructor(address _logic, address _initialOwner, bytes memory _data)
+        TransparentUpgradeableProxy(_logic, _initialOwner, _data)
     {}
-}
 
-/**
- * @notice Contract for Proxy Admin
- * @dev Only the Proxy Admin can update the logic contract for the proxy.
- * Therefore, it is technically required to call the upgrade() method on the Admin contract.
- */
-contract Admin is ProxyAdmin {}
+    function getAdmin() external view returns (address) {
+        return ERC1967Utils.getAdmin();
+    }
+
+    function getImplementation() external view returns (address) {
+        return ERC1967Utils.getImplementation();
+    }
+
+    receive() external payable {}
+}
