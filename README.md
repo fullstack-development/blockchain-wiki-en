@@ -132,6 +132,7 @@ Join our TG-channel: [MetaLamp|Web3 DevTeam](https://t.me/metametalamp)
       - [Brownie](./tools/brownie/README.md)
       - [Tenderly](./tools/tenderly/README.md)
       - [The graph](./tools/thegraph/README.md)
+      - [Thirdweb](./tools/thirdweb/README.md)
     </details>
 </details>
 
