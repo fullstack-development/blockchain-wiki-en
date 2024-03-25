@@ -1,17 +1,20 @@
-## **Data Separation** refers to the approach of creating multiple smart contracts to separate the storage of data from the business logic.
+# Data separation
 
-In this approach, users interact with a logical contract, while the data is stored in a separate storage contract.
+Создание нескольких смарт-контрактов для раздельного хранения состояния и бизнес логики.
 
-The logical contract contains the code that executes when users interact with the application. It also includes the address of the storage contract and interacts with it to retrieve and set data.
+Этот подход можно назвать шаблоном **разделения данных**. Он говорит о том, что пользователи взаимодействуют с логическим контрактом, а данные хранятся в отдельном контракте хранилища.
 
-The storage contract holds the state related to the logical smart contract, such as user balances and addresses.
+Логический контракт содержит код, который выполняется, когда пользователи взаимодействуют с приложением. Он также содержит адрес контракта хранилища и взаимодействует с ним для получения и установки данных.
 
-## **Important!** Only the specific logic contract should be able to write data to the storage contract, and no one else.
+Контракт хранилище содержит состояние, связанное со смарт-контрактом логики, например балансы и адреса пользователей.
 
-By default, the storage contract should be immutable, but it provides the capability to change the logic contract to any other contract.
+_Важно !_ В контракт хранилище должен записывать данные только определенный контракт логики и никто другой.
 
-In the ```/contracts``` folder, there are three contracts. ```TokenLogic``` is a contract that does not have any state variables. All state variables are moved to the ```BalanceStorage``` and ```TotalSupplyStorage``` contracts. These two contracts have public methods for managing the states. These public methods can only be called by the set logic contract.
+По умолчанию контракт хранилища должен быть неизменяемым, но в нем есть возможность поменять контракт логики на любой другой контракт.
 
-For more details, you can refer to the example logic contract [here](./contracts/TokenLogic.sol).
-For more details, you can refer to the example storage contract 1 [here](./contracts/BalanceStorage.sol).
-For more details, you can refer to the example storage contract 2 [here](./contracts/TotalSupplyStorage.sol).
+## Examples
+В папке ``` /contracts ``` лежит три контракта. ``` TokenLogic ``` - это контракт в котором отсутствуют переменные состояния. Все переменные состояния вынесены в контракты ```BalanceStorage``` и ```TotalSupplyStorage```. Эти два контракта имеют публичные методы для управления состояниями. Эти публичные методы могут быть вызваны только установленным контрактом логики.
+
+Подробнее пример контракта логики [тут.](./contracts/TokenLogic.sol)
+Подробнее пример контракта хранилище 1 [тут.](./contracts/BalanceStorage.sol)
+Подробнее пример контракта хранилище 2 [тут.](./contracts/TotalSupplyStorage.sol)

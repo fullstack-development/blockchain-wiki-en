@@ -1,21 +1,22 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.21;
 
 import "@openzeppelin/contracts/proxy/beacon/UpgradeableBeacon.sol";
 import "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
 
 /**
- * Deployment order for testing in Remix:
-
-1. Deploy the Logic contract.
-2. Deploy the Beacon contract with the address of Logic as a parameter.
-3. Deploy the LogicProxy contract with Beacon's address and "0x" as parameters.
-4. Deploy the new Logic2 contract.
-5. Call upgradeTo(address Logic2) on the Beacon contract.
-6. Call the getImplementation() function on each LogicProxy contract to verify the change of the logic contract.
+ * Чтобы понять контракты. Лучше всего задеплоить их при помощи Remix.
+ * Порядок деплоя для тестирования в remix:
+ *      1. Деплой контракта Logic
+ *      2. Деплой контракта Beacon(address Logic, address Owner)
+ *      3. Деплой контракта LogicProxy(address Beacon, 0x)
+ *      4. Деплой контракта LogicProxy2(address Beacon, 0x)
+ *      5. Деплой нового контракта Logic2
+ *      6. Вызов upgradeTo(address Logic2) на контракте Beacon
+ *      7. Вызов функции getImplementation() на каждом контракте LogicProxy для проверки смены контракта логики
  */
 
-/// Logic SC
+/// Контракт логики
 contract Logic {
     uint256 private _value;
 
@@ -28,7 +29,7 @@ contract Logic {
     }
 }
 
-/// SC for Logic upgrade
+/// Контракт логики для обновления
 contract Logic2 {
     uint256 private _value;
 
@@ -45,26 +46,52 @@ contract Logic2 {
     }
 }
 
-// Beacon SC
+// Контракт Beacon
 contract Beacon is UpgradeableBeacon {
-    // To upgrade the logic for all proxy contracts, you need to call the upgradeTo() function on the Beacon contract.
-    constructor(address _implementation) UpgradeableBeacon(_implementation) {}
+    // Для обновления логики для всех контрактов прокси нужно вызывать функцию upgradeTo() на контракте Beacon
+    constructor(address _implementation, address _owner) UpgradeableBeacon(_implementation, _owner) {}
 }
 
-/// Proxy contract
+/// Контракт First прокси
 contract LogicProxy is BeaconProxy {
-    constructor(
-        address _beacon,
-        bytes memory _data
-    ) BeaconProxy(_beacon, _data) {}
+    constructor(address _beacon, bytes memory _data) BeaconProxy(_beacon, _data) {}
 
-    /// @notice Returns the address of the set logic contract for the proxy.
-    function getImplemetation() public view returns (address) {
+    /// @notice Возвращает адрес Beacon контракта
+    function getBeacon() public view returns (address) {
+        return _getBeacon();
+    }
+
+    /// @notice Возвращает адрес установленного контракта логики для прокси
+    function getImplementation() public view returns (address) {
         return _implementation();
     }
 
-    /// @notice Returns the address of the Beacon contract.
-    function getBeacon() public view returns (address) {
-        return _beacon();
+    /// @notice Возвращает описание прокси
+    function getProxyDescription() external pure returns (string memory) {
+        return "First proxy";
     }
+
+    receive() external payable {}
+}
+
+/// Контракт Second прокси
+contract LogicProxy2 is BeaconProxy {
+    constructor(address _beacon, bytes memory _data) BeaconProxy(_beacon, _data) {}
+
+    /// @notice Возвращает адрес Beacon контракта
+    function getBeacon() public view returns (address) {
+        return _getBeacon();
+    }
+
+    /// @notice Возвращает адрес установленного контракта логики для прокси
+    function getImplementation() public view returns (address) {
+        return _implementation();
+    }
+
+    /// @notice Возвращает описание прокси
+    function getProxyDescription() external pure returns (string memory) {
+        return "Second proxy";
+    }
+
+    receive() external payable {}
 }

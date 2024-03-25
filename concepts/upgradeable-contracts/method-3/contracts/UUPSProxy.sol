@@ -1,22 +1,22 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.21;
 
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
-import "@openzeppelin/contracts/proxy/utils/UUPSUpgradeable.sol";
+import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
+import {UUPSUpgradeable} from "@openzeppelin/contracts/proxy/utils/UUPSUpgradeable.sol";
 
-/// Logic contract
+/// Контракт логики
 contract Logic is UUPSUpgradeable, OwnableUpgradeable {
     uint256 private _value;
 
     /**
-     * @dev The upgradeable contracts do not have a constructor, we need to use the initialize() function.
- * Additionally, we need to initialize the Ownable contract because it is also upgradeable.
- * The one who calls initialize() will become the owner of the Logic contract and will be able to upgrade the implementation for the proxy.
+     * @dev Так как в обновляемых контрактах нет конструктора, то нам необходимо использовать функцию initialize()
+     * Дополнительно необходимо инициализировать контракт OwnableUpgradeable, так как он тоже обновляемый
+     * Адрес _initialOwner станет владельцем контракта Logic и сможет обновлять имплементацию для прокси
      */
-    function initialize() external initializer {
-       __Ownable_init();
-   }
+    function initialize(address _initialOwner) external initializer {
+       __Ownable_init(_initialOwner);
+    }
 
     function store(uint256 _newValue) public {
         _value = _newValue;
@@ -27,15 +27,15 @@ contract Logic is UUPSUpgradeable, OwnableUpgradeable {
     }
 
     /**
-     * @notice Checking the ability to upgrade the contract.
- * @dev According to the abstract contract UUPSUpgradeable, it is mandatory for us to override this function.
- * By using our own implementation of the function, we will determine the ability to upgrade the logic contract for the proxy contract.
- * In the context of this example, only the owner of the logic contract can upgrade it.
+     * @notice Проверка возможности обновлять контракт
+     * @dev Согласно абстрактному контракту UUPSUpgradeable, нам обязательно необходимо переопределить данную функцию
+     * При помощи собственной реализации функции мы будем определять возможность обновления контракта логики для контракта прокси
+     * В рамках этого примера обновлять контракт логики может только владелец контракта логики
      */
     function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 }
 
-/// Proxy contact
+/// Контракт прокси
 contract LogicProxy is ERC1967Proxy {
     constructor(
         address _logic,
@@ -43,7 +43,9 @@ contract LogicProxy is ERC1967Proxy {
     ) ERC1967Proxy(_logic, _data) {}
 
     /// @notice Возвращает адрес установленного контракта логики для прокси
-    function getImplemetation() public view returns (address) {
+    function getImplementation() public view returns (address) {
         return _implementation();
     }
+
+    receive() external payable {}
 }
