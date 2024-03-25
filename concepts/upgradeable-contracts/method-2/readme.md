@@ -1,17 +1,20 @@
-## **Data Separation** refers to the approach of creating multiple smart contracts to separate the storage of data from the business logic.
+# Data Separation
 
-In this approach, users interact with a logical contract, while the data is stored in a separate storage contract.
+Creating multiple smart contracts for separate storage of state and business logic.
 
-The logical contract contains the code that executes when users interact with the application. It also includes the address of the storage contract and interacts with it to retrieve and set data.
+This approach can be called a **data separation** pattern. It involves users interacting with a logic contract, while data is stored in a separate storage contract.
 
-The storage contract holds the state related to the logical smart contract, such as user balances and addresses.
+The logic contract contains code that executes when users interact with the application. It also contains the address of the storage contract and interacts with it to get and set data.
 
-## **Important!** Only the specific logic contract should be able to write data to the storage contract, and no one else.
+The storage contract contains the state associated with the logic smart contract, such as balances and user addresses.
 
-By default, the storage contract should be immutable, but it provides the capability to change the logic contract to any other contract.
+_Important!_ Only the designated logic contract should write data to the storage contract and no one else.
 
-In the ```/contracts``` folder, there are three contracts. ```TokenLogic``` is a contract that does not have any state variables. All state variables are moved to the ```BalanceStorage``` and ```TotalSupplyStorage``` contracts. These two contracts have public methods for managing the states. These public methods can only be called by the set logic contract.
+By default, the storage contract should be immutable, but it has the capability to change the logic contract to any other contract.
 
-For more details, you can refer to the example logic contract [here](./contracts/TokenLogic.sol).
-For more details, you can refer to the example storage contract 1 [here](./contracts/BalanceStorage.sol).
-For more details, you can refer to the example storage contract 2 [here](./contracts/TotalSupplyStorage.sol).
+## Examples
+In the folder ``` /contracts ```, there are three contracts. ``` TokenLogic ``` is a contract that lacks state variables. All state variables are moved to the ```BalanceStorage``` and ```TotalSupplyStorage``` contracts. These two contracts have public methods for managing states. These public methods can only be called by the designated logic contract.
+
+More details on the logic contract [here.](./contracts/TokenLogic.sol)
+More details on storage contract 1 [here.](./contracts/BalanceStorage.sol)
+More details on storage contract 2 [here.](./contracts/TotalSupplyStorage.sol)
