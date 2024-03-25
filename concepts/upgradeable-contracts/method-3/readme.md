@@ -1,57 +1,64 @@
 # Proxy pattern
 
-The proxy pattern utilizes data separation to store business logic and state in separate contracts. However, the proxy pattern differs from data separation method 2. It employs a reverse method of data separation, where the storage contract calls the logical contract.
+Шаблон прокси использует разделение данных для хранения бизнес-логики и состояние в отдельных контрактах. Однако шаблон прокси отличается от способа 2 (разделение данных). Это обратный метод разделения данных, когда контракт хранилище вызывает логический контракт.
 
-**Important!** From now on, we will refer to the state storage contract as the "proxy".
+_Важно!_ Дальше контракт хранилище состояний будем называть "прокси".
 
-The interaction between users and the implementation and proxy contracts can be depicted as follows:
+Схематично взаимодействие пользователя с контрактами реализации и прокси выглядит так.
 ![](./images/schema-proxy.png)
 
-## Concept
+## Концепт
 
-The proxy pattern works as follows:
-1. Users interact with the proxy contract. For example, they invoke a certain method on the contract according to the business logic. User interaction occurs solely with the proxy contract.
-2. The proxy contract does not have an implemented function to be called, so the contract invokes the built-in `fallback()` function. Inside this function, the call is redirected to the logical contract.
-3. The proxy contract stores the address of the logical contract and delegates all function calls to the logical contract (which contains the business logic) using the `delegatecall()` function.
-4. After redirecting the call to the logical contract, the returned data from the logical contract is retrieved and returned to the user or stored on the proxy contract.
+Прокси шаблон работает следующим образом:
+1. Пользователь взаимодействует с контрактом прокси. Например вызывает некий метод на контракте согласно бизнес-логике. Взаимодействие пользователя происходит только с контрактом прокси.
+2. Прокси контракт не имеет реализованной функции, которая вызывается и поэтому контракт вызывает встроенную функцию ```fallback()```. Внутри этой функции происходит перенаправление вызова на логический контракт.
+3. Прокси-контракт хранит адрес логического контракта и делегирует все вызовы функций логическому контракту (который содержит бизнес-логику) с использованием ```delegatecall()``` функции.
+4. После перенаправления вызова на логический контракт возвращенные данные из логического контракта извлекаются и возвращаются пользователю или записываются на контракте прокси.
 
-To understand the principle of the proxy pattern, it is necessary to understand the workings of the `delegatecall()` function. Essentially, `delegatecall()` is an opcode that allows a contract to call another contract, while the actual code execution occurs in the context of the calling contract. The purpose of using `delegatecall()` in proxy patterns is that the proxy contract can read and write to its storage and execute the logic stored in the logical contract as if it were calling an internal function.
+Чтобы понять принцип работы шаблона прокси необходимо понимать работу функции ```delegatecall()```. По сути, ```delegatecall()``` - это код операции, который позволяет контракту вызывать другой контракт, в то время как фактическое выполнение кода происходит в контексте вызывающего контракта. ```delegatecall()``` в шаблонах прокси позволяет прокси-контракту читать и записывать в свое хранилище, а также выполнять логику, хранящуюся в логическом контракте, как если бы он вызывал внутреннюю функцию.
 
-You can find an example contract with a `delegateCall()` invocation [here](https://solidity-by-example.org/delegatecall/).
+[Пример смарт-контракта](https://solidity-by-example.org/delegatecall/) с вызовом ```delegateсall()```.
 
-To make the proxy pattern work, it is necessary to write a custom fallback function in the proxy contract that specifies how the proxy contract should handle function calls it does not support. Inside this function, the logical contract is called using `delegateCall()`.
+Это может звучать сложно, на самом деле тут нет никакой магии, "снаружи" это выглядит так - вы берете ABI смарт-контракта имплементации (логики) и вызываете любую функцию этой имплементации на смарт-контракте прокси.
 
-In the proxy contract, the address of the logic contract can be changed at any time. This allows us to update the contract logic without requiring users to switch to using a new contract.
+Подобное можно проделать даже в Remix:
+![](./images/remix-proxy-flow.png)
 
-## Function Selector Conflicts
-Proxy patterns are the most popular way to update smart contracts. They eliminate the difficulties associated with contract migration or data separation. However, proxy patterns are more complex to use and can lead to critical errors when used incorrectly, such as **function selector conflicts**.
+Чтобы заставить шаблон прокси работать, необходимо написать пользовательскую резервную функцию ```fallback()```, которая указывает, как контракт прокси должен обрабатывать вызовы функций, которые он не поддерживает. А уже внутри сделать вызов логического контракта через ```delegateсall()```.
 
-To ensure that calls from the proxy contract are always delegated, any function call should always land in the `fallback()` function and be delegated to the logic contract. Therefore, the proxy contract should not contain functions with the same name as the logic contract. If this happens, the call will not be delegated. This means that it is always necessary to be aware of function selector conflicts. You can read more about this [here](https://medium.com/nomic-foundation-blog/malicious-backdoors-in-ethereum-proxies-62629adf3357).
+В контракте прокси в любой момент можно изменить адрес контракта логики. Это позволяет нам обновлять логику контракта, не заставляя пользователей переходить на использование нового контракта.
 
-## Simple Proxy
-All the experiences described above were documented in the [EIP-1967 standard](https://eips.ethereum.org/EIPS/eip-1967). The standard describes a mechanism for secure delegation of calls and several nuances related to data storage.
+## Конфликты селекторов функций
 
-You can view a simple example contract of a proxy [here](./contracts/SimpleProxy.sol).
+Шаблоны прокси — самый популярный способ обновления смарт-контрактов. Он устраняет трудности, связанные с миграцией контрактов или разделения данных. Однако шаблоны прокси более сложны в использовании и могут привести к критическим ошибкам при неправильном использование, таком как **конфликты селекторов функций**.
 
-The key points to understand are:
-1. All calls go through the proxy contract, entering the `fallback()` function and subsequently invoking `delegateCall()`.
-2. The proxy contract stores the implementation contract address as a state variable. Since the logic contract's variables will overwrite values in the zero slot, all custom variables in the proxy contract must be stored in random and inaccessible slots for the logic contract. The essence of this problem and its solution are described in [EIP-1967](https://eips.ethereum.org/EIPS/eip-1967).
-3. When upgrading the contract to a new implementation, the previous variable storage scheme must be preserved. Otherwise, old data will be overwritten.
-4. Since `constructor()` is not part of the bytecode and is only executed once during deployment, an alternative method is needed to set initialization values. It is commonly accepted to use the `initialize()` function. You can read more about this in the [OpenZeppelin documentation](https://docs.openzeppelin.com/upgrades-plugins/1.x/proxies#the-constructor-caveat).
+Для того, чтобы вызов с контракта прокси всегда делегировался, нужно чтобы вызов любой функции всегда попадал в ```fallback()``` и делегировался контракту логики. Поэтому контракт прокси не должен содержать одноименных функций с контрактом логики. Если это случится, то вызов не будет делегирован. Это значит, что всегда необходимо помнить о конфликте селекторов функций. Подробнее можно почитать об этом [тут](https://medium.com/nomic-foundation-blog/malicious-backdoors-in-ethereum-proxies-62629adf3357).
 
-As the proxy contract exists, it requires its own functions. For example, `upgradeTo(address newLogic)` to change the address of the logic contract. But then the proxy needs to decide whether to proxy/delegate the call to the logic contract. What if the logic contract also has a function with the same name, e.g., `upgradeTo(address someAddr)`?
+## Простой прокси
 
-OpenZeppelin was the first to come up with a solution to this problem. They introduced the concept of a proxy administrator. In this case, if the administrator (i.e., **msg.sender == admin**) makes calls to the proxy, the proxy will not delegate the call but instead execute the function within the proxy if it exists, or revert. This gave rise to a proprietary solution called [Transparent Proxy](https://docs.openzeppelin.com/upgrades-plugins/1.x/proxies#transparent-proxies-and-function-clashes).
+Весь вышеописанный опыт был описан в стандарте [eip-1967](https://eips.ethereum.org/EIPS/eip-1967). Стандарт описывает механизм безопасного делегирования вызова и несколько нюансов, связанных с хранением данных.
 
-**Important!** To allow the administrator's address to be a regular user and delegate their calls to the logic contract, OpenZeppelin proposes an additional contract called ProxyAdmin. Calls from this contract to the proxy contract will not be delegated to the logic contract.
+Простой пример контракта прокси можно посмотреть [тут](./contracts/SimpleProxy.sol).
 
-# Transparent vs UUPS
+Основное, что нужно усвоить:
+1. Все вызовы проходят через контракт прокси, попадая в ```fallback()``` с последующим вызовом ```delegateсall()```.
+2. Контракт прокси хранит адрес контракта реализации в качестве переменной состояния. Так как переменные контракта логики будут затирать значения в нулевом слоте, все собственные переменные контракта прокси должны хранится по случайным и недоступным слотам для контракта логики. Суть этой проблемы и ее решение описаны в [eip-1967](https://eips.ethereum.org/EIPS/eip-1967).
+3. При обновление контракта до новой реализации нужно сохранять прошлую схему хранения переменных. Иначе старые данные будут перезаписаны.
+4. Так как ```constructor()``` не является частью байт кода и запускается лишь один раз во время деплоя, необходим другой способ установки значений инициализации. Общепринятым считается использование функции ```initialize()```. Подробнее об этом можно прочитать у [openzeppelin](https://docs.openzeppelin.com/upgrades-plugins/1.x/proxies#the-constructor-caveat).
 
-`Transparent` and `UUPS` (Universal Upgradeable Proxy Standard) are different implementations of the proxy pattern for contract upgrades by OpenZeppelin. In fact, there is not much difference between these two implementations in the sense that they use the same interface for upgrades and delegation of calls from the proxy to the implementation.
+Поскольку прокси-контракт существует, ему потребуются собственные функции. Например ```upgradeTo(address newLogic)``` для смены адреса логического контракта. Но тогда прокси должен решить, следует ли проксировать/делегировать вызов к контракту логики. Что, если в контракте логики тоже есть функция с таким же именем, т.е. ```upgradeTo(address someAddr)```?
 
-The difference lies in where the upgrade logic is located, either in the proxy contract or the implementation contract.
+Первыми решение для этой проблемы придумали в OpenZeppelin. Они добавили понятие администратора прокси. Тогда, если администратор (т.е. **msg.sender == admin**) делает вызовы к прокси, прокси не будет делегировать вызов, а выполнит функцию в самом прокси, если она существует или сделает revert. Таким образом родилось собственное решение, которое называется [Transparent Proxy](https://docs.openzeppelin.com/upgrades-plugins/1.x/proxies#transparent-proxies-and-function-clashes).
 
-> In Transparent proxy, the upgrade logic is in the proxy contract. This means that the proxy contract has a method `upgradeTo(address newLogic)`
+_Важно!_ Для того чтобы адрес администратора мог быть обычным пользователем и его вызовы делегировались контракту логики, OpenZeppelin предлагает использовать дополнительный контракт ProxyAdmin. Вызовы от контракта ProxyAdmin к контракту прокси не будут делегироваться к контракту логики.
+
+### Transparent vs UUPS
+
+Transparent и UUPS (Universal Upgradeable Proxy Standard) — это разные реализации шаблона прокси для механизма обновления контрактов от openzeppelin. На самом деле между этими двумя реализациями нет большой разницы в том смысле, что они используют один и тот же интерфейс для обновлений и делегирования вызовов с прокси на реализацию.
+
+Разница заключается в том, где находится логика обновления, в прокси контракте или контракте реализации.
+
+> В Transparent proxy логика обновления находится в контракте прокси. Это означает, что контракт прокси имеет метод ```upgradeToAndCall(address newLogic, bytes memory data)```
 
 ![](./images/schema-transparent-proxy.png)
 
@@ -67,20 +74,20 @@ contract TransparentProxy {
     function _delegate(address implementation) internal virtual { /*..*/ }
     function getImplementationAddress() public view returns (address) { /*..*/ }
 
-    /// @notice update logic SC's address for proxy 
-    upgradeTo(address newlogic) external {
-        // update address of SC's logic in a dedicated memory slot of proxy mart contract
+    /// @notice Обновить адрес контракта логики для прокси
+    upgradeToAndCall(address newlogic, bytes memory data) external {
+        // Меняем адрес логики в специальном слоте памяти прокси контракта
     }
 
     fallback() external { /*..*/ }
 }
 ```
+> В UUPS логика обновления обрабатывается самим контрактом логики. Это означает, что контракт логики имеет метод ```upgradeToAndCall(address newLogic, bytes memory data)```
 
-> In UUPS, the upgrade logic is handled by the implementation contract itself. This means that the implementation contract has a method ```upgradeTo(address newLogic)```.
-> 
+_Важно!_ До 5й версии в библиотеке OpenZeppelin бала также функция `upgradeTo()`, в 5й осталась только функция `upgradeToAndCall()`. Последняя позволяет обновлять имплементацию как с вызовом какой-либо функции так и без.
+
 ![](./images/schema-uups-proxy.png)
->
->
+
 ```js
 contract Logic {
     uint256 private _value;
@@ -88,9 +95,9 @@ contract Logic {
     function store(uint256 value) public { /*..*/ }
     function retrieve() public view returns (uint256) { /*..*/ }
 
-    /// @notice update logic SC's address for proxy 
-    upgradeTo(address newlogic) external {
-        // update address of SC's logic in a dedicated memory slot of proxy mart contract
+    /// @notice Обновить адрес контракта логики для прокси
+    upgradeToAndCall(address newlogic, bytes memory data) external {
+        // Меняем адрес логики в специальном слоте памяти прокси контракта
     }
 }
 
@@ -101,70 +108,71 @@ contract TransparentProxy {
 }
 ```
 
-The implementation of Transparent Proxy includes methods for proxy management and an additional ProxyAdmin contract to determine the need for delegation, making the deployment of such contracts more expensive than UUPS. UUPS, on the other hand, is more lightweight and does not require ProxyAdmin.
+В силу отличий двух подходов обновление через UUPS может быть дешевле по газу и проще, чем обновление Transparent Proxy, т.к. не нужно задействовать дополнительный смарт-контракт ProxyAdmin. С другой стороны ProxyAdmin дает больший уровень безопасности и позволяет отделить логику обновления от основной бизнес-логики.
 
-However, it is important to remember that in the case of UUPS, the logic contract stores additional upgrade code, which means that deploying such a contract is more expensive than deploying just the logic.
+Ещe одним важным моментом является то, что TransparentProxy при каждом вызове проверяет, от кого идет вызов — от смарт-контракта ProxyAdmin или от обычного пользователя. Это необходимо для определения, нужно ли делегировать выполнение или выполнять собственные методы администрирования прокси. Из-за дополнительного кода такой проверки все вызовы функций TransparentProxy незначительно дороже UUPS.
 
-Another important point is that TransparentProxy performs a check in each call to determine the caller, whether it is an admin or a regular user. This is done to decide whether to delegate execution or perform its own proxy administration methods. Due to the additional code for this check, all function calls in TransparentProxy are slightly more expensive than in UUPS.
+Однако в случае с UUPS контракт логики хранит дополнительный код обновления, а значит, деплой такого контракта дороже, чем деплой только логики. Также в случае с UUPS необходимо правильно реализовать в контракте логики методы для управления прокси. Иначе есть угроза никогда не обновить контракт. Для минимизации рисков можно посоветовать использовать возможности готового решения [библиотеки OpenZeppelin](https://docs.openzeppelin.com/contracts/4.x/api/proxy#UUPSUpgradeable)
 
-On the other hand, for UUPS, it is necessary to correctly implement methods in the logic contract for proxy management. Otherwise, there is a risk of never being able to upgrade the contract. To minimize risks, it is advisable to use the capabilities of the ready-made OpenZeppelin library, which provides UUPSUpgradeable functionality.
+С примером использования TransparentProxy на базе библиотеки openzeppelin можно ознакомиться [тут](./contracts/TransparentProxy.sol).
 
-You can refer to an example of using TransparentProxy based on the OpenZeppelin library [here](./contracts/TransparentProxy.sol).
-
-You can also refer to an example of using UUPS based on the OpenZeppelin library [here](./contracts/UUPSProxy.sol).
+С примером использования UUPS на базе библиотеки openzeppelin можно ознакомиться [тут](./contracts/UUPSProxy.sol).
 
 ## Beacon Proxy
-The Beacon Proxy pattern is a proxy template where multiple proxy contracts reference a single smart contract. This smart contract provides the address of the logic contract. The contract that provides the implementation address to any proxy is called the "Beacon" contract.
 
-![Beacon Proxy Schema](./images/schema-beacon-proxy.png)
+Это шаблон прокси, в котором несколько прокси контрактов ссылаются на один смарт-контракт. Этот смарт-контракт предоставляет им адрес контракта логики. Контракт, который дает адрес контракта реализации для любых прокси, называется контрактом "Beacon".
 
-_Important!_ This approach is useful when you have multiple proxies but only one logic contract that undergoes constant updates. With TransparentProxy and UUPS, you would need to update each proxy individually. Beacon Proxy provides an excellent solution for this scenario. With just one call to the Beacon contract, you can update the logic for all proxy contracts simultaneously.
+![](./images/schema-beacon-proxy.png)
 
-You can find a simple implementation of Beacon Proxy [here](./contracts/BeaconProxy.sol).
+_Важно!_ Этот подход оправдывает себя, когда у вас несколько прокси, а контракт логики один. При этом контракт логики постоянно обновляется. В случае с TransparentProxy и UUPS будет необходимо обновлять каждый прокси. Beacon proxy прекрасное решение для этого случая. Нам достаточно сделать только один вызов на контракте Beacon для обновления логики сразу для всех контрактов прокси.
+
+Пример простой реализации Beacon proxy [тут](./contracts/BeaconProxy.sol).
 
 ## Minimal Clones
 
-This is a standard based on [EIP-1167](https://eips.ethereum.org/EIPS/eip-1167) for deploying minimal proxy contracts known as clones. OpenZeppelin offers its own [library](https://docs.openzeppelin.com/contracts/4.x/api/proxy#Clones) for implementing this standard.
+Это стандарт на основе [eip-1167](https://eips.ethereum.org/EIPS/eip-1167) для развертывания минимальных прокси контрактов, которые называют клонами. OpenZeppelin предлагает собственную [библиотеку](https://docs.openzeppelin.com/contracts/4.x/api/proxy#Clones) реализации стандарта.
 
-This approach is suitable when you need to create new instances of another contract on a smart contract, and this action is repeated over time. Thanks to low-level calls and code folding in the library bytecode, such cloning is relatively inexpensive. It allows you to initialize the clone instance in the creation transaction.
+Использовать этот подход следует, когда нужно на смарт контракте создавать новый экземпляр другого контракта и это действие повторяющиеся с течением времени. За счет низкоуровневых вызовов и свертки кода библиотеки в байткод такое клонирование относительно недорогое. Позволяет инициализировать экземпляр клона в транзакции создания.
 
-_Important!_ The library supports functions for creating contracts (`create()`) and `create2()`). It also provides functions for predicting clone addresses.
+_Важно!_ Библиотека поддерживает функции для создания контрактов ```create()``` и ```create2()```. Также поддерживает функции для прогнозирования адресов клонов.
 
-_Very important!_ This approach is not meant for upgrading the logic of contracts deployed using EIP-1167. It is simply a cost-effective and controlled way to create a clone of an existing contract.
+_Очень важно!_ Этот подход не служит для обновления логики контрактов задеплоенных при помощи **eip-1167**. Это просто дешевый, контролируемый способ создать клона существующего контракта.
 
-You can see a simple example of using the Clones library [here](./contracts/ClonesProxy.sol). The example demonstrates creating a pair contract inside a factory contract, inspired by the concept of Uniswap.
+Простой пример использования библиотеки Clones можно посмотреть [тут](./contracts/ClonesProxy.sol). Пример показывает создание контракта пары внутри контракта фабрики. Вдохновлялся концептом Uniswap.
 
-More usage examples can be found [here](https://github.com/OpenZeppelin/workshops/tree/master/02-contracts-clone).
+Больше примеров использования [тут](https://github.com/OpenZeppelin/workshops/tree/master/02-contracts-clone).
 
-## OpenZeppelin Plugin
+## Плагин от openzeppelin
 
-OpenZeppelin provides a plugin for Hardhat that allows you to deploy and manage different proxies. You can find the [documentation](https://docs.openzeppelin.com/upgrades-plugins/1.x/) for the plugin and learn how to use it with Hardhat [here](https://docs.openzeppelin.com/upgrades-plugins/1.x/hardhat-upgrades).
+Для Hardhat у OpenZeppelin существуют плагин дял скриптов при помощи которого можно деплоить и управлять различными прокси. [Ссылка на документацию](https://docs.openzeppelin.com/upgrades-plugins/1.x/). [Использование вместе с hardhat](https://docs.openzeppelin.com/upgrades-plugins/1.x/hardhat-upgrades).
 
-The plugin supports UUPS, Transparent, and Beacon proxy templates. The upgrade options differ depending on the template.
-## OpenZeppelin Utils
+Плагин поддерживают шаблоны прокси UUPS, Transparent и Beacon. В зависимости от шаблона варианты обновления отличаются.
 
-As we mentioned earlier, upgradeable contracts do not have a `constructor()`. Instead, a commonly used function called `initialize()` is used for the initial data initialization when deploying an upgradeable contract.
+## OpenZeppelin utils
 
-OpenZeppelin provides its own utility called [Initializable](https://docs.openzeppelin.com/contracts/4.x/api/proxy#Initializable) for safe initialization management. Essentially, it is a base contract that helps in writing upgradeable contracts and protects the `initialize()` function from being called multiple times.
+Как мы говорили выше upgradeable контракты не имеют ```constructor()```. Вместо этого используется общепринятая функция ```initialize()```. Напоминаем, что она используется для первичной инициализации данных при деплое обновляемого контракта.
 
-_Important!_ To avoid leaving the proxy contract uninitialized, the `initialize()` function should be called as early as possible. This is typically done using the **data** argument during proxy deployment.
+OpenZeppelin предлагает собственную утилиту [Initializable](https://docs.openzeppelin.com/contracts/4.x/api/proxy#Initializable) для безопасного управления инициализацией. По сути это базовый контракт, который предлагает помощь в написание обновляемого контракта с возможностью защитить функцию ```initialize()``` от повторного вызова.
 
-_Important!_ In addition to not leaving the proxy contract uninitialized, it is also not recommended to leave the possibility to call the `initialize()` function on the logic contract.
+_Важно!_ Чтобы не оставлять proxy контракт неинициализированным, нужно вызывать функцию ```initialize()``` как можно раньше. Обычно это делается при помощи аргумента **data** в момент деплоя proxy.
 
-To prevent calling the `initialize()` function on the logic contract, the utility provides the `_disableInitializers()` function.
+_Важно!_ Помимо того, что нельзя оставлять proxy контракт неинициализированным, также не рекомендуется оставлять возможность вызвать функцию ```initialize()``` на контракте логики.
 
-Usage example:
+Для запрета вызова функции ```initialize()``` на контракте логики утилита реализует функцию ```_disableInitializers();```.
+
+Пример использования:
 ```solidity
 /// @custom:oz-upgrades-unsafe-allow constructor
 constructor() {
     _disableInitializers();
 }
 ```
-You can check an example of the working smart contract [here](./contracts/Initialize.sol).
+
+Рабочий пример кода контрактов можно посмотреть [тут](./contracts/Initialize.sol).
 
 ## Links
 
-1. [Example of delegateCall](https://solidity-by-example.org/delegatecall/)
+1. [Пример delegateсall вызова](https://solidity-by-example.org/delegatecall/)
 2. [DelegateCall: Calling Another Contract Function in Solidity](https://medium.com/coinmonks/delegatecall-calling-another-contract-function-in-solidity-b579f804178c)
 3. [Delegate call solidity doc](https://docs.soliditylang.org/en/latest/introduction-to-smart-contracts.html#delegatecall-and-libraries)
 4. [Malicious backdoors in Ethereum Proxies](https://medium.com/nomic-foundation-blog/malicious-backdoors-in-ethereum-proxies-62629adf3357)
@@ -174,5 +182,4 @@ You can check an example of the working smart contract [here](./contracts/Initia
 8. [ERC-1822: Universal Upgradeable Proxy Standard (UUPS)](https://eips.ethereum.org/EIPS/eip-1822)
 9. [How to create a Beacon Proxy](https://medium.com/coinmonks/how-to-create-a-beacon-proxy-3d55335f7353)
 10. [ERC-1167: Minimal Proxy Contract](https://eips.ethereum.org/EIPS/eip-1167)
-
-
+11. [Proxies deep dive](https://proxies.yacademy.dev/pages/proxies-list/#the-proxy)

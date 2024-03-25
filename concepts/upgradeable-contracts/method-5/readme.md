@@ -1,42 +1,42 @@
 # Diamond pattern
 
-This approach can be considered an improvement of the proxy pattern. The main difference is that a diamond proxy can delegate calls to more than one logical contract.
+Этот подход можно считать улучшением прокси шаблона. Главное отличие заключается в том, что diamond proxy может делегировать вызовы более чем одному логическому контракту.
 
-![Diamond Proxy Schema](./images/schema-diamond-proxy.png)
+![](./images/schema-diamond-proxy.png)
 
-The diamond upgrade pattern has several advantages compared to regular proxy patterns:
+Diamond шаблон обновления имеет некоторые преимущества по сравнению с обычными шаблонами прокси:
 
-1. It allows updating only a small portion of the contract without modifying the entire code.
+1. Можно обновить только небольшую часть контракта без изменения всего кода.
 
-2. The diamond pattern enables easy segregation of functions into multiple logical contracts, bypassing the contract size limitation of 24 KB.
+2. Diamond шаблон позволяет легко разделить функции на несколько логических контрактов. Таким образом можно легко обойти ограничение размера контракта в 24 КБ.
 
-3. The diamond pattern provides a modular approach to managing upgrade permissions, allowing for restrictions on updating specific functions within the smart contract.
+3. Diamond шаблон обеспечивает модульный подход к управлению разрешениями на обновление, можно ограничить обновление определенных функций в рамках смарт-контракта.
 
-Externally, the diamond pattern appears as a single smart contract with one address. Internally, it utilizes a set of smart contracts called **facets**.
+Снаружи Diamond паттерн кажется единым смарт-контрактом и имеет один адрес. Внутри использует набор смарт-контрактов, которые называются **facets**.
 
-When a function is called on the diamond contract proxy, the proxy checks if it has a **facet** with that function and invokes it if it exists. All state data is stored on the main diamond contract.
+Когда снаружи на контракте Diamond прокси вызывается функция, прокси проверяет, есть ли у него **facet** с этой функцией, и вызывает ее, если она существует. При этом все состояния хранятся на контракте на основном Diamond.
 
-_Important!_ Similar to regular proxies, the diamond pattern has a fallback function inside the contract that delegates the call to the **facets**.
+_Важно!_ Diamond также, как и обычные прокси имеет резервную функцию ```fallback()``` внутри которой реализовано делегирование вызова к **facets**
 
-Originally, the EIP-2535 Diamonds were created to address the contract size limitation of 24 KB, but it turned out to be useful for more than just that. It provides a foundation for building larger smart contract systems that can evolve over time.
+Первоначально EIP-2535 Diamonds был создан для устранения ограничения контракта в 24 КБ, но оказалось, что он полезен и помимо этого. Он обеспечивает основу для создания более крупных систем смарт-контрактов, которые могут расширяться в процессе разработки. Одним из примеров такой системы являются смарт-контракты блокчейна [zkSync era](https://github.com/matter-labs/era-contracts/tree/main/l1-contracts/contracts/zksync), которые развернуты в Ethereum. Подробнее о них можно почитать в [документации](https://docs.zksync.io/zk-stack/components/smart-contracts/smart-contracts.html) протокола.
 
 ## Inherited storage
 
-Since many facets use the same storage address space within the diamond contract, it is essential to properly implement the process of creating and updating the contract's **state**.
+Так как много facets используют одно и тоже адресное пространство хранения в рамках контракта Diamond proxy необходимо правильно реализовать процесс создания и обновления **state** контракта.
 
-The simplest strategy is to create a separate Storage contract, following the approach described in [Method 2](../method-2/readme.md) of updating smart contracts. It is crucial to strictly define any state variables only in this contract. This strategy works well and is successfully used in implementing the pattern.
+Самая простая стратегия заключается в создание отдельного контракта Storage. Тут вспоминаем наш [второй метод](../method-2/readme.md) обновления смарт-контрактов. Важно строгое определение любых state переменных только в этом контракте. Эта стратегия работает и успешно используется в реализации паттерна.
 
-However, with a large number of facets, it can be easy to confuse variables declared in Storage with local variables. Therefore, another approach to organizing storage exists.
+Однако с большим количеством facets достаточно легко начать путать переменные объявленные в Storage и локально. Поэтому существует еще один подход к организации storage.
 
 ## Diamond Storage
 
-For each facet, you can specify different starting storage positions, preventing conflicts between different facets with different state variables in storage locations.
+Для каждого facet можно указать разные места для начала хранения данных, тем самым предотвращая конфликты разных facets с разными переменными состояния в местах хранения.
 
-By hashing a unique string, we can obtain a random storage position and store the structure there. The structure can contain all the state variables we need. The unique string can act as a namespace for specific functions.
+Мы можем хэшировать уникальную строку, чтобы получить случайную позицию хранения и сохранить там структуру. Структура может содержать все переменные состояния, которые нам нужны. Уникальная строка может действовать как пространство имен для определенных функций.
 
 ## App Storage
 
-Another option is to have a single AppStorage structure for all facets together, where all variables are stored. This can be more convenient because you don't have to think about segregating state variables.
+Еще один вариант это завести одну структуру AppStorage для всех facets сразу. И в этой структуре хранить все переменные. Это может быть намного удобнее, потому что не нужно будет думать о разграничение state переменных.
 
 # Examples
 1. [Simple implementation](https://github.com/mudgen/diamond-1-hardhat)

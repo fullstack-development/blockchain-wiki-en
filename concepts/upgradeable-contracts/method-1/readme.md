@@ -1,36 +1,36 @@
-# Contract Migration
+# Contract migration
 
-Versioning smart contracts and migrating states from one version to another.
+Версионирование смарт-контрактов и миграция состояний из одной версии в другую.
 
-The main idea is to create a new contract and transfer the state from the old contract to the new one. Initially, the newly deployed contract will have an empty storage.
+Основная идея заключается в создание нового контракта и перенос в него состояния из старого контракта. Изначально новый развернутый контракт будет иметь пустое хранилище.
 
-The process of transitioning to a new version can be done as follows:
-1. Create a new instance of the contract.
-2. Transfer the state or migrate the data. This can be done in two ways:
-   - **On-chain migration:** Migration using smart contracts.
-   - **Off-chain migration:** Gathering data from the old contract outside the blockchain, and finally, storing the collected data at the address of the new contract.
-3. Update the address of the new contract for all contracts, services, and client applications. In other words, replace the old address with the new one.
-4. Encourage users to switch to using the new contract. If it is a token contract, you also need to reach out to exchanges to deprecate the old contract and use the new contract instead.
+Процесс перехода на новую версию может выглядеть следующим образом:
+1. Создание нового экземпляра контракта.
+2. Перенос состояния или миграция данных. Это может быть реализовано двумя способами:
+ - **On-chain.** Миграция при помощи смарт-контрактов.
+ - **Off-chain.** Сбор данных со старого контракта происходит за пределами блокчейна. На последнем этапе собранные данные записываются по адресу нового контракта.
+3. Обновить адрес нового контракта для всех контрактов, сервисов и клиентских приложений. То есть заменить старый адрес, на новый.
+4. Убедить пользователей перейти на использование нового контракта. Если это контракт токена, вам также необходимо связаться с биржами, чтобы отказаться от старого контракта и использовать новый контракт.
 
-_Important!_ Data migration is a relatively straightforward operation, but it can take a significant amount of time and require significant gas costs. It's also important to note that not all users will want to migrate to the new version, so support measures for such users and old contract versions should be carefully considered.
+_Важно !_ Перенос данных относительно несложная и простая операция, но она может занять значительное время и потребовать значительных затрат на газ. Также стоит помнить, что не все пользователи захотят перейти на новую версию, а значит необходимо продумывать меры поддержки для таких пользователей и старых версий контрактов.
 
-## On-chain Migration
-Migration using smart contracts can be implemented in two ways:
-- **User-Paid Migration:** When we ask the user to pay for the gas. We implement a migration functionality that determines the user upon invocation and transfers the functionality to the new contract.
-- **Migrator-Paid Migration:** We can perform the migration on behalf of the protocol by manually transferring the states or using another contract. In this case, the gas costs are covered by the company (contract owners, protocol).
+## On-chain
+Миграция при помощи смарт-контрактов. Такая миграция может быть реализована двумя способами.
+- **За счет пользователя.** Когда мы предлагаем пользователю заплатить за газ. Мы пишем некий функционал миграции, который при вызове определяет пользователя и переносит функционал на новый контракт.
+- **За счет мигратора.** Мы можем это делать за счет протокола и переносить состояния в ручную или при помощи еще одного контракта. В этом случае затраты на газ покрывает компания(владельцы контрактов, протокола).
 
-## Off-chain Migration
-Read all data from the blockchain. If there was a hack or failure, it is necessary to read the data until the block with the failure. If possible, it's recommended to pause the operation of the current smart contract. All public primitives can be easily read. For private variables, it's a bit more challenging, but you can rely on events or use the `getStorageAt()` method to read such variables from storage. Arrays can also be easily restored since the number of elements is known. However, with mappings, it's more complex as the keys are not stored, so you can only rely on events. After collecting all the data, it needs to be stored in the new contract.
+## Off-chain
+Считываем все данные из блокчейн. Если был взлом или сбой, то читать необходимо до блока со сбоем. При этом работу действующего смарт-контракта лучше приостановить(если это возможно). Все публичные примитивы легко считываются. Для приватных переменных чуть сложнее, но можно полагаться на события(Events) или использовать метод ```getStorageAt()``` для чтения таких переменных из хранилища. Массивы также легко восстанавливаются, поскольку известно количество элементов. С mapping все намного сложнее, так как ключи не сохраняются, поэтому можно полагаться только на события(Event). После сбора всех данных необходимо записать их на новый контракт.
 
-To recover data from events, you need to understand how events are stored, indexed, and filtered outside of the blockchain. This is well described [here](https://medium.com/mycrypto/understanding-event-logs-on-the-ethereum-blockchain-f4ae7ba50378).
+Чтобы восстановить данные из событий необходимо понимать, как события хранятся, как индексируются и как фильтруются за пределами блокчейн. Про это хорошо описано [тут](https://medium.com/mycrypto/understanding-event-logs-on-the-ethereum-blockchain-f4ae7ba50378).
 
-One way to collect data is by using the [Google BigQuery API](https://cloud.google.com/blog/products/data-analytics/ethereum-bigquery-public-dataset-smart-contract-analytics) service.
+Одним из вариантов сбора данных является использования сервиса [Google BigQuery API](https://cloud.google.com/blog/products/data-analytics/ethereum-bigquery-public-dataset-smart-contract-analytics)
 
-For more details and examples, refer to [here](./big-quiery.md).
+Подробнее с примерами смотреть [тут](./big-query.md)
 
 # Links
 
 1. [How contract migration works](https://blog.trailofbits.com/2018/10/29/how-contract-migration-works/)
-2. [EthersJS. Events. Logs and filtering](https://docs.ethers.io/v5/api/providers/provider/#Provider--events)
+2. [EthersJS. Events. Logs and filtering](https://docs.ethers.org/v5/concepts/events/#events--filters)
 3. [Solidity documentation. Events](https://docs.soliditylang.org/en/v0.8.18/contracts.html#events)
 4. [Understanding event logs on the Ethereum blockchain](https://medium.com/mycrypto/understanding-event-logs-on-the-ethereum-blockchain-f4ae7ba50378)

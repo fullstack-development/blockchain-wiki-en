@@ -1,42 +1,43 @@
-# Smart Contract Upgrades
+# Обновление смарт-контракта
 
-**Author:** [Pavel Naydanov](https://github.com/PavelNaydanov) 🕵️‍♂️
+**Автор:** [Павел Найданов](https://github.com/PavelNaydanov) 🕵️‍♂️
 
-By default, smart contracts on the Ethereum network are immutable. However, there are scenarios where it is desirable to have the ability to modify them.
+Смарт-контракты в сети Ethereum по умолчанию неизменны. Однако для некоторых сценариев желательно иметь возможность их модифицировать.
 
-A smart contract upgrade involves changing the business logic of the contract while preserving the contract's state. The codebase can be updated, while the contract's address, state, and balance remain unchanged.
+Обновление смарт-контракта - это изменение бизнес-логики контракта при сохранении состояния контракта. Можно обновить кодовую базу, при этом адрес контракта, состояние и баланс должны оставаться неизменными.
 
-**Why is it needed?**
-Firstly, smart contracts may contain bugs or potential vulnerabilities that need to be fixed.
+**Для чего это нужно?**
 
-Secondly, there may be a need to introduce improvements or new features.
+Во-первых, в смарт-контракте могут обнаружиться ошибки или потенциальные уязвимости, которые необходимо будет исправить.
 
-_Important!_ Control over upgrades should be decentralized to avoid malicious actions.
+Во-вторых, может быть необходим сценарий, когда нужно внести улучшения или новые функциональные возможности.
 
-There are several ways to modify the executable code:
+_Важно!_ Контроль над обновлениями должен быть децентрализован, чтобы избежать злонамеренных действий.
 
-1. Creating multiple versions of smart contracts and migrating the state from the old contract to the new contract. [Learn more](./method-1/README.md).
-2. Creating multiple smart contracts to separate state and business logic. [Learn more](./method-2/README.md).
-3. Using **Proxy patterns** to delegate function calls from an immutable proxy contract to a mutable logic contract. [Learn more](./method-3/README.md).
-4. Using the **Strategy pattern**. Creating an immutable main contract that interacts with flexible auxiliary contracts and relies on them to perform certain functions. [Learn more](./method-4/README.md).
-5. Using the **Diamond pattern** to delegate function calls from a proxy contract to logical contracts. [Learn more](./method-5/README.md).
+Можно изменить исполняемый код несколькими способами:
 
-## Pros and Cons of Smart Contract Upgrades
+1. Создание нескольких версий смарт-контрактов и миграция состояния из старого контракта в новый контракт. [Подробнее](./method-1/readme.md).
+2. Создание нескольких смарт-контрактов для раздельного хранения состояния и бизнес логики. [Подробнее](./method-2/readme.md).
+3. Использование **Proxy patterns** для делегирования вызова функций из неизменяемого прокси-контракта в изменяемый логический контракт. [Подробнее](./method-3/readme.md).
+4. Использование **Strategy pattern**. Создание неизменного основного контракта, который взаимодействует с гибкими вспомогательными контрактами и полагается на них для выполнения определенных функций. [Подробнее](./method-4/readme.md).
+5. Использование **Diamond pattern** для делегирования вызовов функций из прокси-контракта логическим контрактам. [Подробнее](./method-5/readme.md).
 
-### Pros
+## Плюсы и минусы обновления смарт-контрактов
 
-1. Allows for vulnerability fixes post-deployment. It can be argued that this enhances security by enabling vulnerability patches.
-2. Enables adding functionality to the contract's logic after deployment.
-3. Opens up new possibilities for designing and building decentralized systems with isolation of different parts of the application and access control.
+### Плюсы
 
-### Cons
+1. Дает возможность исправить уязвимость после деплоя. Можно даже сказать (но это спорно), что это повышает безопасность, так как можно исправить уязвимость.
+2. Дает возможность добавлять функциональность к логике контракта после деплоя.
+3. Открывает новые возможности проектирования и построения децентрализованной системы с изолированием отдельных частей приложения и разграничением доступа и управления.
 
-1. Contradicts the immutability principle of blockchain. From a security standpoint, this is not ideal, as users have to trust developers not to make arbitrary changes to smart contracts.
-2. To gain user trust, additional layers of protection, such as a DAO, may be needed to guard against unauthorized changes.
-3. Allowing for contract upgrades can significantly increase the complexity of the contract.
-4. Insecure access control or centralization in smart contracts can make it easier for malicious actors to perform unauthorized upgrades.
+### Минусы
+1. Отменяет идею блокчейна о неизменности кода. А значит с точки зрения безопасности, это плохо. Пользователи должны доверять разработчикам, чтобы они не изменяли смарт-контракты произвольно.
+2. Чтобы завоевать доверие пользователей, нужны дополнительные слои защиты,например DAO, которое будет защищать от несанкционированных изменений.
+3. Закладывание возможности обновления контракта может сильно увеличить его сложность.
+4. Небезопасный контроль доступа или централизация в смарт-контрактах может упростить злоумышленникам выполнение несанкционированных обновлений.
 
 ## Links
 1. [Upgrading smart contracts](https://ethereum.org/en/developers/docs/smart-contracts/upgrading/)
 2. [Upgradable Smart Contracts: What They Are and How To Deploy Your Own](https://blog.chain.link/upgradable-smart-contracts/)
-3. [Upgrading smart contracts by OpenZeppelin](https://docs.openzeppelin.com/learn/upgrading-smart-contracts#whats-in-an-upgrade)
+3. [Upgrading smart contracts от OpenZeppelin](https://docs.openzeppelin.com/learn/upgrading-smart-contracts#whats-in-an-upgrade)
+4. [yAcademy Proxies Research](https://proxies.yacademy.dev/)

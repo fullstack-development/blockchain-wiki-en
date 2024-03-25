@@ -1,22 +1,27 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.21;
 
 import {TransparentUpgradeableProxy} from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
+import {ERC1967Utils} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Utils.sol";
 import {ProxyAdmin} from "@openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol";
 
 /**
- * To understand the contracts better, it's best to deploy them using Remix.
-Deployment order:
+ * Чтобы понять контракты. Лучше всего задеплоить их при помощи Remix.
+ * Порядок деплоя:
+ *      1. Задеплоить контракт Logic
+ *      2. Задеплоить контракт LogicProxy(address Logic, address InitialOwner, 0x)
+ *      3. Связать ABI контракта Logic с LogicProxy при помощи встроенного в Remix функционала "Deploy at address".
+ *         Чтобы сделать это необходимо выбрать в поле CONTRACT - Logic, а в "At Address" установить адрес LogicProxy. Нажать на кнопку "At address"
+ *          Это позволит вызывать методы контракта Logic для контракта LogicProxy
+ *      4. Задеплоить контракт Logic2. Этот контракт обновит логику контракта Logic. Будет добавлена новая функция increment()
+        5. Вызвать на контракте LogicProxy функцию "getAdmin()" чтобы получить адрес контракта администратора, затем связать ABI ProxyAdmin
+            с этим адресом, как это было проделано в пункте 3
+ *      6. На контракте ProxyAdmin вызвать upgradeAndCall(address LogicProxy, address Logic2, 0x) и передать туда адреса LogicProxy, Logic2 и data (можно нулевую 0x)
+ *      7. Повторить пункт 3 но уже для контракта Logic2. Теперь у нас появился дополнительный метод increment().
+ *         При этом состояние прокси не изменилось, там хранятся те же значения что были до обновления имплементации.
+ */
 
-1. Deploy the Logic contract.
-2. Deploy the Admin contract.
-3. Deploy the LogicProxy contract with the addresses of Logic and Admin as parameters, and "0x" as the third parameter.
-4. Deploy the LogicProxy contract with the ABI of the Logic contract using the built-in Remix functionality "Deploy at address." To do this, select "Logic" in the CONTRACT field and set the address of LogicProxy in the At field. Click on the "At" button. This will enable calling methods of the Logic contract for the LogicProxy contract.
-5. Deploy the Logic2 contract. This contract will update the logic of the Logic contract by adding a new function increment().
-6. On the Admin contract, call upgrade() and pass the addresses of LogicProxy and Logic2 as parameters.
-7. Repeat step 4, but now for the Logic2 contract. Now we have an additional method increment(). The state of the proxy contract remains unchanged; it still holds the same values as before the implementation update.
-
-/// Logic Contract
+/// Контракт логики
 contract Logic {
     uint256 private _value;
 
@@ -29,7 +34,7 @@ contract Logic {
     }
 }
 
-/// Logic contract for updating.
+/// Контракт логики для обновления
 contract Logic2 {
     uint256 private _value;
 
@@ -46,16 +51,19 @@ contract Logic2 {
     }
 }
 
-/// Proxy contract
+/// Контракт прокси
 contract LogicProxy is TransparentUpgradeableProxy {
-    constructor(address _logic, address admin_, bytes memory _data)
-        TransparentUpgradeableProxy(_logic, admin_, _data)
+    constructor(address _logic, address _initialOwner, bytes memory _data)
+        TransparentUpgradeableProxy(_logic, _initialOwner, _data)
     {}
-}
 
-/**
- * @notice /// Admin proxy contract
- * @dev Only the proxy admin can update the logic contract for the proxy.
- * Therefore, it is technically required to call the upgrade() method on the admin contract.
- */
-contract Admin is ProxyAdmin {}
+    function getAdmin() external view returns (address) {
+        return ERC1967Utils.getAdmin();
+    }
+
+    function getImplementation() external view returns (address) {
+        return ERC1967Utils.getImplementation();
+    }
+
+    receive() external payable {}
+}
