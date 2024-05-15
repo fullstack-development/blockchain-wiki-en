@@ -258,7 +258,7 @@ If the second bit was 0, it will turn into 1:
 ```bash
     00110000
   ^
-    00110010
+    00000010
     00110010
 ```
 
@@ -267,7 +267,7 @@ And conversely, if there was a 1, it will become 0:
 ```bash
    00110010
  ^
-   00110010
+   00000010
    00110000
 ```
 
@@ -375,7 +375,7 @@ A refined example of working with flags in solidity can be seen in the [Universa
 
 Bitwise operations allow for compact data storage and transfer. We can combine multiple boolean flags into a single number and use bitwise operations to read or write each flag individually. This conserves memory and simplifies data handling.
 
-For example, in Solidity, the `bool` type is stored in `uint8`. If we use `uint8` and store each flag in separate bits, it can accommodate 256 boolean values!
+For example, in Solidity, the `bool` type is stored in `uint8`. If we use `uint8` and store each flag in separate bits, it can accommodate 8 boolean values!
 
 **3. Performance Optimization**.
 
