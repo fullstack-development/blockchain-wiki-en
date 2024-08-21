@@ -8,9 +8,9 @@ In other words, a lending protocol is a liquidity aggregator that is provided to
 
 ## Quick Navigation
 
-1. Article about [Compound](./compound/README.md).
-2. Article about [Aave](./aave/README.md).
-3. Article about [flash loans](./aave/flash-loans/README.md) based on Aave.
+1. Article about [Compound](/protocols/compound-v2/README.md).
+2. Article about [Aave](/protocols/aave-v2/README.md).
+3. Article about [flash loans](/protocols/aave-v2/flash-loans/README.md) based on Aave.
 
 ## A Bit of History
 
@@ -70,14 +70,14 @@ Compound V3 operates on Ethereum, Polygon, Arbitrum, and Base networks.
 
 Compound has its own governance token, **COMP**, which allows the community to participate in the governance of the protocol.
 
-Learn more about Compound in a separate [article](./compound/README.md).
+Learn more about Compound in a separate [article](/protocols/compound-v2/README.md).
 
 ## Aave
 
 **Aave** is a decentralized liquidity protocol. Within the protocol, lenders provide assets to secure Aave pools, and borrowers can borrow the provided assets from the protocol. Similar to cTokens in Compound, Aave offers its own aTokens—ERC-20 tokens that are pegged 1:1 to the value of the underlying asset.
 ATokens serve as confirmation of the lender's deposited liquidity. Interest is accrued in real-time and varies depending on the demand for borrowed funds and the supply of liquidity. For borrowers, the protocol has implemented debtTokens—ERC-20 tokens that represent the borrower's debt obligations.
 
-Learn more about Aave in a separate [article](./aave/README.md).
+Learn more about Aave in a separate [article](/protocols/aave-v2/README.md).
 
 ## What Are Lending Protocols Used For?
 
