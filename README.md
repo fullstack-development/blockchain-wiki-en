@@ -135,6 +135,7 @@ Join our TG-channel: [MetaLamp|Web3 DevTeam](https://t.me/metametalamp)
 
       - [Aave v2](./protocols/aave-v2/README.md)
       - [Aragon DAO v1](./protocols/aragon-dao-v1/README.md)
+      - [Aragon DAO v2](./protocols/aragon-dao-v2/README.md)
       - [Compound v2](./protocols/compound-v2/README.md)
       - [Compound v3](./protocols/compound-v3/README.md)
       - [LayerZero v2](./protocols/layerzero-v2/README.md)
