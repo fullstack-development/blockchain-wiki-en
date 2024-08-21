@@ -2,7 +2,7 @@
 
 **Author:** [Pavel Naydanov](https://github.com/PavelNaydanov) 🕵️‍♂️
 
-_Oops!_ **Staking NFT** is a way to lock assets (NFTs) in smart contracts with the possibility of receiving rewards or other protocol privileges without the need to sell or transfer the NFT to another user.
+_Oops!_ **NFT staking** is a way to lock assets (NFTs) in smart contracts with the possibility of receiving rewards or other protocol privileges without the need to sell or transfer the NFT to another user.
 
 Many projects are looking for ways to bring benefits to NFT owners and try to stimulate long-term ownership or engagement in the project's ecosystem. For such projects, NFT staking can be a good tool to attract new participants. For NFT holders, it's a way to earn passive income.
 
@@ -32,9 +32,20 @@ Such a system can depend on several factors:
 - **Rarity or property of the NFT**. Different NFT metrics can affect the reward size. For example, a rare NFT may yield higher rewards than a common one.
 - **Network fee**. Gas fees for claiming rewards can negate any passive income.
 
+For example, the formula could be as follows:
+
+> rewardAmount = (nftAmount * annualRewardAmountPerNft * stakingDuration) / secsPerYear, where:
+>- **nftAmount** - the number of NFTs staked by the user
+>- **annualRewardAmountPerNft** - the amount of reward for one NFT that is staked for one year
+>- **stakingDuration** - the actual time the NFT was staked (in seconds)
+>- **secsPerYear** - the number of seconds in a year. It is a constant equal to `31,556,952` seconds. This value accounts for 365.2425 days, which is the average length of a calendar year according to the [Gregorian calendar](https://en.wikipedia.org/wiki/Gregorian_calendar).
+Suppose a user staked one NFT for 10 days (864,000 seconds). The annual reward is 1,000 ERC-20 tokens. Then, we can easily calculate the amount of reward:
+> rewardAmount = 1 * 1000 * 864000 / 31556952 ≈ 27.379
+The user will receive twenty-seven (and some fraction) tokens for 10 days of staking according to our model.
+
 ## Pros and Cons
 
-Like everything in this world, NFT staking has its pros and cons.
+Like everything in this world, NFT staking has its pros and cons. Details are in the comparative table below.
 
 |Pros|Cons|
 |----|----|
