@@ -17,7 +17,7 @@ _Important!_ OpenZeppelin's **governance** system is designed with compatibility
 ![](./images/governance-content.png)
 
 To implement a voting system, two subsystems need to be implemented:
-1. **Token** - to control the ability to vote. For example, the user's possession of an EC-721 or ERC-20 token allows them to participate in voting.
+1. **Token** - to control the ability to vote. For example, the user's possession of an ERC-721 or ERC-20 token allows them to participate in voting.
 2. **Governor** - will determine the settings, rules, and lifecycle of the voting.
 
 ### Token
@@ -591,4 +591,4 @@ A simple contract [Whitelist.sol](../contracts/test/mocks/Whitelist.sol) was use
 ## Links
 
 1. [Governance docs](https://docs.openzeppelin.com/contracts/5.x/api/governance)
-2. [OpenZeppelin contracts Repository](https://docs.openzeppelin.com/contracts/5.x/api/governance)
+2. [OpenZeppelin contracts. Repository](https://github.com/OpenZeppelin/openzeppelin-contracts/tree/v5.0.0/contracts/governance)
