@@ -88,7 +88,7 @@ After creating a smart contract automation task, you can monitor execution stati
 
 Ready-made templates and usage examples can be found [here](https://docs.gelato.network/developer-services/web3-functions/template-and-use-cases).
 
-#### Payment 
+#### Payment
 
 When using the Gelato service, you need to pay for:
  - Gas costs for your executed transactions (or those of your end-users if you sponsor them via the relay service).
@@ -290,6 +290,110 @@ It should be noted that the information necessary to use the protocol is suffici
 The most significant advantage of the protocol is the ability to pay for jobs through income earned from the liquidity pool, thus allowing you to provide liquidity once and not pay in the future.
 
 Available on networks: Ethereum, Optimism, Polygon, and Optimism Goerli.
+
+## Practical Implementation Example
+
+Let's provide a practical example from Chainlink Automation.
+
+We'll give an example of using automation with custom logic to check the necessity of a call.
+
+Task: Implement an automatic call to a counter at a specified time interval.
+
+The solution to this task can be divided into two stages:
+- Implementation of the UpKeeper contract;
+- Registration of the contract for automation.
+
+### Creating and Deploying the Contract
+
+For this, your contract must inherit from the `AutomationCompatibleInterface`:
+
+```solidity
+import {AutomationCompatibleInterface} from "@chainlink/contracts/src/v0.8/automation/AutomationCompatible.sol";
+
+contract Counter is AutomationCompatibleInterface {}
+```
+
+Next, you need to implement two functions of the interface:
+- `checkUpkeep` (runs off-chain to determine whether the `performUpkeep` function should be called on-chain);
+- `performUpkeep` (contains the logic that should be executed on-chain when `checkUpkeep` returns true).
+
+Thus, we get a contract configured as we need — to call `performUpkeep` at a specified interval in seconds:
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.20;
+import {AutomationCompatibleInterface} from "@chainlink/contracts/src/v0.8/automation/AutomationCompatible.sol";
+
+/**
+ * @notice Counter contract that calls the performUpkeep method at a specified time interval, defined by the interval parameter in seconds.
+ * @dev The contract is created for educational purposes. Do not use in real projects.
+ */
+contract Counter is AutomationCompatibleInterface {
+    /**
+     * counter - the counter for function calls
+     */
+    uint256 public counter;
+
+    /**
+     * interval - time between function calls, in seconds
+     * lastTimeStamp - timestamp that indicates the last time the required function was called
+     */
+    uint256 public immutable interval;
+    uint256 public lastTimeStamp;
+
+    constructor(uint256 updateInterval) {
+        interval = updateInterval;
+        lastTimeStamp = block.timestamp;
+        counter = 0;
+    }
+
+    // checkData is set when registering upKeep. You can pass encoded parameters
+    function checkUpkeep(
+        bytes calldata /* checkData */
+    )
+        external
+        view
+        override
+        returns (bool upkeepNeeded, bytes memory /* performData */)
+    {
+        upkeepNeeded = (block.timestamp - lastTimeStamp) > interval;
+        // For simplicity, we are not using performData, which could be passed by the node when calling the performUpkeep method
+    }
+
+    function performUpkeep(bytes calldata /* performData */) external override {
+        if ((block.timestamp - lastTimeStamp) > interval) {
+            lastTimeStamp = block.timestamp;
+            counter = counter + 1;
+        }
+    }
+}
+```
+
+Теперь мы можем задеплоить наш контракт в блокчейн, используя [remix](https://remix.ethereum.org/). В качестве аргумента при деплое контракта, необходимо задать updateInterval - время между вызовами функции, указанное в секундах.
+
+### Registering Our Contract for Automation:
+
+1) Connect your wallet on the [website](https://automation.chain.link/) and select `Register new UpKeep`.
+2) Choose the trigger type — `Custom logic` and enter the address of your contract.
+   ![alt text](./images/custom-logic-image.png)
+3) Fill in the necessary registration details:
+   ![alt text](./images/upKeep-details.png)
+   `Gas limit` — this is the gas limit that the node will use when calling our function on the contract. In our case, the function consumes little gas, so you can leave it as is. For more complex automations, it is recommended to deploy the contract on a testnet and check how much gas is used by `performUpkeep`.
+   `Starting balance (LINK)` — the amount of LINK tokens that will be sent to the Upkeep to maintain operation.
+   `Check data` — an optional data parameter that can be sent to the `checkUpkeep` function. In our case, leave this field empty.
+4) After filling in the UpKeeper registration details, you need to submit the transaction ![alt text](./images/submit-transaction.png)
+
+Now, through your personal account, you can track:
+- The status of the keeper, its name, and balance.
+ ![alt text](./images/keeper-status.png)
+- Details and history of operations.
+![alt text](./images/keeper-details-history.png)
+
+There are also management options for our upkeep:
+![alt text](./images/keeper-actions.png)
+
+Thus, setting up the necessary automation for a smart contract is not particularly difficult.
+
 
 ## Conclusion
 
