@@ -158,7 +158,7 @@ For example, if your account does not support working with ERC721 and cannot rec
 **dependencyInterfaceIds**
 
 This should be specified when the target plugin depends on validation from another plugin.
-For example, let's take a look at the [plugin](./contracts/src/TokenWhitelistPlugin.sol) I wrote for testing. Its main task is to check if an ERC20 token is in the whitelist when calling the `transfer` and `approve` functions. It has a utility function `updateTokens`, which adds and removes tokens from the whitelist. Naturally, access to this function should be restricted, but thousands of accounts might use the plugin, and it wouldn’t make sense to assign whitelist management to a single admin wallet. Therefore, each MSCA account manages the list of tokens it can interact with independently. To ensure that only the MSCA has access to modify the whitelist, you need to add a dependency in the form of a plugin that will handle access checks. In my case, this is the [MultiOwnerPlugin](https://github
+For example, let's take a look at the [plugin](./contracts/src/TokenWhitelistPlugin.sol) I wrote for testing. Its main task is to check if an ERC20 token is in the whitelist when calling the `transfer` and `approve` functions. It has a utility function `updateTokens`, which adds and removes tokens from the whitelist. Naturally, access to this function should be restricted, but thousands of accounts might use the plugin, and it wouldn’t make sense to assign whitelist management to a single admin wallet. Therefore, each MSCA account manages the list of tokens it can interact with independently. To ensure that only the MSCA has access to modify the whitelist, you need to add a dependency in the form of a plugin that will handle access checks. In my case, this is the [MultiOwnerPlugin](https://github.com/alchemyplatform/modular-account/blob/v1.0.1/src/plugins/owner/MultiOwnerPlugin.sol).
 
 ```solidity
 function pluginManifest() external pure override returns (PluginManifest memory) {
@@ -461,7 +461,7 @@ function pluginManifest() external pure override returns (PluginManifest memory)
     });
 ```
 
-You can see a complete example [here].(./contracts/src/TransferLimitPlugin.sol).
+You can see a complete example [here](./contracts/src/TransferLimitPlugin.sol).
 
 ### Installing and Uninstalling the Plugin
 
