@@ -5,7 +5,6 @@ pragma solidity ^0.8.19;
  * @title Binary Search
  * @notice The contract implements the binarySearch() function, which performs a search for an element in a sorted list
  */
-
 contract BinarySearch {
     uint256[] private _list;
 
@@ -24,10 +23,9 @@ contract BinarySearch {
     }
 
    /**
- * @notice Binary search
- * @param desiredValue The value being searched for
- */
-
+    * @notice Binary search
+    * @param desiredValue The value being searched for
+    */
     function binarySearch(uint256 desiredValue) external view returns (uint256) {
     /// Variables to store the boundaries of the list being searched
         uint256 start = 0;

@@ -4,9 +4,9 @@ pragma solidity ^0.8.19;
 import {Counters} from "@openzeppelin/contracts/utils/Counters.sol";
 
 /**
- * @title Очередь
- * @notice Библиотека для реализации структуры данных очереди
- * @dev Использовать можно следующим образом:
+ * @title Queue
+ * @notice Library for implementing a queue data structure
+ * @dev It can be used as follows:
  * using Queue for Queue.Info;
  * Queue.Info private _queue;
  */
@@ -20,9 +20,9 @@ library Queue {
     error ZeroQueue();
 
     /**
-     * @notice Добавить элемент в очередь
-     * @param queue Хранилище очереди, представлено структурой Info
-     * @param item Элемент для добавления в очередь
+     * @notice Add item to queue
+     * @param queue Queue storage, represented by the Info structure
+     * @param item Item to add to queue
      */
     function enqueue(Info storage queue, string calldata item) external {
         queue.last += 1;
@@ -31,9 +31,9 @@ library Queue {
     }
 
     /**
-     * @notice Извлечь элемент из очереди
-     * @param queue Хранилище очереди, представлено структурой Info
-     * @return item Первый элемент в очереди
+     * @notice Remove an element from the queue
+     * @param queue Queue storage, represented by the Info structure
+     * @return item First element in the queue
      */
     function dequeue(Info storage queue) external returns (string memory item) {
         uint256 first = queue.first;
@@ -50,8 +50,8 @@ library Queue {
     }
 
     /**
-     * @notice Количество элементов в очереди
-     * @param queue Хранилище очереди, представлено структурой Info
+     * @notice Number of elements in the queue
+     * @param queue Queue storage, represented by the Info structure
      */
     function length(Info storage queue) external view returns (uint256) {
         return queue.last - queue.first;

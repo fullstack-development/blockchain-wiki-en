@@ -12,7 +12,6 @@ import {Counters} from "@openzeppelin/contracts/utils/Counters.sol";
  * Important! All nodes in the graph are numbered in the order they are added.
  * This is necessary to know the total number of nodes for conducting the search and keeping track of visited nodes.
  */
-
 contract BreadthFirstSearch {
     using Counters for Counters.Counter;
 
