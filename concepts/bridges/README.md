@@ -34,7 +34,7 @@ On a more abstract level, the process described above can be visualized as follo
 
 ![domain-to-domain](./img/domain-to-domain.png)
 
-At the same time, **Domain A** cannot simply send a message through the channel to **Domain B** and receive confirmation from **Domain B** that the message was delivered. This is a one-way communication. Therefore,
+At the same time, **Domain A** cannot simply send a message through the channel to **Domain B** and receive confirmation from **Domain B** that the message was delivered. This is a one-way communication. Therefore, a third party is necessary — verifiers.
 
 ![verifiers](./img/verifiers.png)
 
@@ -44,7 +44,7 @@ Things get a bit more complicated because, as a rule, the main differences betwe
 - **Extensibility** — the ability to support any domain.
 - **Generalizability** — the ability to process arbitrary cross-domain data.
 
-You can read more about the trilemma in [this article] (https://medium.com/connext/the-interoperability-trilemma-657c2cf69f17). I’ll just provide a visual representation of the trilemma from this article:
+You can read more about the trilemma [in this article](https://medium.com/connext/the-interoperability-trilemma-657c2cf69f17). I’ll just provide a visual representation of the trilemma from this article:
 
 ![interoperability-trilemma](./img/interoperability-trilemma.png)
 
@@ -52,7 +52,7 @@ Due to the trilemma, there are many different approaches and solutions, as it is
 
 ## Classification of Bridges
 
-In [this article] (https://medium.com/1kxnetwork/blockchain-bridges-5db6afac44f8) The classification of bridges is described in [this article] in considerable detail. It is extensive, so here we’ll briefly cover the key points.
+The classification of bridges is described in [this article](https://medium.com/1kxnetwork/blockchain-bridges-5db6afac44f8) in considerable detail. It is extensive, so here we’ll briefly cover the key points.
 
 Globally, bridges are usually divided into two types: **trusted** and **trustless**.
 
@@ -133,7 +133,7 @@ contract OriginToken is ERC20 {
 }
 ```
 
-Next, we create a wrapper, or synthetic token, for our source token, which we will deploy on Polygon Amoy. The full code is [here] (./contracts/contracts/DestinationToken.sol).
+Next, we create a wrapper, or synthetic token, for our source token, which we will deploy on Polygon Amoy. The full code is [here](./contracts/contracts/DestinationToken.sol).
 
 ```solidity
 contract DestinationToken is ERC20, ERC20Burnable {
@@ -265,7 +265,7 @@ Now we’re ready for the first transfer. To do this, start by launching the wat
 Watching ...
 ```
 
-After launching the watcher, you need to run the token transfer script in a separate terminal. The script code is [here] (./contracts/scripts/sendTokensToDestination.js).
+After launching the watcher, you need to run the token transfer script in a separate terminal. The script code is [here](./contracts/scripts/sendTokensToDestination.js).
 
 ```bash
 Tx sent: 0x12fe9602196d5f2e9c8c26ecf170f6804e620b02a4e0461c539d5857d875c895
@@ -592,7 +592,7 @@ One more important note: transactions in CCIP are processed quite slowly (20–3
 
 ![ccip-explorer-send-to-dest](./contracts/img/ccip-explorer-send-to-dest.png)
 
-When the transaction is completed, you will be able to see the transactions in both chains as well as the transaction cost in the destination network. By the way, you can check the approximate cost of such transactions in [this table] (https://arc.net/l/quote/bpccutmc).
+When the transaction is completed, you will be able to see the transactions in both chains as well as the transaction cost in the destination network. By the way, you can check the approximate cost of such transactions [in this table](https://arc.net/l/quote/bpccutmc).
 
 ## Risks of Bridges
 
@@ -622,7 +622,7 @@ In reality, not all hacks are listed under the keyword "bridge," such as the Ron
 
 Each verification method has its own advantages and disadvantages, depending on the goals and conditions of use.
 
-You can read more about the risks [here] (https://arc.net/l/quote/fafbuydl).
+You can read more about the risks [here](https://arc.net/l/quote/fafbuydl).
 
 ## Conclusions
 
