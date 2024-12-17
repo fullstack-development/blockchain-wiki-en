@@ -17,7 +17,6 @@ contract SelectionSort {
      * @param arr Unsorted array of numbers
      * @param sortDirection Sorting direction
      */
-
     function sort(uint256[] memory arr, SortDirection sortDirection)
         external
         pure

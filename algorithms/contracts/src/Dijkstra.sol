@@ -6,7 +6,6 @@ pragma solidity ^0.8.19;
  * @notice This contract implements the search() function,
  * which performs the search for the shortest path to any point in the graph.
  */
-
 contract Dijkstra {
 /**
  * @notice Calls the shortest path search algorithm
@@ -15,31 +14,30 @@ contract Dijkstra {
  * @dev We assume that all nodes in the graph are numbered from 0 to graph.length
  * If it is impossible to reach a node, the return value will be equal to type(uint256).max
  */
-
 function search(uint256[][] memory graph, uint256 startNodeId) public pure returns (uint256[] memory) {
     /// Array to keep track of the minimum distance to reach a node
     uint256[] memory nodeWeights = new uint256[](graph.length);
     /// Array to keep track of visited nodes. This helps avoid cycling
     bool[] memory visited = new bool[](graph.length);
 
-/// Set all initial values to the maximum possible. 
+/// Set all initial values to the maximum possible.
 /// This is necessary for finding the minimum path to each node in the graph.
 for (uint256 i = 0; i < graph.length; i++) {
     nodeWeights[i] = type(uint256).max;
 
         }
 
-/// The distance from the starting node to itself is zero. We establish this immediately.
+        /// The distance from the starting node to itself is zero. We establish this immediately.
         nodeWeights[startNodeId] = 0;
 
-/// Traverse all nodes in the graph
+        /// Traverse all nodes in the graph
         uint256 count = graph.length;
         while(count > 0) {
-/// Find the minimum path to the nearest neighboring node in the graph and set that node as the starting node
+            /// Find the minimum path to the nearest neighboring node in the graph and set that node as the starting node
             startNodeId = _findMinWeight(nodeWeights, visited);
             visited[startNodeId] = true;
 
-/// Calculate all possible distances to the nearest neighboring nodes
+            /// Calculate all possible distances to the nearest neighboring nodes
             for (uint256 endNodeId = 0; endNodeId < graph.length; endNodeId++) {
                 if (
                     !visited[endNodeId]
@@ -47,7 +45,7 @@ for (uint256 i = 0; i < graph.length; i++) {
                     && nodeWeights[startNodeId] != type(uint256).max
                     && nodeWeights[startNodeId] + graph[startNodeId][endNodeId] < nodeWeights[endNodeId]
                 ) {
-/// Update the distance if it's smaller than what was set previously
+                    /// Update the distance if it's smaller than what was set previously
                     nodeWeights[endNodeId] = nodeWeights[startNodeId] + graph[startNodeId][endNodeId];
                 }
             }
