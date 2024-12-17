@@ -13,7 +13,7 @@ Join our TG-channel: [MetaLamp|Web3 DevTeam](https://t.me/metametalamp)
 ### Blockchain wiki
 
 <details open>
-  <summary>Оглавление</summary>
+  <summary>Table of contents</summary>
 
   - [Algorithms and data structures](./algorithms/README.md)
   - <details open>
