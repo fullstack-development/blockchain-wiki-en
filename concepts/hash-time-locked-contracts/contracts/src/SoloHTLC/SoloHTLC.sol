@@ -17,10 +17,10 @@ struct LockOrder {
 
 /**
  * @title Hash time locked contract
- * @notice Смарт-контракт создан в учебных целях для демонстрации работы HTLC
- * @dev Пользователь блокирует активы в момент создания контракта, указав хеш секретной фразы.
- * Зная секретную фразу другой пользователь сможет разблокировать активы.
- * Если этого не происходит первый пользователь может вернуть активы обратно по истечении времени блокировки
+ * @notice The smart contract was created for educational purposes to demonstrate the operation of HTLC.
+ * @dev The user locks the assets at the moment of contract creation by specifying the hash of the secret phrase.
+ * Knowing the secret phrase, another user will be able to unlock the assets.
+ * If this does not happen, the first user can return the assets after the lock time expires
  */
 contract SoloHTLC {
     using SafeERC20 for IERC20;
@@ -95,8 +95,8 @@ contract SoloHTLC {
     }
 
     /**
-     * @notice Конструктор. На момент инициализации контракта блокирует активы пользователя
-     * @param lockOrder Информация о блокируемых активах
+     * @notice Constructor. Locks the user's assets at the moment of contract initialization
+     * @param lockOrder Information about the locked assets
      */
     constructor(LockOrder memory lockOrder) validateLock(lockOrder) payable {
         _lockOrder = lockOrder;
@@ -107,8 +107,8 @@ contract SoloHTLC {
     }
 
     /**
-     * @notice Позволяет забрать средства получателю актива
-     * @param secret Секретная фраза, которую необходимо знать, для того, чтобы разблокировать активы
+     * @notice Allows the recipient of the asset to withdraw the funds
+     * @param secret The secret phrase that must be known to unlock the assets
      */
     function claim(bytes memory secret) external validateClaim(secret) {
         _transfer(_lockOrder.token, _lockOrder.recipient, _lockOrder.value);
@@ -117,8 +117,8 @@ contract SoloHTLC {
     }
 
     /**
-     * @notice Позволяет забрать средства создателю заблокированных активов
-     * @dev Доступно только после наступления expiredTime
+     * @notice Allows the creator of the locked assets to withdraw the funds
+     * @dev Available only after the `expiredTime` has been reached
      */
     function refund() external validateRefund {
         _transfer(_lockOrder.token, _lockOrder.sender, _lockOrder.value);
@@ -126,7 +126,7 @@ contract SoloHTLC {
         emit Refunded(_lockOrder);
     }
 
-    /// @notice Получить информацию о заблокированных активах
+    /// @notice Retrieve information about the locked assets
     function getLockOrder() external view returns (LockOrder memory) {
         return _lockOrder;
     }
