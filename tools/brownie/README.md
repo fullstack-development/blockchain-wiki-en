@@ -34,22 +34,22 @@ The command to initialize a project from templates is ```brownie bake nameOfRepo
 
 ## Project Structure
 
-contracts/: 
+contracts/:
 The contracts themselves (code and libraries).
 
-interfaces/: 
+interfaces/:
 Contract interfaces.
 
-scripts/: 
+scripts/:
 Python scripts.
 
-tests/: 
+tests/:
 Project tests.
 
-build/: 
+build/:
 Information obtained as a result of building and deploying is stored here.
 
-reports/: 
+reports/:
 Reports in JSON format.
 
 There is also a configuration file **brownie-config.yaml** — it can specify compiler options, data for connecting to a node, or testing parameters. Configuration options can be found [here](https://eth-brownie.readthedocs.io/en/stable/config.html).
@@ -85,8 +85,6 @@ For more detailed information on how to install, manage packages and import them
 ### gui
 
 Brownie includes a graphical interface for viewing data on test coverage and analyzing the compiled bytecode of your contracts.
-
-If you're not familiar with opcodes, I suggest you read this excellent [article](https://github.com/fullstack-development/blockchain-wiki/blob/b062e3a0b385c05120a898eda485a509d5d1745e/ehtereum-virtual-machine/evm-opcodes/README.md#L1).
 
 _Important!_ If you have problems loading the gui, you probably haven't installed [Tkinter](#installing-brownie).
 
@@ -136,7 +134,7 @@ Using this method, each test runs many times with different random data. If a ca
 
 This way, you can test necessary functions with a range of arguments, find vulnerabilities, and fix them. You can read more about setting up such tests [here](https://eth-brownie.readthedocs.io/en/stable/tests-hypothesis-property.html#what-is-property-based-testing).
 
-### Stateful Testing 
+### Stateful Testing
 
 Stateful testing is an advanced property-based testing method used for testing complex systems. It uses [Hypothesis](https://github.com/HypothesisWorks/hypothesis).
 
