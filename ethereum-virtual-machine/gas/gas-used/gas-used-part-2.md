@@ -1,71 +1,72 @@
 # Gas used part 2: Storage gas calculation
 
-**Автор:** [Роман Ярлыков](https://github.com/rlkvrv) 🧐
+**Author:** [Roman Yarlykov](https://github.com/rlkvrv) 🧐
 
-После того как в первой части статьи мы исследовали общую механику расчета газа при выполнении транзакций, в этой части погружения в мир Ethereum сфокусируемся на операциях с хранилищем (`storage`). Пройдемся по истории EIPs, связанных с расчетом газа в Ethereum, чтобы увидеть, по каким принципам сообщество принимало решения об изменениях "правил игры" и как сегодня, на основе этой истории, правильно выполнять расчет газа.
+After exploring the general mechanics of gas calculation during transaction execution in the first part of the article, in this part of our deep dive into the Ethereum world, we will focus on storage operations (`storage`). We'll walk through the history of EIPs related to gas calculations in Ethereum to understand the principles the community used to make decisions about changing the "rules of the game" and how, today, we can use this history to accurately calculate gas.
 
-## Расчет динамического газа для операции SSTORE
+## Dynamic Gas Calculation for the SSTORE Operation  
 
-Существуют сложные правила, связанные с опкодом `SSTORE`, понять и запомнить которые с первого раза бывает непросто.
+The rules related to the `SSTORE` opcode are complex, and understanding or memorizing them on the first try can be challenging.
 
-Основная идея заложенная в эти правила - сделать первую запись в слот (изменение значения с 0 на ненулевое) более затратной по газу, в отличие от последующих перезаписей, так как в базе данных этот слот уже инициализирован.
+The core idea behind these rules is to make the initial write to a storage slot (changing the value from `0` to a non-zero value) more expensive in terms of gas compared to subsequent overwrites, as the slot is already initialized in the database.
 
-> Слот (slot) - это ячейка фиксированного размера в хранилище смарт-контракта, способная хранить 32 байта данных.
+> A **slot** is a fixed-size cell in a smart contract's storage capable of holding 32 bytes of data.
 
-Кроме того, важно стимулировать очищение блокчейна от ненужных данных. Поэтому, если значение в слоте устанавливается обратно в 0, за такую операцию предусмотрен возврат газа.
+Additionally, it is important to incentivize clearing unnecessary data from the blockchain. Therefore, if the slot value is reset to `0`, a gas refund is provided for such an operation.
 
-### Первоначальный механизм расчета
+### Initial Calculation Mechanism  
 
-На заре Ethereum расчёт газа для опкода `SSTORE` выглядел просто:
+In the early days of Ethereum, gas calculation for the `SSTORE` opcode was straightforward:
 
--   20,000 газа за установку значения слота с 0 на ненулевое;
--   5,000 газа за любые другие изменения значения слота;
--   Возврат 10,000 газа при установке значения слота с ненулевого на 0. Возвраты происходили в конце транзакции.
+- **20,000 gas** for setting a slot value from `0` to a non-zero value;  
+- **5,000 gas** for any other changes to the slot value;  
+- A **10,000 gas refund** for setting the slot value from a non-zero value back to `0`. Refunds occurred at the end of the transaction.
 
-### EIP-1087: Учет газа для операций SSTORE
+### EIP-1087: Gas Accounting for SSTORE Operations  
 
-Эти простые правила, заложенные с самого начала, привели к ряду крайних случаев,  когда расход газа оказывался нерациональным и несправедливым. Поэтому вышел [EIP-1087](https://eips.ethereum.org/EIPS/eip-1087), который основывался на базовых правилах, но должен был решить возникшие проблемы.
+These simple rules, established initially, led to some edge cases where gas usage was inefficient and unfair. As a result, [EIP-1087](https://eips.ethereum.org/EIPS/eip-1087) was introduced, which built on the basic rules but aimed to address the emerging issues.
 
 ![eip-1087](./img/eip-1087.png)
 
-Проблемы, возникшие с базовыми правилами отражены в этих примерах:
--   Контракт с пустым хранилищем, устанавливающий значение слота сначала на 1, а затем обратно на 0, тратит `20,000 + 5,000 - 10,000 = 15,000` газа, хотя такая последовательность операций не требует записи на диск. Это может использоваться, например, в механизмах защиты от атаки повторного входа (reentrancy attack).
--   Контракт, который увеличивает значение слота 0 пять раз, тратит `20,000 + 5 * 5,000 = 45,000` газа, в то время как такая последовательность операций требует столько же активности диска, сколько одна запись, стоимостью в 20,000 газа.
--   Перевод средств с аккаунта A на B, а затем с B на C, при условии, что все аккаунты имеют ненулевые начальные и конечные балансы, обходится в `5,000 * 4 = 20,000` газа.
+Problems arising from the basic rules are reflected in the following examples:  
 
-#### Dirty map
+- A contract with an empty storage that first sets a slot value to `1` and then back to `0` spends `20,000 + 5,000 - 10,000 = 15,000` gas, even though this sequence of operations does not require a disk write. This can be used, for example, in mechanisms to protect against reentrancy attacks.  
+- A contract that increments a slot value from `0` five times spends `20,000 + 5 * 5,000 = 45,000` gas, even though this sequence of operations requires as much disk activity as a single write costing `20,000` gas.  
+- Transferring funds from account A to B, and then from B to C, assuming all accounts have non-zero initial and final balances, costs `5,000 * 4 = 20,000` gas.  
 
-В качестве решения EIP-1087 было предложено использовать **"dirty map"**, чтобы фиксировать все обращения к хранилищу в ходе текущей транзакции.
+#### Dirty Map  
 
-> Dirty map — это структура данных типа ключ-значение, записывающая все изменённые слоты хранения во всех контрактах за время транзакции.
+As a solution, **EIP-1087** proposed using a **"dirty map"** to track all storage interactions during the current transaction.  
 
-Для повторных перезаписей предлагалось установить стоимость в 200 единиц газа, а также ввести счетчик для возврата газа.
+> A **dirty map** is a key-value data structure that records all modified storage slots across all contracts during a transaction.  
 
-Крайние случаи, описанные выше, после внедрения EIP-1087 стали выглядеть так:
+For repeated overwrites, the cost was set to **200 gas**, and a gas refund counter was introduced.  
 
--   Если контракт с пустым хранилищем устанавливает слот 0 в 1, а затем обратно в 0, с него будет взиматься `20,000 + 200 - 19,800 = 400` газа, что сильно меньше по сравнению с 15,000.
--   Контракт с пустым хранилищем, который увеличивает слот 0 пять раз будет облагаться `20,000 + 5 * 200 = 21,000` газа, что меньше по сравнению с 45,000.
--   Перевод баланса с аккаунта A на аккаунт B, за которым следует перевод с B на C, при всех ненулевых начальных и конечных балансах, будет стоить `5,000 * 3 + 200 = 15,200` газа, что меньше по сравнению с 20,000.
+The edge cases described above, after the implementation of EIP-1087, would look like this:
 
-Все условия перечислены в [тестовых случаях](https://eips.ethereum.org/EIPS/eip-1087#test-cases) EIP-1087, всего их 12.
+- If a contract with empty storage sets slot `0` to `1` and then back to `0`, it will incur a cost of `20,000 + 200 - 19,800 = 400` gas, which is significantly less compared to 15,000.  
+- A contract with empty storage that increments slot `0` five times will be charged `20,000 + 5 * 200 = 21,000` gas, which is much lower than 45,000.  
+- Transferring a balance from account A to account B, followed by a transfer from B to C, with all non-zero initial and final balances, will cost `5,000 * 3 + 200 = 15,200` gas, which is less compared to 20,000.  
 
-### EIP-1283: Учет газа для SSTORE без dirty map
+All conditions are outlined in the [test cases] (https://eips.ethereum.org/EIPS/eip-1087#test-cases) EIP-1087, there are a total of 12.
 
-Реализация концепции "dirty map" оказалась сложной, что привело к разработке [EIP-1283](https://eips.ethereum.org/EIPS/eip-1283), основанного на предыдущем EIP-1087.
+### EIP-1283: Gas Accounting for SSTORE Without Dirty Map  
+
+The implementation of the "dirty map" concept proved to be complex, which led to the development of [EIP-1283] (https://eips.ethereum.org/EIPS/eip-1283), based on the previous EIP-1087.
 
 ![eip-1283](./img/eip-1283.png)
 
-В EIP-1283 предлагается новая система определения стоимости газа для операций с хранилищем. Значения, устанавливаемые в `storage`, классифицируются следующим образом:
+In **EIP-1283**, a new system for determining the gas cost of storage operations is proposed. Values set in `storage` are classified as follows:
 
--   **Исходное значение слота хранилища (original value):** Значение слота хранилища в случае, если происходит откат в рамках текущей транзакции.
--   **Текущее значение слота хранилища (current value):** Значение слота перед выполнением операции SSTORE.
--   **Новое значение слота хранилища (new value):** Значение слота после выполнения операции SSTORE.
+- **Original value of the storage slot (original value):** The value of the storage slot if a rollback occurs within the current transaction.  
+- **Current value of the storage slot (current value):** The value of the slot before executing the `SSTORE` operation.  
+- **New value of the storage slot (new value):** The value of the slot after executing the `SSTORE` operation.  
 
-Возьмем небольшой фрагмент кода, который берет значение смарт-контракта `ChangeNumberTwice` из слота 0 и дважды его меняет при выполнении транзакции, которая вызовет функцию `set()`:
+Let’s take a small code snippet from a smart contract, `ChangeNumberTwice`, that retrieves a value from slot `0` and changes it twice during a transaction when the `set()` function is called:
 
 ```js
 contract ChangeNumberTwice {
-    uint256 public amount; // до транзакции равно 0
+    uint256 public amount; // before the transaction, it equals 0
 
     function set() external {
         amount = 1; // до SSTORE: original = 0; current = 0; new = 1;
@@ -75,21 +76,21 @@ contract ChangeNumberTwice {
 
 ```
 
-Так это будет выглядеть на схеме:
+This is how it will look in the diagram:
 
 ![slot-original-current-new-state](./img/slot-original-current-new-state.png)
 
-Помимо этого вместо "dirty map" вводятся три состояния хранилища:
+In addition, instead of the "dirty map," three storage states are introduced:
 
--   **Бездействие (No-op):** Операция не требует изменений, если значение `current` == `new`.
--   **Свежее (Fresh):** Слот не изменялся или возвращён к `original` значению. Применяется, когда значение `current` != `new`, но совпадает с `original`.
--   **Грязное (Dirty):** Слот уже был изменён. Применяется, когда значение `current` отличается от `new` и `original`.
+- **No-op (Inactive):** The operation requires no changes if the `current` value == `new`.  
+- **Fresh:** The slot has not been modified or has been reverted to the `original` value. This applies when the `current` value != `new` but matches the `original`.  
+- **Dirty:** The slot has already been modified. This applies when the `current` value differs from both `new` and `original`.  
 
-В отличие от EIP-1087, такой подход внедрить легче, к тому же он может обработать еще больше [крайних случаев](https://eips.ethereum.org/EIPS/eip-1283#test-cases) (17).
+Unlike EIP-1087, this approach is easier to implement and can handle even more [edge cases] (https://eips.ethereum.org/EIPS/eip-1283#test-cases) (17).
 
-#### gasSStore в коде Geth
+#### gasSStore in Geth Code  
 
-Если мы посмотрим на код клиента geth, то увидим что для `dynamicGas` опкода `SSTORE` установлена функция [gasSStore](https://github.com/ethereum/go-ethereum/blob/ae4ea047e35bb35828231f1b93f2f65a964abdc9/core/vm/gas_table.go#L98).
+If we look at the Geth client code, we can see that the `dynamicGas` function for the `SSTORE` opcode is set to [gasSStore](https://github.com/ethereum/go-ethereum/blob/ae4ea047e35bb35828231f1b93f2f65a964abdc9/core/vm/gas_table.go#L98).
 
 ```go
 SSTORE: {
@@ -100,30 +101,30 @@ SSTORE: {
 },
 ```
 
-В коде функции `gasSStore` есть следующие комментарии:
+In the code of the `gasSStore` function, the following comments are present:
 
 ```go
-// Устаревший механизм учёта газа, учитывает только текущее состояние.
-// Правила устаревшего режима должны применяться, если мы находимся в Petersburg
-// (когда был отменен EIP-1283) ИЛИ если Constantinople не активен.
+// The outdated gas accounting mechanism considers only the current state
+// The rules of the outdated mode must apply if we are in Petersburg
+// (when EIP-1283 was reverted) OR if Constantinople is not active
 if evm.chainRules.IsPetersburg || !evm.chainRules.IsConstantinople {
     // ...
-    // Логика расчета газа для хард-форка St.Petersburg и всех остальных
-    // кроме хард-форка Constantinople
+    // Gas calculation logic for the St. Petersburg hard fork and all others
+    // except for the Constantinople hard fork
 }
 ```
 
-Это вызывает ряд вопросов относительно хард-форков Petersburg и Constantinople, а также EIP-1283, давайте разбираться:
+This raises several questions about the Petersburg and Constantinople hard forks, as well as EIP-1283. Let’s break it down:
 
-1. **EIP-1283 и Constantinople:** EIP-1283 был включен в первоначальный план хард-форка Constantinople, но из-за обнаруженной уязвимости к атаке "повторного входа", его реализация была отменена.
-2. **Работа Constantinople с EIP-1283:** Несмотря на то, что EIP-1283 был отменен, его код оставался в некоторых клиентах до официального релиза Constantinople, к тому же хард-форк уже был развернут в тестовой сети.
-3. **Отмена EIP-1283:** Для отмены EIP-1283 понадобился хард-форк St.Petersburg, который в был развернут в мейннете в одном блоке с Constantinople для устранения этой проблемы. В [истории](https://ethereum.org/en/history) хард-форков Ethereum St.Petersburg не упоминается, потому что фактически он был частью Constantinople.
+1. **EIP-1283 and Constantinople:** EIP-1283 was initially included in the Constantinople hard fork plan, but its implementation was canceled due to a discovered vulnerability to a "reentrancy" attack.  
+2. **Constantinople with EIP-1283:** Although EIP-1283 was canceled, its code remained in some clients until the official Constantinople release. Moreover, the hard fork had already been deployed in the test network.  
+3. **EIP-1283 Reversal:** Canceling EIP-1283 required the St. Petersburg hard fork, which was deployed on the mainnet in the same block as Constantinople to resolve the issue. In [history] (https://ethereum.org/en/history) The Ethereum St. Petersburg hard fork is not often mentioned in history because it was effectively part of Constantinople.
 
-В результате, в мейннете Ethereum продолжил работать устаревший механизм учёта газа, описанный в начале статьи, вместо реализации предложенной в EIP-1283.
+As a result, the outdated gas accounting mechanism described at the beginning of this article continued to operate on the Ethereum mainnet, instead of the implementation proposed in EIP-1283.
 
-### EIP-2200: Структурированные определения для учета газа
+### EIP-2200: Structured Definitions for Gas Accounting
 
-Получается вернулись в ту точку, с которой начали, переходим к следующему хард-форку - [Istanbul](https://ethereum.org/en/history#istanbul), который вводит 2 предложения по газу: [EIP-2200](https://eips.ethereum.org/EIPS/eip-2200) и [EIP-1884](https://eips.ethereum.org/EIPS/eip-1884) (фактически их 3, но EIP-1108 связан с криптографией).
+So we ended up back at the starting point. Let’s move on to the next hard fork - [Istanbul](https://ethereum.org/en/history#istanbul),which introduces 2 gas proposals: [EIP-2200](https://eips.ethereum.org/EIPS/eip-2200) and [EIP-1884](https://eips.ethereum.org/EIPS/eip-1884) (actually, there are 3, but EIP-1108 is related to cryptography).
 
 ![eip-2200](./img/eip-2200.png)
 
