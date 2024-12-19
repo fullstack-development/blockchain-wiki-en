@@ -134,9 +134,9 @@ contract SingleHTLC {
     }
 
     /**
-     * @notice Блокировка активов пользователя
-     * @param order Информация о блокируемых активах
-     * @param secretHash Захешированная секретная фраза
+     * @notice User asset blocking
+     * @param order Information about blocked assets
+     * @param secretHash Hashed secret phrase
      */
     function lock(Order memory order, bytes32 secretHash) validateLock(order, secretHash) external payable {
         _lockedOrders[msg.sender][secretHash] = order;
@@ -147,9 +147,9 @@ contract SingleHTLC {
     }
 
     /**
-     * @notice Раскрытие секрета
-     * @param secret Секретная фраза. Хешировалась для создания ордеров пользователями
-     * @dev Используется первым пользователем. В момент раскрытия первый пользователь забирает активы второго пользователя
+     * @notice Secret revelation
+     * @param secret Secret phrase. It was hashed to create orders by users
+     * @dev Used by the first user. At the moment of revelation, the first user takes the assets of the second user
      */
     function redeem(bytes memory secret) external validateRedeem(secret) {
         bytes32 secretHash = keccak256(abi.encodePacked(secret));
@@ -163,9 +163,9 @@ contract SingleHTLC {
     }
 
     /**
-     * @notice Позволяет забрать актив второму пользователю
-     * @param secret Секретная фраза, которую необходимо знать, для того, чтобы разблокировать активы
-     * @dev Второй пользователь узнает секретную фразу после того, как первый пользователь раскрыл ее через вызов функции redeem()
+     * @notice Allows the second user to take the asset
+     * @param secret A secret phrase that must be known to unlock assets
+     * @dev The second user learns the secret phrase after the first user reveals it by calling the redeem() function
      */
     function claim(bytes memory secret) external validateClaim(secret) {
         bytes32 secretHash = keccak256(abi.encodePacked(secret));
@@ -179,8 +179,8 @@ contract SingleHTLC {
     }
 
     /**
-     * @notice Позволяет забрать средства пользователю, который блокировал активы для конкретной секретной фразы
-     * @dev Доступно только после наступления expiredTime. Становится недоступным после того, как было сделано раскрытие секретной фразы.
+     * @notice Allows the user who locked the assets for a specific secret phrase to withdraw the funds
+     * @dev Available only after the expiredTime. Becomes unavailable after the secret phrase has been revealed.
      */
     function refund(bytes32 secretHash) external validateRefund(secretHash) {
         Order memory senderOrder = _lockedOrders[msg.sender][secretHash];
@@ -191,31 +191,31 @@ contract SingleHTLC {
         emit Refunded(secretHash, senderOrder.token, msg.sender, senderOrder.value);
     }
 
-    /// @notice Получить информацию о заблокированных активах
+    /// @notice Get information about blocked assets
     function getLockedOrder(address sender, bytes32 secretHash) external view returns (Order memory) {
         return _lockedOrders[sender][secretHash];
     }
 
     /**
-     * @notice True, если было сделано раскрытие секретной фразы, иначе - false
-     * @param secretHash Захешированная секретная фраза
+     * @notice True if the secret phrase has been revealed, otherwise false
+     * @param secretHash Hashed secret phrase
      */
     function isSecretHashRedeemed(bytes32 secretHash) external view returns (bool) {
         return _isSecretHashRedeemed[secretHash];
     }
 
     /**
-     * @notice True, если активы были разблокированы для второго пользователя, иначе - false
-     * @param secretHash Захешированная секретная фраза
+     * @notice True if the assets were unlocked for the second user, otherwise false
+     * @param secretHash Hashed secret phrase
      */
     function isSecretHashClaimed(bytes32 secretHash) external view returns (bool) {
         return _isSecretHashClaimed[secretHash];
     }
 
     /**
-     * @notice True, если был сделан возврат активов, иначе - false
-     * @param secretHash Захешированная секретная фраза
-     * @param account Адрес пользователя для которого проверяются заблокированные активы
+     * @notice True if the assets were returned, otherwise false
+     * @param secretHash Hashed secret phrase
+     * @param account The address of the user for whom the blocked assets are being checked
      */
     function isSecretHashRefunded(bytes32 secretHash, address account) external view returns (bool) {
         return _isSecretHashRefunded[secretHash][account];
