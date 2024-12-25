@@ -128,17 +128,17 @@ So we ended up back at the starting point. Let’s move on to the next hard fork
 
 ![eip-2200](./img/eip-2200.png)
 
-Основные изменения следующие:
+The main changes are as follows:
 
--   **EIP-2200:** Берет за основу EIP-1283 и [EIP-1706](https://eips.ethereum.org/EIPS/eip-1706), последний исправляет уязвимость EIP-1283. Теперь, если оставшийся газ (`gasleft`) в транзакции меньше или равен стипендии за перевод эфира (2300 газа), транзакция отменяется с ошибкой `out of gas`.
--   **Константы вместо магических чисел:** Вводятся переменные, такие как `SSTORE_SET_GAS` в EIP-2200, чтобы в дальнейшем было легче оперировать различными значениями стоимости газа.
--   **Увеличение стоимости `SLOAD`:** В EIP-1884 стоимость операции `SLOAD` увеличена с 200 до 800 единиц газа.
--   **Стоимость грязного хранилища:** В EIP-2200 стоимость обращения к "грязному хранилищу" установлена в переменной `SLOAD_GAS`.
--   **Структурные изменения в EIP-2200:** Внесены изменения в реализацию EIP-1283, улучшающие структуру и исправляющие обнаруженные недостатки.
+-   **EIP-2200:** It is based on EIP-1283 and [EIP-1706](https://eips.ethereum.org/EIPS/eip-1706), The latter fixes a vulnerability in EIP-1283. Now, if the remaining gas (`gasleft`) in a transaction is less than or equal to the stipend for an Ether transfer (2300 gas), the transaction is reverted with an `out of gas` error.
+-   **Constants instead of magic numbers:** Variables like `SSTORE_SET_GAS` are introduced in EIP-2200 to make it easier to work with different gas cost values in the future.
+-   **Increase in `SLOAD` cost:** In EIP-1884, the cost of the `SLOAD` operation has been increased from 200 to 800 gas units.
+-   **Cost of dirty storage:** In EIP-2200, the cost of accessing "dirty storage" is set in the variable `SLOAD_GAS`.
+-   **Structural changes in EIP-2200:** Changes have been made to the implementation of EIP-1283, improving its structure and addressing identified shortcomings.
 
 #### EIPs in geth
 
-Снова сделаем небольшое отступление в сторону кода. В файле [eips.go](https://github.com/ethereum/go-ethereum/blob/master/core/vm/eips.go) клиента geth представлены все изменения, связанные с EIPs, включая EIP-2200, внедренный после хард-форка Istanbul. Вот функция отвечающая за изменения:
+Let's once again make a small digression towards the code. In the file [eips.go](https://github.com/ethereum/go-ethereum/blob/master/core/vm/eips.go) the geth client contains all the changes related to EIPs, including EIP-2200, introduced after the Istanbul hard fork. Here is the function responsible for the changes:
 
 ```go
     func enable2200(jt *JumpTable) {
@@ -147,34 +147,35 @@ So we ended up back at the starting point. Let’s move on to the next hard fork
     }
 ```
 
-Эти строки кода отражают следующее:
+These lines of code reflect the following:
 
--   **Изменение стоимости `SLOAD`:** Константное значение газа для `SLOAD` было изменено на 800 единиц, что соответствует новым параметрам, определенным в EIP-2200. Сами переменные, связанные с газом, можно найти в [protocol_params.go](https://github.com/ethereum/go-ethereum/blob/master/params/protocol_params.go#L108).
--   **Изменение функции расчета динамического газа для `SSTORE`:** Введена новая функция `gasSStoreEIP2200`, которая заменяет устаревшую функцию `gasSStore`. Эта новая функция учитывает изменения, внесенные EIP-2200, и обеспечивает более точный расчет стоимости газа для операций `SSTORE`. Код этой функции доступен в [gas_table.go](https://github.com/ethereum/go-ethereum/blob/7596db5f485e29dbbb66add8fcad6e25368bf96b/core/vm/gas_table.go#L183).
+-   **Change in `SLOAD` cost:** The constant gas value for `SLOAD` was changed to 800 units, which corresponds to the new parameters defined in EIP-2200. The gas-related variables themselves can be found in
+[protocol_params.go](https://github.com/ethereum/go-ethereum/blob/master/params/protocol_params.go#L108).
+-   **Change in the dynamic gas calculation function for `SSTORE`:** A new function `gasSStoreEIP2200` has been introduced, replacing the outdated `gasSStore` function. This new function takes into account the changes introduced by EIP-2200 and provides a more accurate gas cost calculation for `SSTORE` operations. The code for this function is available in [gas_table.go](https://github.com/ethereum/go-ethereum/blob/7596db5f485e29dbbb66add8fcad6e25368bf96b/core/vm/gas_table.go#L183).
 
-#### Тест-кейсы
+#### Test Cases
 
-EIP-2200 предоставляет [таблицу](https://arc.net/l/quote/kskrsgme) с тест-кейсами. Покажу как производится расчет на примере двух случаев с refund и без:
+EIP-2200 provides a [table](https://arc.net/l/quote/kskrsgme) with test cases. I'll show how the calculation is performed using two examples: with a refund and without.
 
 | Code                   | Used Gas | Refund | Original | Current | New |
 | ---------------------- | -------- | ------ | -------- | ------- | --- |
 | 0x60006000556000600055 | 1612     | 0      | 0        | 0       | 0   |
 | 0x60006000556000600055 | 5812     | 15000  | 1        | 0       | 0   |
 
-Важно понимать пару моментов:
+It is important to understand a couple of points:
 
-1. Байт-код написан для установки значений `current` и `new`, т.к. `original` это значение до выполнения транзакции (подразумеваем, что оно уже записано в слот предыдущей транзакцией).
-2. Поэтому тестовые кейсы используют одинаковый байт-код, главное отличие в значении `original`.
+1. The bytecode is written to set the values of `current` and `new`, as `original` is the value before the transaction execution (we assume it has already been written to the slot by a previous transaction).
+2. Therefore, the test cases use the same bytecode, with the main difference being the value of `original`.
 
-##### Тест-кейс 1
+##### Test Case 1
 
 | Code                   | Used Gas | Refund | Original | 1st | 2nd |
 | ---------------------- | -------- | ------ | -------- | --- | --- |
 | 0x60006000556000600055 | 1612     | 0      | 0        | 0   | 0   |
 
-Разложим код на опкоды и запишем сколько газа потребляет каждый опкод, затем посчитаем сколько газа было использовано и сколько накопилось в счетчике **refund**.
+Let's break the code into opcodes and record how much gas each opcode consumes, then calculate how much gas was used and how much accumulated in the **refund** counter.
 
-| Операция   | Значения                           | Газ  | Условие                        |
+| Operation  | Values                             | Gas  | Condition                      |
 | ---------- | ---------------------------------- | ---- | ------------------------------ |
 | PUSH1 0x00 | -                                  | 3    | -                              |
 | PUSH1 0x00 | -                                  | 3    | -                              |
@@ -185,21 +186,21 @@ EIP-2200 предоставляет [таблицу](https://arc.net/l/quote/ksk
 | **Итог**   | 3 + 3 + 800 + 3 + 3 + 800          | 1612 | -                              |
 | **Refund** | -                                  | 0    | -                              |
 
-В данной ситуации в обоих `sstore` сработало правило EIP-2200:
+In this situation, the EIP-2200 rule was applied in both `sstore` cases:
 
 -   If current value equals new value (this is a no-op), `SLOAD_GAS` is deducted.
 
-Константа SLOAD_GAS = 800.
+The constant SLOAD_GAS = 800.
 
-##### Тест-кейс 2
+##### Test Case 2
 
 | Code                   | Used Gas | Refund | Original | Current | New |
 | ---------------------- | -------- | ------ | -------- | ------- | --- |
 | 0x60006000556000600055 | 5812     | 15000  | 1        | 0       | 0   |
 
-Здесь сложнее, помним, что значение `current` - это то, что лежит в слоте до вызова `SSTORE`. Флоу транзакции следующий:
+This one is more complex. Remember, the value of `current` is what is in the slot before the `SSTORE` call. The transaction flow is as follows:
 
-| Код        | Описание                           | Газ   | Комментарий                                                               |
+| Code       | Description                        | Gas   | Comments                                                                  |
 | ---------- | ---------------------------------- | ----- | ------------------------------------------------------------------------- |
 | PUSH1 0x00 | -                                  | 3     | -                                                                         |
 | PUSH1 0x00 | -                                  | 3     | -                                                                         |
@@ -210,28 +211,28 @@ EIP-2200 предоставляет [таблицу](https://arc.net/l/quote/ksk
 | **Итог**   | 3 + 3 + 5000 + 3 + 3 + 800         | 5812  | -                                                                         |
 | **Refund** | -                                  | 15000 | -                                                                         |
 
-В первом `sstore` применяются следующие правила EIP-2200:
+In the first `sstore`, the following EIP-2200 rules are applied:
 
 -   **If current value does not equal new value**
     -   **If original value equals current value (this storage slot has not been changed by the current execution context)**
         -   If original value is 0, SSTORE_SET_GAS is deducted.
         -   **Otherwise, SSTORE_RESET_GAS gas is deducted. If new value is 0, add SSTORE_CLEARS_SCHEDULE gas to refund counter.**
 
-Переменная SSTORE_RESET_GAS = 5000, SSTORE_CLEARS_SCHEDULE = 15000.
+The variable SSTORE_RESET_GAS = 5000, SSTORE_CLEARS_SCHEDULE = 15000.
 
-Эти два примера показывают общую логику, попробуйте проделать подобный расчет для других тест-кейсов, чтобы улучшить свое понимание, потому что знание условий EIP-2200 еще пригодится.
+These two examples illustrate the general logic. Try performing similar calculations for other test cases to improve your understanding, as knowledge of the EIP-2200 conditions will come in handy later.
 
-Разобраться также поможет сайт [evm.codes](https://www.evm.codes) (вкладка Opcodes). Нужно выбрать хард-форк (конкретно в этом случае Istanbul) и посмотреть описание `SSTORE`.
+The website will also help you understand [evm.codes](https://www.evm.codes) (tab Opcodes). You need to select the hard fork (in this case, Istanbul) and look at the description of `SSTORE`.
 
 ![](./img/evm-codes.png)
 
-## Теплый и холодный доступ
+## Warm and Cold Access
 
-После Istanbul, хард-форк [Berlin](https://ethereum.org/en/history#berlin) снова внес в Ethereum важные изменения, связанные с газом. Одно из ключевых предложений — [EIP-2929: Gas cost increases for state access opcodes](https://eips.ethereum.org/EIPS/eip-2929). Эти изменения повлияли на расчет динамической части газа для `SSTORE`.
+After Istanbul, the hard fork [Berlin](https://ethereum.org/en/history#berlin) once again introduced significant changes to Ethereum related to gas. One of the key proposals is [EIP-2929: Gas cost increases for state access opcodes](https://eips.ethereum.org/EIPS/eip-2929). These changes affected the calculation of the dynamic part of gas for `SSTORE`.
 
 ![eip-2929](./img/eip-2929.png)
 
-В EIP-2929 введены три новые константы, которые добавляют понятия "теплого" и "холодного" доступа, применяемые не только к операциям с хранилищем, но и к другим опкодам, работающим с состоянием блокчейна, таким как `SLOAD`, семейство `*CALL`, `BALANCE`, семейство `EXT*` и `SELFDESTRUCT`.
+EIP-2929 introduces three new constants that add the concepts of "warm" and "cold" access, applied not only to storage operations but also to other opcodes interacting with blockchain state, such as `SLOAD`, the `*CALL` family, `BALANCE`, the `EXT*` family, and `SELFDESTRUCT`.
 
 | Constant                 | Value |
 | ------------------------ | ----- |
@@ -239,12 +240,12 @@ EIP-2200 предоставляет [таблицу](https://arc.net/l/quote/ksk
 | COLD_ACCOUNT_ACCESS_COST | 2600  |
 | WARM_STORAGE_READ_COST   | 100   |
 
-> Холодный доступ - если в рамках транзакции к конкретному слоту в `storage` аккаунта обращаются впервые (выполняют загрузку данных).
-> Теплый доступ - в рамках одной транзакции к этому слоту уже обращались (слот прогрет).
+> Cold access - occurs when a specific slot in an account's `storage` is accessed for the first time within a transaction (data loading is performed).  
+> Warm access - occurs when the slot has already been accessed within the same transaction (the slot is warmed up).
 
-Нововведение необходимо для оптимизации работы сети и более эффективного распределения ресурсов.
+This innovation is necessary to optimize network performance and distribute resources more efficiently.
 
-Также изменились значения старых параметров:
+Additionally, the values of old parameters have been changed:
 
 | Parameter        | Old value | New value                     |
 | ---------------- | --------- | ----------------------------- |
@@ -252,11 +253,11 @@ EIP-2200 предоставляет [таблицу](https://arc.net/l/quote/ksk
 | SLOAD_GAS        | 800       | 100 (=WARM_STORAGE_READ_COST) |
 | SSTORE_RESET_GAS | 5000      | 2900 (5000 - COLD_SLOAD_COST) |
 
-_Важно!_ EIP-2929 не отменяет понятия "Fresh" и "Dirty" хранилища, а также градацию значений на original/current/new из EIP-2200 (в контексте обращения к хранилищу). Ко всему этому еще добавляется первый и последующий доступы (холодный и теплый) к слотам.
+_Important!_ EIP-2929 does not eliminate the concepts of "Fresh" and "Dirty" storage, nor the classification of values as original/current/new from EIP-2200 (in the context of storage access). On top of all this, the first and subsequent accesses (cold and warm) to slots are now added.
 
-_Важно!_ Доступы распространяется и на другие опкоды, не только на работу с `SLOAD` и `SSTORE`. Это ключевой момент в понимании данного EIP.
+_Important!_ These accesses also apply to other opcodes, not just `SLOAD` and `SSTORE`. This is a key point in understanding this EIP.
 
-Если взять первый тестовый кейс из EIP-2200, тогда изменения следующие:
+If we take the first test case from EIP-2200, the changes are as follows:
 
 Было:
 | Code                 | Used Gas | Refund | Original | 1st | 2nd | 3rd |
@@ -278,42 +279,43 @@ _Важно!_ Доступы распространяется и на други
     3 + 3 + (2100 + 100) + 3 + 3 + 100 = 2300
 ```
 
-То есть, раньше каждая последующая запись в один и тот же слот (в случае когда **current** == **original**) стоило бы 800 ед. газа. После EIP-2929, самое первое обращение в рамках одной транзакции будет дороже (2200), но все последующие будут сильно дешевле (100).
+That is, previously, each subsequent write to the same slot (in the case where **current** == **original**) would cost 800 gas units. After EIP-2929, the very first access within a single transaction will be more expensive (2200), but all subsequent accesses will be significantly cheaper (100).
 
-Также поменялась логика и с возвратом газа в связи с изменением `SSTORE_RESET_GAS`.
+The logic for gas refunds has also changed due to the modification of `SSTORE_RESET_GAS`.
 
-### Списки доступа
+### Access Lists
 
-Второе ключевое изменение, внесенное хард-форком Berlin, заключается в [EIP-2930: Optional access lists](https://eips.ethereum.org/EIPS/eip-2930), который вводит так называемые списки доступа.
+The second key change introduced by the Berlin hard fork is [EIP-2930: Optional access lists](https://eips.ethereum.org/EIPS/eip-2930), the introduction of so-called access lists.
 
 ![eip-2930](./img/eip-2930.png)
 
-Это предложение разработано для смягчения последствий, введенных EIP-2929, и для этого предлагает новый тип транзакций (тип 1) с включением списка доступа (про типы транзакций я уже рассказывал [тут](https://github.com/fullstack-development/blockchain-wiki/blob/main/ethereum-virtual-machine/gas/gas-price/README.md#%D1%82%D0%B8%D0%BF%D1%8B-%D1%82%D1%80%D0%B0%D0%BD%D0%B7%D0%B0%D0%BA%D1%86%D0%B8%D0%B9-%D0%B2-ethereum)). Также вводятся новые константы:
+This proposal was developed to mitigate the consequences introduced by EIP-2929 and introduces a new type of transaction (type 1) with the inclusion of an access list (I’ve already talked about transaction types [here]
+(https://github.com/fullstack-development/blockchain-wiki/blob/main/ethereum-virtual-machine/gas/gas-price/README.md#%D1%82%D0%B8%D0%BF%D1%8B-%D1%82%D1%80%D0%B0%D0%BD%D0%B7%D0%B0%D0%BA%D1%86%D0%B8%D0%B9-%D0%B2-ethereum)). New constants are also introduced:
 
 | Constant                     | Value |
 | ---------------------------- | ----- |
 | ACCESS_LIST_STORAGE_KEY_COST | 1900  |
 | ACCESS_LIST_ADDRESS_COST     | 2400  |
 
-Списки доступа в этих транзакциях (тип 1) позволяют заранее указывать, к каким адресам и ключам хранения будет осуществляться доступ в ходе транзакции. Это уменьшает стоимость газа для "холодных" доступов, если они заранее указаны в списке доступа, таким образом смягчая воздействие увеличенной стоимости газа для "холодных" чтений, введенной в EIP-2929.
+Access lists in these transactions (type 1) allow specifying in advance which addresses and storage keys will be accessed during the transaction. This reduces the gas cost for "cold" accesses if they are pre-specified in the access list, thereby mitigating the impact of the increased gas cost for "cold" reads introduced in EIP-2929.
 
-Смысл такой. Инициатор транзакции может сделать ее немного дешевле в случае, если выполняются два условия:
+The idea is this. The transaction initiator can make it slightly cheaper if two conditions are met:
 
--   Инициатор транзакции вызывает смарт-контракт А, который в свою очередь вызывает смарт-контракты Б, В и так далее. В таком случае `ACCESS_LIST_ADDRESS_COST` применяется для смарт-контрактов вызываемых из А - т.е смарт-контракт Б, В и т.д
--   Инициатор точно знает адреса смарт-контрактов, вызываемых контрактом А, и слоты памяти, к которым эти смарт-контракты обращаются.
+- The transaction initiator calls smart contract A, which, in turn, calls smart contracts B, C, and so on. In this case, `ACCESS_LIST_ADDRESS_COST` is applied to the smart contracts called by A — i.e., smart contracts B, C, etc.
+- The initiator knows exactly the addresses of the smart contracts called by contract A and the memory slots those smart contracts will access.
 
-При выполнении этих условий, стоимость первого (холодного) доступа к опкодам `CALL` и `SLOAD` для смарт-контракта Б снижается:
+When these conditions are met, the cost of the first (cold) access to the `CALL` and `SLOAD` opcodes for smart contract B is reduced:
 
 | Constant                     | Смарт-контракт | CALL | SLOAD |
 | ---------------------------- | -------------- | ---- | ----- |
 | ACCESS_LIST_STORAGE_KEY_COST | А              | 2600 | 2400  |
 | ACCESS_LIST_ADDRESS_COST     | Б              | 2100 | 1900  |
 
-#### Реализация списков доступа в клиенте geth
+#### Implementation of Access Lists in the geth Client
 
-Для реализации EIP-2929 с "теплым" и "холодным" доступом к хранилищу в [интерфейсе StateDB](https://github.com/ethereum/go-ethereum/blob/f55a10b64d511b27beb02ff4978a6ed66d604cd8/core/vm/interface.go#L66) добавляют два поля: `AddressInAccessList` и `SlotInAccessList`. При первом считывании переменной (т.е. "холодном" доступе), она регистрируется в `SlotInAccessList`. Второе и последующие обращения к этой переменной (т.е. "теплые" доступы) потребляют меньше газа.
+To implement EIP-2929 with "warm" and "cold" access to storage in the [StateDB interface](https://github.com/ethereum/go-ethereum/blob/f55a10b64d511b27beb02ff4978a6ed66d604cd8/core/vm/interface.go#L66) two fields are added: `AddressInAccessList` and `SlotInAccessList`. During the first read of a variable (i.e., "cold" access), it is registered in `SlotInAccessList`. The second and subsequent accesses to this variable (i.e., "warm" accesses) consume less gas.
 
-Для подробного изучения, можно обратиться к функции [enable2929](https://github.com/ethereum/go-ethereum/blob/18e154eaa24d5f7a8b3c48983ad591e6c10963ca/core/vm/eips.go#L120), в частности, к функции расчета динамического газа для опкода `SLOAD` - `gasSLoadEIP2929`:
+For a detailed study, you can refer to the function [enable2929](https://github.com/ethereum/go-ethereum/blob/18e154eaa24d5f7a8b3c48983ad591e6c10963ca/core/vm/eips.go#L120), specifically, to the function for calculating dynamic gas for the `SLOAD` opcode - `gasSLoadEIP2929`:
 
 ```go
 func enable2929(jt *JumpTable) {
@@ -326,20 +328,20 @@ func enable2929(jt *JumpTable) {
 }
 ```
 
-Сама функция [gasSLoadEIP2929](https://github.com/ethereum/go-ethereum/blob/f55a10b64d511b27beb02ff4978a6ed66d604cd8/core/vm/operations_acl.go#L103) выглядит так:
+The function itself [gasSLoadEIP2929](https://github.com/ethereum/go-ethereum/blob/f55a10b64d511b27beb02ff4978a6ed66d604cd8/core/vm/operations_acl.go#L103) looks like this:
 
 ```go
-// Для SLOAD, если пара (адрес, ключ_хранения, где адрес - это адрес контракта,
-// чье хранилище считывается) еще не находится в accessed_storage_keys,
-// взимается 2100 газа и пара добавляется в accessed_storage_keys.
-// Если пара уже находится в accessed_storage_keys, взимается 100 газа.
+// For SLOAD, if the pair (address, storage_key, where address is the contract address,
+// whose storage is being read) is not yet in `accessed_storage_keys`,
+// 2100 gas is charged, and the pair is added to `accessed_storage_keys`.
+// If the pair is already in `accessed_storage_keys`, 100 gas is charged.
 func gasSLoadEIP2929(evm *EVM, contract *Contract, stack *Stack, mem *Memory, memorySize uint64) (uint64, error) {
 	loc := stack.peek()
 	slot := common.Hash(loc.Bytes32())
-	// Проверяем наличие слота в списке доступа
+	// Checking the presence of the slot in the access list
 	if _, slotPresent := evm.StateDB.SlotInAccessList(contract.Address(), slot); !slotPresent {
-		// Если вызывающий не может позволить себе стоимость, изменение будет отменено
-		// Если он может позволить, мы можем пропустить повторную проверку того же самого позже, в процессе выполнения
+		// If the caller cannot afford the cost, the change will be reverted.
+		// If they can afford it, we can skip rechecking the same later during execution.
 		evm.StateDB.AddSlotToAccessList(contract.Address(), slot)
 		return params.ColdSloadCostEIP2929, nil
 	}
@@ -347,87 +349,86 @@ func gasSLoadEIP2929(evm *EVM, contract *Contract, stack *Stack, mem *Memory, me
 }
 ```
 
-_Важно!_ Список доступа формируется до выполнения транзакции и добавляется непосредственно в данные транзакции.
+_Important!_ The access list is formed before the transaction execution and is added directly to the transaction data.
 
-Подробнее про списки доступа можно почитать в [этой](https://www.rareskills.io/post/eip-2930-optional-access-list-ethereum) статье.
+You can read more about access lists in [this](https://www.rareskills.io/post/eip-2930-optional-access-list-ethereum) article.
 
-### Возврат газа при очистке хранилища (refund)
+### Gas Refund for Storage Clearing (refund)
 
-Рассмотрим механизм возврата газа при очистке storage в Ethereum, когда значение слота возвращается к исходному, как это определено в EIP-1283. Логика refund менялась с каждым хард-форком. Все началась с возмещения 10,000 единиц газа за очистку слота, далее правила изменились в EIP-1283 и были дополнены в EIP-2200:
+Let's examine the mechanism for gas refunds when clearing storage in Ethereum, where a slot's value is returned to its original state, as defined in EIP-1283. The refund logic has changed with each hard fork. It all started with a refund of 10,000 gas units for clearing a slot, then the rules were updated in EIP-1283 and further refined in EIP-2200:
 
-1. При замене ненулевого исходного значения (original) на ноль, возврат составляет `SSTORE_CLEARS_SCHEDULE` (15,000 газа).
-2. Если значение `original` было нулевым, `current` - ненулевым, и `new` - нулевым, возврат равен `SSTORE_SET_GAS` - `SLOAD_GAS` (19,900 газа).
-3. При замене ненулевого `original` значения на другое ненулевое, а затем обратно на `original`, возврат составляет `SSTORE_RESET_GAS` - `SLOAD_GAS` (4,900 газа).
+1. When replacing a non-zero original value (`original`) with zero, the refund is `SSTORE_CLEARS_SCHEDULE` (15,000 gas).
+2. If the value `original` was zero, `current` is non-zero, and `new` is zero, the refund is `SSTORE_SET_GAS` - `SLOAD_GAS` (19,900 gas).
+3. When replacing a non-zero `original` value with another non-zero value, and then back to `original`, the refund is `SSTORE_RESET_GAS` - `SLOAD_GAS` (4,900 gas).
 
-Подробнее обработку таких случаев изучить в [тестовых примерах](https://arc.net/l/quote/bfzggnpq) EIP-2200.
+You can study the handling of such cases in more detail in the [test examples](https://arc.net/l/quote/bfzggnpq) EIP-2200.
 
-#### EIP-3529: Изменения в механизме возврата газа
+#### EIP-3529: Changes to the Gas Refund Mechanism
 
-EIP-2929 не вносил изменений в механизм возврата газа, но таковые появились в хард-форке [London](https://ethereum.org/en/history#london) с [EIP-3529](https://eips.ethereum.org/EIPS/eip-3529). Этот EIP пересматривает правила возврата газа за `SSTORE` и `SELFDESTRUCT`.
+EIP-2929 did not introduce changes to the gas refund mechanism, but such changes appeared in the hard fork [London](https://ethereum.org/en/history#london) with [EIP-3529](https://eips.ethereum.org/EIPS/eip-3529). This EIP revises the gas refund rules for `SSTORE` and `SELFDESTRUCT`.
 
 ![eip-3529](./img/eip-3529.png)
 
-Ранее, эти возмещения предназначались для стимулирования разработчиков к "хорошей гигиене состояний", то есть к очистке ненужных слотов хранилища и смарт-контрактов. Однако, на практике это привело к нескольким проблемам:
+Previously, these refunds were intended to encourage developers to maintain "good state hygiene," meaning clearing unnecessary storage slots and smart contracts. However, in practice, this led to several problems:
 
-1. **Проблема GasToken**: GasToken позволяет экономить газ в периоды низких комиссий и использовать его в периоды высоких цен, но это также приводит к увеличению размера состояния сети (потому что он использует слоты хранилища, как накопители газа) и неэффективно загружает сеть. Таким образом, правила возврата давали возможность манипулировать газом, влияя на работу всего блокчейна.
+1. **The GasToken Problem**: GasToken allows users to save gas during periods of low fees and use it during periods of high prices, but this also increases the network's state size (because it uses storage slots as gas reservoirs) and inefficiently loads the network. Thus, the refund rules enabled gas manipulation, affecting the entire blockchain's operation.
 
-    > GasToken - смарт-контракт в сети Ethereum, который позволяет пользователям покупать и продавать газ напрямую, обеспечивая долгосрочный "банкинг" газа, который может помочь защитить пользователей от роста цен на газ.
+    > GasToken - a smart contract on the Ethereum network that allows users to buy and sell gas directly, providing long-term "gas banking," which can help protect users from rising gas prices.
 
-2. **Увеличение вариативности размера блока**: Теоретически, максимальное количество газа, потребляемое в блоке, может быть почти вдвое больше установленного лимита газа из-за возмещений. Это увеличивает колебания размера блоков и позволяет поддерживать высокое потребление газа на более длительный период, что противоречит целям [EIP-1559](https://eips.ethereum.org/EIPS/eip-1559).
+2. **Increased Block Size Variability**: Theoretically, the maximum gas consumed in a block could be almost twice the set gas limit due to refunds. This increases fluctuations in block sizes and allows for high gas consumption over longer periods, which runs counter to the goals [EIP-1559](https://eips.ethereum.org/EIPS/eip-1559).
 
-EIP-3529 внес предложения по уменьшению возмещений за операции, чтобы повысить предсказуемость и стабильность экономики газа. Основные изменения:
+EIP-3529 proposed reducing refunds for operations to improve the predictability and stability of gas economics. The key changes are:
 
-1. Удалить возмещение газа за `SELFDESTRUCT`.
-2. Заменить `SSTORE_CLEARS_SCHEDULE` (как определено в EIP-2200) на `SSTORE_RESET_GAS` + `ACCESS_LIST_STORAGE_KEY_COST` (4,800 газа по состоянию на EIP-2929 + EIP-2930).
-3. Уменьшить максимальное количество газа, возмещаемого после транзакции, до `gas_used` // `MAX_REFUND_QUOTIENT`.
-    - Примечание: Ранее максимальное количество возмещаемого газа определялось как `gas_used` // 2. В EIP константе 2 присваивается название `MAX_REFUND_QUOTIENT`, значение изменяется на 5.
+1. Remove gas refunds for `SELFDESTRUCT`.
+2. Replace `SSTORE_CLEARS_SCHEDULE` (as defined in EIP-2200) with `SSTORE_RESET_GAS` + `ACCESS_LIST_STORAGE_KEY_COST` (4,800 gas as per EIP-2929 + EIP-2930).
+3. Reduce the maximum amount of gas refunded after a transaction to `gas_used` // `MAX_REFUND_QUOTIENT`.
+    - Note: Previously, the maximum amount of refundable gas was defined as `gas_used` // 2. In this EIP, the constant 2 is named `MAX_REFUND_QUOTIENT`, and its value is changed to 5.
 
-##### Изменения EIP-3529 в клиенте geth
+##### EIP-3529 Changes in the geth Client
 
-Проследим изменения EIP-3529 в коде geth. Для этого переходим в файл [eips.go](https://github.com/ethereum/go-ethereum/blob/master/core/vm/eips.go), находим функцию [enable3529](https://github.com/ethereum/go-ethereum/blob/566754c74a74c8175ec2f1ee5cc10a8caced6015/core/vm/eips.go#L160C8-L160C8):
+Let's track the EIP-3529 changes in the geth code. To do this, go to the file [eips.go](https://github.com/ethereum/go-ethereum/blob/master/core/vm/eips.go), find the function [enable3529](https://github.com/ethereum/go-ethereum/blob/566754c74a74c8175ec2f1ee5cc10a8caced6015/core/vm/eips.go#L160C8-L160C8):
 
 ```go
-// enable3529 активирует "EIP-3529: Сокращение возмещений":
-// - Удаляет возмещения за selfdestruct
-// - Уменьшает возмещения за SSTORE
-// - Уменьшает максимальные возмещения до 20% от газа
+// enable3529 activate "EIP-3529: Reduction of Refunds":
+// - Removes refunds for `selfdestruct`
+// - Reduces refunds for `SSTORE`
+// - Reduces maximum refunds to 20% of the gas used
 func enable3529(jt *JumpTable) {
     jt[SSTORE].dynamicGas = gasSStoreEIP3529
     jt[SELFDESTRUCT].dynamicGas = gasSelfdestructEIP3529
 }
 ```
 
-Функция расчета для `dynamicGas` в очередной раз изменена, теперь это `gasSStoreEIP3529`:
+The calculation function for `dynamicGas` has been modified once again, and it is now `gasSStoreEIP3529`:
 
 ```go
-// gasSStoreEIP3529 реализует стоимость газа для SSTORE в соответствии с EIP-3529
-// Заменяет SSTORE_CLEARS_SCHEDULE на SSTORE_RESET_GAS + ACCESS_LIST_STORAGE_KEY_COST (4,800)
-gasSStoreEIP3529 = makeGasSStoreFunc(params.SstoreClearsScheduleRefundEIP3529)
+// `gasSStoreEIP3529` implements the gas cost for `SSTORE` in accordance with EIP-3529
+// Replaces `SSTORE_CLEARS_SCHEDULE` with `SSTORE_RESET_GAS` + `ACCESS_LIST_STORAGE_KEY_COST` (4,800)  
+`gasSStoreEIP3529 = makeGasSStoreFunc(params.SstoreClearsScheduleRefundEIP3529)`
 ```
 
-Если посмотреть из чего складывается `SstoreClearsScheduleRefundEIP3529`, в комментариях можно увидеть всю историю изменений возвратов:
+If you look at what makes up `SstoreClearsScheduleRefundEIP3529`, you can see the entire history of refund changes in the comments:
 
 ```go
 // В EIP-2200: SstoreResetGas был 5000.
 // В EIP-2929: SstoreResetGas был изменен на '5000 - COLD_SLOAD_COST'.
 // В EIP-3529: SSTORE_CLEARS_SCHEDULE определяется как SSTORE_RESET_GAS + ACCESS_LIST_STORAGE_KEY_COST
-// Что теперь ровняется: 5000 - 2100 + 1900 = 4800
+// Which now equals: 5000 - 2100 + 1900 = 4800
 SstoreClearsScheduleRefundEIP3529 uint64 = SstoreResetGasEIP2200 - ColdSloadCostEIP2929 + TxAccessListStorageKeyGas
 ```
-
-В файле с константами также есть предыдущее значение:
+In the constants file, the previous value is also present:
 
 ```go
 SstoreClearsScheduleRefundEIP2200 uint64 = 15000
 ```
 
-##### Тестовые случаи EIP-3529 (изменения расчета газа)
+##### Test Cases for EIP-3529 (Gas Calculation Changes)
 
-[Тестовые случаи](https://eips.ethereum.org/EIPS/eip-3529#test-cases) EIP-3529 демонстрируют изменения в возвратах газа до и после его активации. Они представлены в виде двух таблиц, где заметно, что возвраты, ранее составлявшие 15,000 единиц газа, теперь сокращены до 4,800 единиц.
+[Test Cases](https://eips.ethereum.org/EIPS/eip-3529#test-cases) EIP-3529 demonstrates the changes in gas refunds before and after its activation. They are presented in two tables, showing that refunds, which previously amounted to 15,000 gas units, are now reduced to 4,800 units.
 
-_Важно!_ Эти тесты проведены с предположением, что хранилище уже "прогрето".
+_Important!_ These tests are conducted under the assumption that the storage is already "warmed up."
 
-Также можно снова обратиться к сайту [evm.codes](https://www.evm.codes), где представлен калькулятор газа для опкода [SSTORE](https://arc.net/l/quote/yxdehesj), позволяющий указать три значения (original, current, new) и тип хранилища (warm или cold), чтобы рассчитать потребление и возврат газа. Там же доступно подробное описание правил расчета в зависимости от условий. Как и в прошлый раз важно указать хардфорк, перед тем как обращаться к описанию опкода.
+You can also refer to the website again [evm.codes](https://www.evm.codes), где представлен калькулятор газа для опкода [SSTORE](https://arc.net/l/quote/yxdehesj), позволяющий указать три значения (original, current, new) и тип хранилища (warm или cold), чтобы рассчитать потребление и возврат газа. Там же доступно подробное описание правил расчета в зависимости от условий. Как и в прошлый раз важно указать хардфорк, перед тем как обращаться к описанию опкода.
 
 Стоит отметить, что в будущем правила для динамического расчета газа могут измениться. Однако теперь вы знаете, где искать эти изменения и как интерпретировать их, чтобы понять актуальную стоимость. В Ethereum, подобно юридическим законам реального мира, правила могут устаревать, меняться или претерпевать небольшие корректировки, хотя механизмы этих изменений отличаются от традиционных законодательных процессов.
 
