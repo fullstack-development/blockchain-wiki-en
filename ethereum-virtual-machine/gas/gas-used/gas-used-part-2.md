@@ -428,66 +428,69 @@ SstoreClearsScheduleRefundEIP2200 uint64 = 15000
 
 _Important!_ These tests are conducted under the assumption that the storage is already "warmed up."
 
-You can also refer to the website again [evm.codes](https://www.evm.codes), где представлен калькулятор газа для опкода [SSTORE](https://arc.net/l/quote/yxdehesj), позволяющий указать три значения (original, current, new) и тип хранилища (warm или cold), чтобы рассчитать потребление и возврат газа. Там же доступно подробное описание правил расчета в зависимости от условий. Как и в прошлый раз важно указать хардфорк, перед тем как обращаться к описанию опкода.
+You can also refer to the website again [evm.codes](https://www.evm.codes), which features a gas calculator for the opcode [SSTORE](https://arc.net/l/quote/yxdehesj), allowing you to specify three values (original, current, new) and the type of storage (warm or cold) to calculate gas consumption and refunds. There is also a detailed description of the calculation rules depending on the conditions. As before, it is important to specify the hard fork before referring to the opcode description.
 
-Стоит отметить, что в будущем правила для динамического расчета газа могут измениться. Однако теперь вы знаете, где искать эти изменения и как интерпретировать их, чтобы понять актуальную стоимость. В Ethereum, подобно юридическим законам реального мира, правила могут устаревать, меняться или претерпевать небольшие корректировки, хотя механизмы этих изменений отличаются от традиционных законодательных процессов.
+It is worth noting that in the future, the rules for dynamic gas calculation may change. However, now you know where to look for these changes and how to interpret them to understand the current costs. In Ethereum, much like the legal laws of the real world, rules can become outdated, change, or undergo minor adjustments, although the mechanisms for these changes differ from traditional legislative processes.
 
-## Внутренний газ (intrinsic gas)
+## Intrinsic gas
 
-Мы уже рассмотрели расчет и списание газа при выполнении логики смарт-контракта, но существует также понятие внутреннего газа (intrinsic gas), потребляемого перед выполнением этой логики. Важно учитывать, что в некоторых транзакциях вызов смарт-контракта может отсутствовать.
+We have already reviewed the calculation and deduction of gas during the execution of smart contract logic, but there is also the concept of intrinsic gas, which is consumed before this logic is executed. It is important to note that in some transactions, a smart contract call may not be present.
 
-Для понимания составляющих внутреннего газа, следует обратиться к разделу 6 Yellow paper Ethereum. Расчет внутреннего газа представлен формулой g<sub>0</sub>:
+To understand the components of intrinsic gas, you should refer to section 6 of the Ethereum Yellow Paper. The calculation of intrinsic gas is presented by the formula g<sub>0</sub>:
 
 ![formula-67](./img/formula-67.png)
 
-Для значений G, указанных в формуле, можно обратиться к "Appendix G. Fee Schedule" на 27 странице Yellow paper. Формула внутреннего газа довольно проста, и мы рассмотрим ее детально пошагово:
+For the values of G mentioned in the formula, refer to "Appendix G. Fee Schedule" on page 27 of the Ethereum Yellow Paper. The formula for intrinsic gas is quite simple, and we will break it down step by step:
 
-1. **Расчет газа за `calldata`:** В транзакции он основывается на сумме G<sub>txdatazero</sub> и G<sub>txdatanonzero</sub>. За каждый ненулевой байт `calldata` взимается G<sub>txdatanonzero</sub> (16 ед. газа), а за каждый нулевой байт — G<sub>txdatazero</sub> (4 ед. газа). Рассмотрим пример вызова функции `store(uint256 num)` с параметром num = 1:
+1. **Gas Calculation for `calldata`:** In a transaction, this is based on the sum of G<sub>txdatazero</sub> and G<sub>txdatanonzero</sub>. For each non-zero byte of `calldata`, G<sub>txdatanonzero</sub> (16 gas units) is charged, and for each zero byte, G<sub>txdatazero</sub> (4 gas units) is charged. Let's consider an example of calling the function `store(uint256 num)` with the parameter num = 1:
 
 ```
     0x6057361d0000000000000000000000000000000000000000000000000000000000000001
 ```
 
--   Первые 4 байта — это ненулевая сигнатура функции, что обходится в 4 \* 16 = 64 единицы газа.
--   Затем следует 31 нулевой байт, что равно 31 \* 4 = 124 единицам газа.
--   Ненулевой байт, представляющий `num = 1`, взимает 1 \* 16 = 16 единиц газа.
--   Итого, общая стоимость составляет 64 + 124 + 16 = 204 единицы газа.
+-   The first 4 bytes are the non-zero function signature, which costs 4 \* 16 = 64 gas units.
+-   Then follows 31 zero bytes, which equals 31 \* 4 = 124 gas units.
+-   A non-zero byte representing `num = 1` costs 1 \* 16 = 16 gas units.
+-   Thus, the total cost is 64 + 124 + 16 = 204 gas units.
 
-2. **Создание смарт-контракта**: Если транзакция включает создание смарт-контракта (поле `to` равно нулевому адресу), к внутреннему газу добавляется G<sub>txcreate</sub>, равный 32,000 единиц газа.
+2. **Smart Contract Creation**: If the transaction involves creating a smart contract (the `to` field is equal to the zero address), G<sub>txcreate</sub>, equal to 32,000 gas units, is added to the intrinsic gas.
 
-3. **Базовый газ за транзакцию**: Минимальное количество газа, требуемое для любой транзакции, составляет G<sub>transaction</sub> — 21,000 единиц газа. Это базовое значение применяется, например, к простым переводам эфира, где нет дополнительных операций, требующих увеличения газа.
+3. **Base Gas for a Transaction**: The minimum amount of gas required for any transaction is G<sub>transaction</sub> — 21,000 gas units. This base value applies, for example, to simple Ether transfers where there are no additional operations requiring more gas.
 
-4. **Стоимость доступа к списку**: Согласно [EIP-2930](https://eips.ethereum.org/EIPS/eip-2930), внутренний газ также учитывает G<sub>accesslistaddress</sub> (2,400 единиц газа) и G<sub>accessliststorage</sub> (1,900 единиц газа). Эти значения добавляются за каждый адрес и слот, указанные в списке доступа, если транзакция включает предоплату за "прогрев".
+4. **Access List Cost**: According to [EIP-2930](https://eips.ethereum.org/EIPS/eip-2930), Intrinsic gas also accounts for G<sub>accesslistaddress</sub> (2,400 gas units) and G<sub>accessliststorage</sub> (1,900 gas units). These values are added for each address and storage slot specified in the access list if the transaction includes prepayment for "warming up."
 
-Таким образом, как можно видеть, расчет внутреннего газа в Ethereum относительно прост. Для более детального понимания, рекомендуется изучить функцию [IntrinsicGas](https://github.com/ethereum/go-ethereum/blob/c66ca8bf7a8c63ae54e44f4566e206cd1a4fa204/core/state_transition.go#L69), находящуюся в файле [state_transition.go](https://github.com/ethereum/go-ethereum/blob/master/core/state_transition.go) в репозитории go-ethereum.
+Thus, as you can see, the calculation of intrinsic gas in Ethereum is relatively straightforward. For a more detailed understanding, it is recommended to study the function [IntrinsicGas](https://github.com/ethereum/go-ethereum/blob/c66ca8bf7a8c63ae54e44f4566e206cd1a4fa204/core/state_transition.go#L69), located in the file [state_transition.go](https://github.com/ethereum/go-ethereum/blob/master/core/state_transition.go) in the go-ethereum repository.
 
-## Общий процесс расчета газа в Ethereum
+## General Gas Calculation Process in Ethereum
 
-Давайте соберем всю информацию вместе для полного понимания процесса расчета газа в Ethereum. Все начинается с блока, в котором отслеживается суммарное количество использованного газа по всем транзакциям (`gasUsed`). Каждая индивидуальная транзакция в блоке проходит через обработку функцией [applyTransaction](https://github.com/ethereum/go-ethereum/blob/566754c74a74c8175ec2f1ee5cc10a8caced6015/core/state_processor.go#L107), в ходе которой происходит следующее:
+Let's gather all the information together for a complete understanding of the gas calculation process in Ethereum. It all starts with a block that tracks the total amount of gas used by all transactions (`gasUsed`). Each individual transaction in the block is processed through the function [applyTransaction](https://github.com/ethereum/go-ethereum/blob/566754c74a74c8175ec2f1ee5cc10a8caced6015/core/state_processor.go#L107), during which the following occurs:
 
-1. **Инициализация счетчиков газа**: Первый счетчик (`st.gas`) отображает доступное количество газа для транзакции и инициализируется ее лимитом газа (`gasLimit`). Второй счетчик следит за фактически использованным газом.
+1. **Initialization of Gas Counters**: The first counter (`st.gas`) shows the available gas for the transaction and is initialized with its gas limit (`gasLimit`). The second counter tracks the gas actually used.
 
-2. **Авансовый платеж**: С баланса отправителя списывается авансовый платеж, равный произведению цены газа (`gasPrice`) на лимит газа (`gasLimit`).
+2. **Upfront Payment**: An upfront payment is deducted from the sender's balance, equal to the product of the gas price (`gasPrice`) and the gas limit (`gasLimit`).
 
-3. **Уменьшение лимита газа блока**: Общий лимит газа блока уменьшается на величину лимита газа транзакции.
-4. **Расчет внутреннего газа**: Вычисляется внутренний газ транзакции, включая базовую стоимость и стоимость за каждый байт `calldata`.
-5. **Выполнение транзакции**: Функция `Call()` запускает выполнение транзакции, а при необходимости - и логику смарт-контракта через `Run()`.
-6. **Обновление и возврат газа**: Счетчик оставшегося газа (`st.gas`) обновляется на основе данных от `Call()`. Неиспользованный газ, умноженный на цену газа, возвращается отправителю в ETH. Остаток газа также возвращается в общий пул газа блока.
+3. **Block Gas Limit Reduction**: The block's total gas limit is reduced by the gas limit of the transaction.
 
-На приведенной схеме наглядно показан процесс обработки газа на уровне протокола как для отдельных транзакций, так и для всего блока. Более подробно об этом можно прочитать [здесь](https://arc.net/l/quote/wdbuajzw).
+4. **Intrinsic Gas Calculation**: The intrinsic gas of the transaction is calculated, including the base cost and the cost for each byte of `calldata`.
+
+5. **Transaction Execution**: The `Call()` function initiates the transaction execution, and if necessary, the smart contract logic through `Run()`.
+
+6. **Gas Update and Refund**: The remaining gas counter (`st.gas`) is updated based on the data from `Call()`. Unused gas, multiplied by the gas price, is refunded to the sender in ETH. The remaining gas is also returned to the block's total gas pool.
+
+The diagram below clearly illustrates the gas handling process at the protocol level for both individual transactions and the entire block. You can read more about this [here](https://arc.net/l/quote/wdbuajzw).
 
 ![gas-flow](./img/gas-flow.png)
 
-Таким образом процесс расчета стоимости газа за транзакцию включает в себя две основные составляющие:
+Thus, the process of calculating the gas cost for a transaction includes two main components:
 
-1. **Базовая стоимость газа**: Она учитывает внутренний газ транзакции (intrinsic gas), включающий стоимость данных (`calldata`) и базовые операционные расходы.
-2. **Стоимость выполнения смарт-контракта**: Это дополнительные расходы газа, связанные с логикой и операциями смарт-контракта.
+1. **Base Gas Cost**: This accounts for the intrinsic gas of the transaction, including the cost of data (`calldata`) and basic operational expenses.
+2. **Smart Contract Execution Cost**: These are additional gas expenses related to the logic and operations of the smart contract.
 
-Важно гарантировать, что баланс отправителя содержит достаточно средств для покрытия максимально возможных расходов газа. Также критично убедиться, что лимит газа, установленный для транзакции, не превышает общий лимит газа блока, чтобы транзакция могла быть успешно обработана в рамках блока.
+It is important to ensure that the sender's balance contains enough funds to cover the maximum possible gas expenses. It is also critical to verify that the gas limit set for the transaction does not exceed the block's total gas limit, so the transaction can be successfully processed within the block.
 
-## Заключение
+## Conclusion
 
-Поздравляю! Это было долгий и сложный путь, но теперь в расчете газа стало меньше магии. Вот тут есть краткая [шпаргалка](https://www.evm.codes/about) по основным моментам.
+Congratulations! This was a long and challenging journey, but now there’s less mystery in gas calculations. Here’s a quick [cheat sheet] (https://www.evm.codes/about) on the key points.
 
 ## Links
 
