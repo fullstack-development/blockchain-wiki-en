@@ -74,6 +74,7 @@ Join our TG-channel: [MetaLamp|Web3 DevTeam](https://t.me/metametalamp)
   - <details>
       <summary>Cryptography</summary>
 
+      - [Circom-and-snarkjs](./cryptography/circom-and-snarkjs/README.md)
       - [Zero-knowledge-proof](./cryptography/zero-knowledge-proof/README.md)
     </details>
   - <details>
