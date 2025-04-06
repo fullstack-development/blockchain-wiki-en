@@ -19,6 +19,7 @@ Join our TG-channel: [MetaLamp|Web3 DevTeam](https://t.me/metametalamp)
   - <details open>
       <summary>Blockchains</summary>
 
+      - [Bittensor](./blockchains/bittensor/bittensor.md)
       - [Polygon zkEVM](./blockchains/zk-evm-polygon/zk-evm-polygon.md)
       - <details>
           <summary>Scroll</summary>
