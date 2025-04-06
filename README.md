@@ -127,6 +127,7 @@ Join our TG-channel: [MetaLamp|Web3 DevTeam](https://t.me/metametalamp)
 
       - [EIP-140: REVERT instruction](./EIPs/erc-140/README.md)
       - [ERC-165: Standard Interface Detection](./EIPs/erc-165/README.md)
+      - [EIP-1014: Skinny CREATE2](./EIPs/erc-1014/README.md)
       - [EIP-1153: Transient storage opcodes](./EIPs/eip-1153/README.md)
       - [ERC-1363: Payable Token(transferAndCall)](./EIPs/erc-1363/README.md)
       - [ERC-2981: NFT Royalty Standard](./EIPs/erc-2981/README.md)
