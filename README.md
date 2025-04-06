@@ -42,6 +42,7 @@ Join our TG-channel: [MetaLamp|Web3 DevTeam](https://t.me/metametalamp)
       - [Auctions](./concepts/auctions/README.md)
       - [Bridges](./concepts/bridges/README.md)
       - [Commitment scheme](./concepts/commitment-scheme/README.md)
+      - [ERC-721-C](./concepts/erc-721-c/README.md)
       - [Gnosis conditional token framework](./concepts/conditional-token-framework/README.md)
       - <details>
           <summary>DAO</summary>
