@@ -148,6 +148,7 @@ Join our TG-channel: [MetaLamp|Web3 DevTeam](https://t.me/metametalamp)
       - [Pendle](./protocols/pendle/README.md)
       - [Polymarket](./protocols/polymarket/README.md)
       - [Uma. Optimistic oracle](./protocols/uma/README.md)
+      - [Uniswap v4](./protocols/uniswap-v4/README.md)
       - [Uniswap X](./protocols/uniswapX/README.md)
     </details>
   - <details>
