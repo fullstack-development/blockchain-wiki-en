@@ -120,6 +120,7 @@ Join our TG-channel: [MetaLamp|Web3 DevTeam](https://t.me/metametalamp)
       <summary>Guides</summary>
 
       - [Uniswap-v2](./guides/uniswap-v2/README.md)
+      - [Uniswap-v3](./guides/uniswap-v3/README.md)
     </details>
   - <details>
       <summary>EIPs</summary>
