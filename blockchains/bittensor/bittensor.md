@@ -1,606 +1,620 @@
 # Bittensor
 
-**Автор:** [Алексей Куценко](https://github.com/bimkon144) 👨‍💻
+**Author:** [Aleksei Kutsenko](https://github.com/bimkon144) 👨‍💻
 
-[Bittensor](https://bittensor.com/) — это децентрализованный блокчейн-протокол, предназначенный для распределённого обмена вычислительными мощностями и интеллектуальными ресурсами. Его цель — создать открытую и саморегулируемую экосистему, в которой участники могут разрабатывать, обучать и оценивать нейросетевые модели, получая вознаграждение за свой вклад.
+[Bittensor](https://bittensor.com/) is a decentralized blockchain protocol designed for distributed exchange of computational power and intellectual resources. Its goal is to create an open and self-regulating ecosystem where participants can develop, train, and evaluate neural network models, earning rewards for their contributions.
 
-Система построена с использованием фреймворка [Substrate](https://polkadot-blockchain-academy.github.io/pba-book/substrate/intro/page.html), разработанного создателями [Polkadot](https://polkadot.com/). 
+The system is built using the [Substrate](https://polkadot-blockchain-academy.github.io/pba-book/substrate/intro/page.html) framework, developed by the creators of [Polkadot](https://polkadot.com/). 
 
-Почему Substrate, а не Ethereum? Выбор Substrate для Bittensor обусловлен несколькими ключевыми преимуществами:
- 1) **Специализация** — возможность создать полностью кастомизированный блокчейн для AI-вычислений, а не ограничиваться рамками смарт-контрактов; 
- 2) **Масштабируемость** — обработка большого количества транзакций между майнерами и валидаторами без высоких комиссий;
- 3) **Модульность** — использование готовых компонентов для быстрой разработки;
- 4) **Экономическая эффективность** — предсказуемые затраты на транзакции, критичные для постоянного обмена данными в AI-сети;
- 5) **Автономность** — полный контроль над развитием протокола без зависимости от решений сторонних блокчейнов.
+Why Substrate instead of Ethereum? The choice of Substrate for Bittensor is based on several key advantages:
+ 1) **Specialization** — the ability to create a fully customized blockchain for AI computations, rather than being limited by smart contract constraints;
+ 2) **Scalability** — handling a large number of transactions between miners and validators without high fees;
+ 3) **Modularity** — using ready-made components for rapid development;
+ 4) **Economic efficiency** — predictable transaction costs, which are critical for constant data exchange in an AI network;
+ 5) **Autonomy** — full control over protocol development without relying on third-party blockchain decisions.
 
-> **Парачейн (Parachain)** в экосистеме Polkadot — это специализированный блокчейн, который работает параллельно с основной сетью Polkadot (называемой Relay Chain) и другими парачейнами.
+> **Parachain** in the Polkadot ecosystem is a specialized blockchain that runs in parallel with the main Polkadot network (called the Relay Chain) and other parachains.
 
-Важно отметить, что хотя Bittensor использует технологии *Substrate*, он функционирует как независимый блокчейн и не является частью экосистемы Polkadot в качестве *парачейна*. Это стратегический выбор разработчиков Bittensor, который позволяет им полностью контролировать свою сеть и развивать ее в соответствии с собственным видением, используя при этом мощные инструменты Substrate для разработки блокчейна.
+It's important to note that although Bittensor uses *Substrate* technologies, it operates as an independent blockchain and is not part of the Polkadot ecosystem as a *parachain*. This is a strategic decision by the Bittensor developers, allowing them to fully control their network and develop it according to their own vision, while still leveraging Substrate's powerful blockchain development tools.
 
-Основной блокчейн сети, **Subtensor**, работает на механизме консенсуса [*Proof of Authority* (PoA)](https://coinmerce.io/en/learn/what-is-proof-of-authority/), где валидация осуществляется доверенными узлами под контролем **Opentensor Foundation**.
+The network’s main blockchain, **Subtensor**, operates on the [*Proof of Authority* (PoA)](https://coinmerce.io/en/learn/what-is-proof-of-authority/) consensus mechanism, where validation is carried out by trusted nodes under the control of the **Opentensor Foundation**.
 
-Ключевая особенность блокчейна — это способность координировать участников без централизованного управления, используя финансовые стимулы. Это позволяет строить саморегулируемые экосистемы, где каждый действует в своих интересах, одновременно укрепляя сеть.
+A key feature of blockchain is its ability to coordinate participants without centralized control by using financial incentives. This enables the creation of self-regulating ecosystems where everyone acts in their own interest while simultaneously strengthening the network.
 
-Например, в [Bitcoin](https://bitcoin.org/) механизм майнинга служит стимулом для защиты блокчейна: когда цена BTC растёт, вознаграждения майнеров становятся выше, что привлекает новых участников и повышает безопасность сети.
+For example, in [Bitcoin](https://bitcoin.org/), the mining mechanism serves as an incentive to secure the blockchain: when the price of BTC rises, miner rewards increase, attracting new participants and boosting the network’s security.
 
-Bittensor адаптирует этот принцип для рынка искусственного интеллекта и распределённых вычислений. Вместо фиксированной системы стимулов сеть использует гибкую рыночную модель, в которой каждая сабнет-экосистема управляет собственной экономикой.
+Bittensor adapts this principle for the artificial intelligence and distributed computing market. Instead of a fixed incentive system, the network uses a flexible market model where each subnet ecosystem manages its own economy.
 
-Ранее сеть использовала для оценки работы майнеров только один механизм [Yuma Consensus](https://docs.bittensor.com/yuma-consensus), который распределял награды TAO на основе субъективных оценок валидаторов. Однако этот подход имел элементы централизации: ключевую роль играли валидаторы Root Subnet, контролируя распределение ресурсов.
+Previously, the network used a single mechanism for evaluating miner performance — [Yuma Consensus](https://docs.bittensor.com/yuma-consensus), which distributed TAO rewards based on the subjective evaluations of validators. However, this approach had elements of centralization: validators of the Root Subnet played a key role by controlling resource distribution.
 
-В феврале 2024 года Bittensor внедрил [Dynamic TAO](https://docs.bittensor.com/dynamic-tao/) — новую экономическую модель, устранившую централизованный контроль и сделавшую сеть более динамичной и устойчивой. Он работает в паре с Yuma Consensus, работу которого видоизменили. Теперь награды зависят не только от валидаторов, но и от динамики стейкинга и рыночной стоимости токенов TAO. Это означает, что чем больше TAO застейкано в сабнете и чем выше его рыночная стоимость, тем больше награды получают участники.
+In February 2024, Bittensor introduced [Dynamic TAO](https://docs.bittensor.com/dynamic-tao/) — a new economic model that eliminated centralized control and made the network more dynamic and resilient. It works alongside Yuma Consensus, which was modified in the process. Now, rewards depend not only on validators but also on staking dynamics and the market value of TAO tokens. This means that the more TAO is staked in a subnet and the higher its market value, the greater the rewards participants receive.
 
-Этот подход превращает развитие AI-моделей и вычислительных процессов в саморегулируемый и экономически обоснованный процесс. Таким образом, Bittensor создаёт не просто децентрализованный рынок цифровых ресурсов, а новую инфраструктуру для совместной работы над сложными вычислительными задачами.
+This approach turns the development of AI models and computational processes into a self-regulating and economically driven process. In this way, Bittensor is creating not just a decentralized market for digital resources, but a new infrastructure for collaborative work on complex computational tasks.
 
-## 1. Как работает протокол в целом?
+## 1. How does the protocol work overall?
 
 ![alt text](./images/schem-1.png)
 
-1. Пользователи отправляют запрос через приложения.
-2. Приложение или валидатор формирует запрос.
-3. Валидаторы распределяют задачи майнерам.
-4. Майнеры отправляют результаты своей работы валидаторам для проверки и оценки.
-5. Валидатор оценивает результат работы по стандартам сабнета и взаимодействует с основным блокчейном для записи результата и оценки распределения наград.
-6. Отправляет лучший результат обратно в приложение.
+1. Users send a request through applications.  
+2. The application or validator forms the request.  
+3. Validators distribute tasks to miners.  
+4. Miners send the results of their work to validators for verification and evaluation.  
+5. The validator evaluates the result based on the standards of the subnet and interacts with the main blockchain to record the result and determine reward distribution.  
+6. Sends the best result back to the application.
 
-## 2. Архитектура блокчейна
+## 2. Blockchain Architecture
 
-В основе Bittensor лежит блокчейн Subtensor, система сабнетов (subnets),  Bittensor API
+At the core of Bittensor are the Subtensor blockchain, the system of subnets, and the Bittensor API.
 ![alt text](./images/schem-2.png)
 
-Таким образом, можно выделить следующие роли в работе протокола:
+Thus, the following roles can be identified in the operation of the protocol:
 
-- Майнеры (*Miners*) — Работают над созданием цифровых товаров.
-- Валидаторы (*Validators*) — Оценивают качество работы майнеров.
-- Создатели сабнетов (*Subnet creators*) — Управляют механизмами стимулов, которые определяют задачи, которые должны выполнять майнеры и валидаторы.
-- Стейкеры (*Stakers*) — Держатели TAO могут поддерживать конкретных валидаторов в каждом сабнете. Делегируя свои токены валидатору, они увеличивают его стейк и в будущем получают часть его дохода.
+- **Miners** — Work on creating digital goods.  
+- **Validators** — Evaluate the quality of miners' work.  
+- **Subnet creators** — Manage the incentive mechanisms that define the tasks miners and validators must perform.  
+- **Stakers** — TAO holders can support specific validators in each subnet. By delegating their tokens to a validator, they increase its stake and later receive a share of its income.
 
-Рассмотрим каждый выделенный модуль на схеме.
+Let’s look at each highlighted module in the diagram.
 
-### 2.1 Subtensor — главный блокчейн сети
+### 2.1 Subtensor — the main blockchain of the network
 
-В архитектуре блокчейн Subtensor выполняет функцию неизменяемого реестра, фиксируя данные о вычислительных процессах, транзакциях и результатах работы участников сети.
+In the architecture, the Subtensor blockchain functions as an immutable ledger, recording data about computational processes, transactions, and the performance results of network participants.
 
-Функциональность блокчейна Bittensor(Subtensor)
+Functionality of the Bittensor (Subtensor) blockchain
 
-В основе экономики Bittensor лежат два типа токенов:
-- **TAO** (τ) — нативный токен сети, используемый для *стейкинга*, оплаты газа
-- **Альфа-токены** (α) — токены, специфичные для каждого *сабнета*, используемые для учета вклада участников
+The Bittensor economy is based on two types of tokens:
+- **TAO** (τ) — the native token of the network, used for *staking* and gas fees  
+- **Alpha tokens** (α) — tokens specific to each *subnet*, used to track participant contributions
 
-Основные функции Subtensor:
-- Выступает как неизменяемый реестр, фиксирующий данные о вычислительных процессах, результатах работы участников и оценках валидаторов
-- Фиксирует балансы и транзакции всех участников сети
-- Обеспечивает возможность стейкинга — пользователи могут делегировать TAO в поддержку конкретных валидаторов из сабнетов
-- Поддерживает передачу токенов TAO между адресами
-- Обеспечивает совместимость с Ethereum Virtual Machine, что открывает возможности для более сложных приложений, таких как ликвидный стейкинг и лендинг TAO.
+Main functions of Subtensor:
+- Acts as an immutable ledger, recording data about computational processes, participant outputs, and validator evaluations  
+- Records balances and transactions of all network participants  
+- Enables staking — users can delegate TAO to support specific validators in subnets  
+- Supports TAO token transfers between addresses  
+- Provides compatibility with the Ethereum Virtual Machine, opening the door for more complex applications such as liquid staking and TAO lending
 
-Важно понимать, что evm блокчейн не позволяет взаимодействовать с сабнетами, т.е обращаться за выполнением какой-то задачи.
+It’s important to understand that the EVM blockchain does not allow interaction with subnets, meaning it cannot be used to request task execution.
 
-### 2.2 Сабнеты
+### 2.2 Subnets
 
-Сабнет (subnet) в Bittensor представляет собой специализированную платформу для создания определённого типа цифрового продукта, связанного с искусственным интеллектом. Например, один сабнет может специализироваться на генерации текста, другой — на обработке изображений.
+A subnet in Bittensor is a specialized platform for creating a specific type of digital product related to artificial intelligence. For example, one subnet may specialize in text generation, while another focuses on image processing.
 
-**Структура сабнета**
+**Subnet Structure**
 
-Каждый сабнет состоит из следующих компонентов:
+Each subnet consists of the following components:
 
-1. **Механизм стимулирования**:
-   - Определяет, какие задачи должны выполнять майнеры и какие стандарты качества к ним применяются
-   - Задает правила оценки работы майнеров валидаторами и механизм распределения вознаграждений
-   - Регулирует получение наград майнеров и валидаторов
-   - Реализован в виде кодовой базы, которая определяет интерфейсы и правила взаимодействия между участниками
+1. **Incentive Mechanism**:
+   - Defines the tasks miners must perform and the quality standards applied to them  
+   - Sets the rules for how validators evaluate miners' work and how rewards are distributed  
+   - Regulates how miners and validators receive rewards  
+   - Implemented as a codebase that defines the interfaces and rules of interaction between participants
 
-2. **Участники**:
-   - **Майнеры** — выполняют вычислительные задачи
-   - **Валидаторы** — проверяют и оценивают результаты работы майнеров
-   - **Создатели сабнетов** — разрабатывают и поддерживают механизмы работы сабнета
+2. **Participants**:
+   - **Miners** — perform computational tasks  
+   - **Validators** — verify and evaluate the results produced by miners  
+   - **Subnet creators** — develop and maintain the subnet’s operational mechanisms  
 
-3. **Процесс работы**:
-   - Майнеры получают и выполняют задачи
-   - Валидаторы независимо оценивают результаты
-   - Формируется матрица оценок для каждого майнера
-   - На основе этих оценок происходит распределение наград
+3. **Workflow**:
+   - Miners receive and complete tasks  
+   - Validators independently evaluate the results  
+   - A rating matrix is generated for each miner  
+   - Based on these evaluations, rewards are distributed
 
 ### 2.3 Bittensor SDK
 
-Bittensor предоставляет мощный набор инструментов для работы с сетью, обеспечивая децентрализованное управление вычислительными ресурсами и разработку новых сабнетов.
+Bittensor provides a powerful set of tools for working with the network, enabling decentralized management of computational resources and the development of new subnets.
 
-Ключевой инструмент для интеграции с сетью — Bittensor SDK, который:
-- Позволяет майнерам и валидаторам взаимодействовать в сабнетах
-- Обеспечивает доступ к блокчейну Subtensor для передачи данных и управления активами
-- Автоматизирует обработку транзакций и учёт вычислений
+The key tool for integrating with the network is the Bittensor SDK, which:
+- Enables miners and validators to interact within subnets  
+- Provides access to the Subtensor blockchain for data transmission and asset management  
+- Automates transaction processing and computation tracking  
 
-Это открытая экосистема для разработчиков, где Bittensor предоставляет:
-- Исходные репозитории и инструменты для работы с сетью
-- Подробную документацию с описанием API и экономических механизмов
-- Пошаговые руководства и туториалы для майнеров, валидаторов и создателей сабнетов
+This is an open ecosystem for developers, where Bittensor provides:
+- Source repositories and tools for working with the network  
+- Detailed documentation describing the API and economic mechanisms  
+- Step-by-step guides and tutorials for miners, validators, and subnet creators  
 
-Эти инструменты позволяют разработчикам создавать новые сабнеты, интегрироваться с Bittensor и взаимодействовать с блокчейном Subtensor, развивая децентрализованную AI-инфраструктуру.
+These tools allow developers to create new subnets, integrate with Bittensor, and interact with the Subtensor blockchain, helping to grow a decentralized AI infrastructure.
 
 ---
 
-Теперь, когда мы разобрались с общей архитектурой сети, рассмотрим, как проходит процесс обработки задач внутри сабнетов – от создания запроса до распределения наград.
+Now that we’ve covered the overall network architecture, let’s look at how task processing works within subnets — from request creation to reward distribution.
 
-## 3. Технологии
+## 3. Technologies
 
-Следует понимать, что в основе распределения наград лежит Yuma consensus и Dynamic TAO.
+It’s important to understand that reward distribution is based on Yuma Consensus and Dynamic TAO.
 
-**Что такое Dynamic TAO?**
+**What is Dynamic TAO?**
 
-**Dynamic TAO** представляет собой новый способ определения ценности сабнетов через рыночный механизм: пользователи могут «голосовать» за ценность сабнета, ставя свои токены в его резерв.
+**Dynamic TAO** is a new way of determining the value of subnets through a market-driven mechanism: users can “vote” for a subnet’s value by placing their tokens into its reserve.
 
 ![alt text](./images/schem-3.png)
 
-Основной механизм работы заключается в автоматизированном маркете (AMM) для каждого сабнета, который включает два резерва:
+The core mechanism operates through an automated market maker (AMM) for each subnet, which includes two reserves:
 
-- **TAO Reserves** (τ_in) — пул застейканных **TAO**
-- **Alpha Reserves** (α_in) — пул **α-токенов**
-- Цена: `Price = τ_in/α_in`
-- Между резервами существует механизм автоматического обмена
+- **TAO Reserves** (τ_in) — the pool of staked **TAO**  
+- **Alpha Reserves** (α_in) — the pool of **α-tokens**  
+- Price: `Price = τ_in/α_in`  
+- An automatic exchange mechanism exists between the reserves  
 
-**Эмиссия в Dynamic TAO**
-С внедрением **Dynamic TAO** ликвидность постепенно эмитируется в экономику токенов **Bittensor** в соответствии с алгоритмом, направленным на стимулирование роста, стабилизацию цен и защиту от манипуляций.
+**Emission in Dynamic TAO**  
+With the introduction of **Dynamic TAO**, liquidity is gradually emitted into the Bittensor token economy according to an algorithm designed to encourage growth, stabilize prices, and protect against manipulation.
 
-Каждый блок:
+Each block:
 
-- Сеть эмитирует **TAO** и добавляет его в **TAO-резервы** сабнетов.
-- Сеть эмитирует **альфа-токены** с удвоенной базовой скоростью эмиссии. Эти эмитированные **альфа-токены** распределяются между:
-  - **Alpha-резервом сабнета** (увеличивая доступную ликвидность)
-  - **Alpha outstanding** (стимулы для майнеров, валидаторов и создателей сабнетов, стейкеров)
+- The network emits **TAO** and adds it to the **TAO reserves** of subnets.  
+- The network emits **alpha tokens** at double the base emission rate. These emitted **alpha tokens** are distributed between:  
+  - The **subnet’s alpha reserve** (increasing available liquidity)  
+  - **Alpha outstanding** (incentives for miners, validators, subnet creators, and stakers)  
 
-Этот механизм создает динамичную рыночную экономику, в которой эмиссия токенов происходит на основе потребности в вычислительных мощностях, что помогает стабилизировать цены и создает здоровую конкуренцию среди сабнетов.
+This mechanism creates a dynamic market economy where token emission is based on demand for computational power, helping stabilize prices and fostering healthy competition among subnets.
 
-Более детально, с формулами и примерами можно ознакомиться [здесь](https://docs.bittensor.com/dynamic-tao/dtao-guide).
+For more details, including formulas and examples, see [here](https://docs.bittensor.com/dynamic-tao/dtao-guide).
 
-**Связь с Yuma Consensus**
+**Connection with Yuma Consensus**
 
-**Yuma Consensus** ранее играл ключевую роль в оценке работы майнеров, обеспечивая согласованность оценок валидаторов. С переходом на **Dynamic TAO**, система стала более децентрализованной и рыночно-ориентированной, однако Yuma Consensus по-прежнему используется внутри сабнетов для согласования оценок между валидаторами и определения качества работы майнеров. Теперь этот механизм работает в связке с Dynamic TAO, где Yuma отвечает за консенсус внутри сабнета, а Dynamic TAO определяет ценность самих сабнетов через рыночные механизмы.
+**Yuma Consensus** previously played a key role in evaluating miner performance by ensuring consistency in validator scores. With the transition to **Dynamic TAO**, the system has become more decentralized and market-driven. However, Yuma Consensus is still used within subnets to align validator evaluations and determine the quality of miners' work. Now, this mechanism works in tandem with Dynamic TAO — Yuma handles consensus within a subnet, while Dynamic TAO defines the value of the subnets themselves through market mechanisms.
 
-Оценка каждого сабнета определяется через стейкинг TAO (обмен через AMM и стейкинг альфа-токенов), где участники сети могут «голосовать» за ценность сабнета. Это позволяет:
-- Участникам сети влиять на стоимость и относительную ценность сабнетов
-- Майнерам и валидаторам работать в условиях динамичной экономики, где ценность сабнета меняется в зависимости от спроса и ликвидности
+The value of each subnet is determined through TAO staking (via AMM exchange and alpha-token staking), where network participants can "vote" on a subnet’s value. This allows:
+- Network participants to influence the price and relative value of subnets  
+- Miners and validators to operate in a dynamic economy where the subnet's value changes based on demand and liquidity
 
-Система вознаграждений теперь основана на рыночной стоимости альфа-токенов каждого сабнета. По мере роста популярности сабнетов и привлечения большего количества TAO, цена их альфа-токенов увеличивается, что ведет к увеличению эмиссии TAO.
+The reward system is now based on the market value of each subnet’s alpha tokens. As subnets grow in popularity and attract more TAO, the price of their alpha tokens increases, leading to higher TAO emissions.
 
-Вознаграждения распределяются в альфа-токенах, которые участники сети могут конвертировать в TAO. Этот процесс может влиять на цену альфа-токенов, что, в свою очередь, влияет на будущие вознаграждения.
+Rewards are distributed in alpha tokens, which network participants can convert into TAO. This process can affect the price of alpha tokens, which in turn impacts future rewards.
 
-Dynamic TAO обеспечивает справедливое распределение вознаграждений, выравнивая их с реальной ценностью каждого сабнета. Это создает саморегулируемую экономику, где рыночные механизмы стимулируют более качественные вычисления и эффективную работу.
+Dynamic TAO ensures fair reward distribution by aligning it with the real value of each subnet. This creates a self-regulating economy where market mechanisms incentivize higher-quality computations and efficient performance.
 
-## 4. Майнеры, валидаторы, создатели сабнета и номинаторы
+## 4. Miners, Validators, Subnet Creators, and Nominators
 
-- Возможно вам интересно, а можно ли создать своего майнера для выполнения определенных задач и получать за это награды?
-- А может вы хотите быть валидаторам и оценивать работу майнеров и получать за это награды?
-- Возможно у вас есть идея по задаче которую могли бы выполнять в рамках нового сабнета и она будет приносить вам доход?
-- Вы владелец TAO токенов и вы хотите получить пассивный доход?
+- Maybe you're wondering: can I create my own miner to perform specific tasks and earn rewards?  
+- Or maybe you want to become a validator, evaluate miners’ work, and earn rewards for it?  
+- Perhaps you have an idea for a task that could be run in a new subnet and generate revenue?  
+- Are you a TAO token holder looking to earn passive income?
 
-На все эти вопросы мы ответим ниже.
+We’ll answer all of these questions below.
 
-**Как стать майнером**
+**How to Become a Miner**
 
-Для того чтобы стать майнером, необходимо в первую очередь иметь подходящее оборудование.
-В каждой сабнет свои требования, но для общего представления, можно посмотреть шаблон для создателей сабнетов. В нём указаны общие [требования](https://github.com/opentensor/bittensor-subnet-template/blob/main/min_compute.yml) для сетапов майнеров и валидаторов.
+To become a miner, you first need suitable hardware.  
+Each subnet has its own requirements, but for a general idea, you can check out the template for subnet creators. It includes general [requirements](https://github.com/opentensor/bittensor-subnet-template/blob/main/min_compute.yml) for setting up miners and validators.
 
-Для регистрации требуется заплатить TAO токеном.
+Registration requires a payment in TAO tokens.
 
-Один сабнет может содержать максимум 64 валидатора и 192 майнера.
+Each subnet can contain a maximum of 64 validators and 192 miners.
 
-Как только вы зарегистрировались и получили идентификационный номер, у вас начинается _immunity_period_ который даёт вам иммунитет от делистинга на определенное количество блоков. Соответственно, если после окончания льготного периода, у майнера будут самые низкие метрики производительности, то текущего майнера делистят и принимают нового майнера вместо него. Более детально можно посмотреть [тут](https://docs.bittensor.com/miners/).
+Once you register and receive an identification number, you enter an _immunity_period_ which gives you protection from delisting for a certain number of blocks. After this grace period ends, if a miner has the lowest performance metrics, they will be delisted and replaced by a new miner.  
+For more details, see [here](https://docs.bittensor.com/miners/).
 
-Таким образом, если у вас возможность стать майнером для выполнения каких-то задач, будь то предоставление модели AI, своих мощностей GPU или как хранилище данных под определенные задачи.
+So, if you have the opportunity to become a miner to perform specific tasks — whether it's providing an AI model, GPU power, or data storage for certain purposes — you can join the network and start earning.
 
-**Как стать валидатором**
+**How to Become a Validator**
 
-Для регистрации валидатором, аналогичным образом под каждую сабнет существуют свои требования к оборудованию.
+To register as a validator, similar to miners, each subnet has its own hardware requirements.
 
-Сначало следует зарегистрироваться в сабнете и застейкать 1000 TAO токенов.
+First, you need to register in the subnet and stake 1000 TAO tokens.
 
-Далее, можно применять механизм оценки работы майнеров который установлен в сабнете.
+After that, you can start using the evaluation mechanism for miners’ work that is defined within the subnet.
 
-Более детально можно почитать [тут](https://docs.bittensor.com/validators/).
+For more details, read [here](https://docs.bittensor.com/validators/).
 
-**Как стать Номинатором**
+**How to Become a Nominator**
 
-Номинатора можно назвать делегатором или стейкером в конкретный сабнет и на определенный валидатор.
+A nominator can be thought of as a delegator or staker for a specific subnet and validator.
 
-Как мы ранее говорили, у валидатором вес их голоса в расчёте работы майнеров зависит от количества стейка под этого валидатора и соотственно это влияет на величину получаемой эмиссия в токенах. Таким образом, для увеличения дахода в токенах эмиссия блокчейна, валидатор может привлекать стейкеров TAO. Такие стейкеры тоже будут получать диведенты от общей эмиссии в сабнет пропорционально их стейку.
+As we mentioned earlier, a validator’s voting power in evaluating miner performance depends on the amount of stake delegated to them — and this directly impacts the size of the token emission they receive. 
+ 
+So, to increase their share of blockchain emissions, a validator can attract TAO stakers. These stakers will also earn dividends from the subnet’s total emissions, proportional to their stake.
 
-Стейкать можно через:
+You can stake through:
 - [Bittensor SDK](https://docs.bittensor.com/staking-and-delegation/managing-stake-sdk)
 - [Bittensor CLI](https://docs.bittensor.com/staking-and-delegation/managing-stake-btcli)
 - [Polkadot js](https://docs.bittensor.com/staking-and-delegation/staking-polkadot-js)
 - [Ledger Hardware](https://docs.bittensor.com/staking-and-delegation/using-ledger-hw-wallet)
 - [precompile evm contract](https://docs.bittensor.com/evm-tutorials/staking-precompile)
 
-А посмотреть, какую эмиссию получает определенный сабнет, чтобы выбрать его для стейка, можно [тут](https://taostats.io/subnets).
+To check the emission a specific subnet is receiving — and choose one for staking — you can go [here](https://taostats.io/subnets).
 
-**Создатели сабнетов**
+**Subnet Creators**
 
-Для создателей сабнетов рекомендуют в начале протестировать механизм вознаграждения локально, потом в задеплоить сабнет в тестнет, а потом уже в мейннет.
+For subnet creators, it’s recommended to first test the reward mechanism locally, then deploy the subnet to the testnet, and only after that to the mainnet.
 
-Для того чтобы создать сабнет, нужно установить Bittensor SDK и завести создать кошелек через Bittensor wallet.
+To create a subnet, you need to install the Bittensor SDK and set up a wallet using the Bittensor wallet.
 
-Далее, имея достаточный баланс, через SDK можно создать сабнет и приглашать майнеров и валидаторов для работы над вашей задачей.
+Then, with a sufficient balance, you can create a subnet via the SDK and start inviting miners and validators to work on your task.
 
-## 4. Ограничения и проблемы сети Bittensor
+## 4. Limitations and Issues in the Bittensor Network
 
-Несмотря на уникальный и амбициозный подход, Bittensor сталкивается с рядом ограничений и точек централизованного контроля. Рассмотрим ключевые вызовы и усилия по их преодолению.
+Despite its unique and ambitious approach, Bittensor faces several limitations and points of centralized control. Let’s look at the key challenges and the efforts to overcome them.
 
-### 4.1 Механизм Proof of Authority (PoA)
-Основная блокчейн-система Subtensor использует механизм консенсуса Proof of Authority (PoA), где валидация транзакций осуществляется только проверенными узлами, контролируемыми Opentensor Foundation. Это создает проблемы для децентрализации, так как Opentensor Foundation имеет полный контроль над сетью, включая возможность цензуры транзакций.
+### 4.1 Proof of Authority (PoA) Mechanism
 
-Для достижения полной децентрализации планируется переход на Proof of Stake (PoS). Однако сроки реализации этой системы пока не установлены.
+The core blockchain system, Subtensor, uses the Proof of Authority (PoA) consensus mechanism, where transaction validation is performed only by trusted nodes controlled by the Opentensor Foundation. This raises decentralization concerns, as the Opentensor Foundation has full control over the network, including the ability to censor transactions.
 
-### 4.2 Размер блокчейна
-С увеличением популярности сети и числа сабнетов растет и размер блокчейна. Легкие узлы требуют 128 ГБ памяти, а архивные — 1,5 ТБ. Прогнозировалось, что к 2025 году размер легкого узла может достичь 1 ТБ, что может затруднить децентрализацию, если валидация будет открыта для всех. Но такого пока не случилось, и важно понимать, что для большества задач майнерам и валидаторам будет хватить легкого узла.
+To achieve full decentralization, a transition to Proof of Stake (PoS) is planned. However, the timeline for implementing this system is still unknown.
 
-По состоянию на февраль 2025г.
-- Легкий узел: достаточно 128 ГБ
-- Архивный узел: минимум 2 ТБ для текущего размера цепочки, на блоке # 5029000 от 28 февраля 2025 года.
+### 4.2 Blockchain Size
 
-### 4.3 Управление Bittensor
-Управление Bittensor сосредоточено в руках нескольких ключевых участников:
-- **Триумвират**: Состоит из трех сотрудников Opentensor Foundation, ответственных за предложение обновлений сети.
-- **Сенат**: Голосует за предложения от Триумвирата и включает 12 валидаторов с наибольшим количеством делегированных TAO.
+As the network and number of subnets grow, so does the size of the blockchain. Light nodes require 128 GB of storage, while archive nodes need around 1.5 TB. It was projected that by 2025, the size of a light node could reach 1 TB, which may hinder decentralization if validation becomes open to all.  
+However, this hasn’t happened yet, and it’s important to note that for most tasks, light nodes are sufficient for miners and validators.
 
-Централизованное управление может привести к манипуляциям с правилами в пользу ограниченного круга участников. Opentensor Foundation планирует сделать управление более открытым, чтобы уменьшить риски централизации.
+As of February 2025:  
+- Light node: 128 GB is sufficient  
+- Archive node: minimum 2 TB required for the current chain size, at block #5029000 on February 28, 2025.
 
-## 5. Экосистема Bittensor
+### 4.3 Bittensor Governance
 
-Bittensor обладает уникальной архитектурой, основанной на сабнетах, что позволяет создавать разнообразные и амбициозные проекты. Каждый сабнет может быть нацелен как на коммерческое использование, так и на научные исследования в различных областях.
+Bittensor governance is concentrated in the hands of a few key actors:
+- **The Triumvirate**: Consists of three members of the Opentensor Foundation who are responsible for proposing network updates.  
+- **The Senate**: Votes on proposals from the Triumvirate and includes 12 validators with the highest amount of delegated TAO.
 
-**Категории сабнетов**
+Centralized governance may lead to rule manipulation in favor of a limited group of participants. The Opentensor Foundation plans to make governance more open to reduce the risks of centralization.
 
-1. **Коммерческие сабнеты**: Предлагают сервисы с целью получения прибыли, например, интеграция результатов майнеров в сторонние приложения.
-2. **Научные сабнеты**: Поддерживают исследования в нефинансовых областях, таких как биология, медицина и технологии.
+## 5. Bittensor Ecosystem
 
-Наш обзор на сабнеты будет включать топ по маркет капу из [этого](https://taostats.io/subnets) списка.
+Bittensor has a unique architecture based on subnets, which allows for the creation of diverse and ambitious projects. Each subnet can be aimed at either commercial use or scientific research across various domains.
 
-Немного об интерфейсе дашборда, расскажем на примере [сабнета #64](https://taostats.io/subnets/64/chart):
+**Subnet Categories**
 
-Следут пояснить, что за график и кнопки buy/sell.
+1. **Commercial Subnets**: Offer services aimed at generating profit, for example, integrating miner outputs into third-party applications.  
+2. **Scientific Subnets**: Support research in non-financial fields such as biology, medicine, and technology.
 
-Как мы ранее говорили, что каждый сабнет это AMM пул. Где первый актив это токен TAO а второй это токен сабнета. График показывает цену TAO токена в пули по отношению к токену сабнета.
+Our overview of subnets will include the top ones by market cap from [this](https://taostats.io/subnets) list.
 
-Стоимость TAO токена регулируется рынком. Т.е когда сабнет становится популярным или востребованным, то люди отдают свои TAO и забирают второй токен  - сабнета.
-Таким образом, первого токена в пуле (TAO) становится больше а второго токена меньше.
+Let’s briefly talk about the dashboard interface using [Subnet #64](https://taostats.io/subnets/64/chart) as an example:
 
-За счёт этого цена токена токена сабнета показывает рост.
-Тогда все получатели токена сабнета - майнеры, валидаторы, стейкера, создатель сабнета могут либо пойти обменять свой токен награды обратно в TAO и тем самым получить прибыль.
+Let’s explain the chart and the buy/sell buttons.
 
-Таким образом, АММ-пул сабнета можно использовать для обмена токенов, стейкинга или фиксации прибыли за свою работу/вклад.
+As we mentioned earlier, each subnet is an AMM pool. The first asset is the TAO token, and the second is the subnet’s native token. The chart shows the price of the TAO token in the pool relative to the subnet token.
 
-Перейдем к рассмотрению сабнетов и их приложений, чтобы понять, как их можно использовать.
+The value of the TAO token is regulated by the market. So when a subnet becomes popular or in demand, people deposit their TAO and withdraw the subnet token.  
+As a result, the amount of TAO in the pool increases, and the amount of the subnet token decreases.
 
----
-[Subnet 19: Chutes](https://chutes.ai/) — сабнет, обеспечивающий доступ к различным AI-моделям через единый API-интерфейс. Chutes интегрирует как текстовые модели (DeepSeek-R1 и другие), так и генерато
-ры изображений (Dreamshaper XL, Stable Diffusion). Главная идея, что можно быстро задеплоить свою модель либо воспользоваться уже публичными моделями, т.е что-то наподобие маркетплейса AI.
+As a result, the price of the subnet token increases.  
+Then all holders of the subnet token — miners, validators, stakers, and the subnet creator — can choose to exchange their reward tokens back into TAO, thereby realizing a profit.
 
-Приложения на базе сабнета:
+In this way, a subnet’s AMM pool can be used for token swaps, staking, or cashing out profits for your work/contribution.
 
-[Chutes.ai](https://chutes.ai/) предоставляет разработчикам простой REST API сервис для взамодействием с публичными AI моделями, либо возможность задеплоить на облачное хранилище свою модель и получать награды за использование ее другими пользователями.
-
-Возможности участия в сети:
-
-1. **Майнер**:
-- Предоставление вычислительных ресурсов для запуска AI-моделей
-- Обслуживание запросов пользователей через API
-- Поддержка различных моделей (текстовых, генерации изображений и др.)
-- Получение вознаграждения за обработку запросов
-
-2. **Валидатор**:
-- Оценка качества и скорости работы майнеров
-- Проверка доступности и стабильности предоставляемых сервисов
-- Мониторинг соответствия результатов запросам
-- Участие в распределении наград между майнерами
-
-3. **Потребитель**:
-- Использование API для доступа к различным AI-моделям
-- Возможность быстрого развертывания любой публичной AI-модели из обширного каталога либо собственной модели
-- Доступ к уже развернутым и оптимизированным моделям через простой API-интерфейс
-- Прозрачная система оплаты: достаточно пополнить баланс адреса в блокчейне Bittensor токенами TAO
-- Экономическая эффективность: оплата только за фактически использованные вычисления, без абонентской платы или минимальных платежей
-- Отсутствие необходимости в собственном оборудовании для запуска ресурсоемких AI-моделей
-- Возможность выбора оптимальных моделей для конкретных задач
-
-Таким образом, Chutes особенно полезный как для индивидуальных разработчиков, так и для компаний, которым требуется гибкий и масштабируемый доступ к AI-инфраструктуре без значительных первоначальных инвестиций.
+Let’s move on to reviewing subnets and their applications to understand how they can be used.
 
 ---
-[Subnet 4: Targon](https://targon.com/) — один из крупнейших сабнетов, в котором майнеры анализируют ответы языковых моделей и предоставляют источники для проверки точности информации через детерминированный механизм верификации.
+[Subnet 19: Chutes](https://chutes.ai/) — a subnet that provides access to various AI models through a unified API interface.  
+Chutes integrates both text models (like DeepSeek-R1 and others) and image generators (such as Dreamshaper XL, Stable Diffusion).  
+The main idea is that you can quickly deploy your own model or use already available public models — essentially an AI marketplace.
 
-Приложения на базе сабнета:
+Applications built on the subnet:
 
-[Sybil](https://sybil.com/) — AI-поисковик, который предоставляет ответы на запросы пользователей с указанием источников информации, обеспечивая высокую степень достоверности результатов.
+[Chutes.ai](https://chutes.ai/) offers developers a simple REST API service to interact with public AI models, or the ability to deploy their own model to cloud storage and earn rewards when others use it.
 
-Возможности участия в сети:
+Participation opportunities in the network:
 
-1. **Майнер**:
-- Обработка запросов пользователей с использованием языковых моделей
-- Поиск и верификация источников для подтверждения информации
-- Предоставление структурированных ответов с цитированием источников
-- Поддержка API-интерфейса, совместимого со стандартами OpenAI
+1. **Miner**:
+- Provide computational resources to run AI models  
+- Handle user requests via the API  
+- Support various models (text generation, image generation, etc.)  
+- Earn rewards for processing requests
 
-2. **Валидатор**:
-- Оценка точности и достоверности ответов майнеров
-- Проверка релевантности предоставленных источников
-- Мониторинг качества цитирования и соответствия ответов запросам
-- Участие в распределении наград на основе качества верификации
+2. **Validator**:
+- Evaluate the quality and speed of miners' performance  
+- Check the availability and stability of provided services  
+- Monitor how well results match the requests  
+- Participate in distributing rewards among miners
 
-3. **Потребитель**:
-- Получение проверяемых ответов с указанием источников
-- Повышенная точность и достоверность результатов благодаря механизму верификации
-- Доступ к API, совместимому со стандартами OpenAI, для интеграции в собственные приложения
-- Снижение зависимости от централизованных AI-сервисов при сохранении высокого качества ответов
-- Защита от дезинформации и непроверенных данных благодаря системе проверки источников
-- Использование API для интеграции верифицируемых ответов в свои приложения
-- Доступ к достоверной информации с возможностью проверки
+3. **Consumer**:
+- Use the API to access various AI models  
+- Quickly deploy any public AI model from a large catalog, or your own model  
+- Access pre-deployed and optimized models via a simple API interface  
+- Transparent payment system: just top up your Bittensor blockchain address with TAO tokens  
+- Cost-efficiency: pay only for the actual compute used, no subscription fees or minimum charges  
+- No need for your own hardware to run resource-intensive AI models  
+- Ability to choose the most suitable models for specific tasks
 
-Таким образом, Targon и построенный на его основе Sybil.com особенно полезны для пользователей и разработчиков, которым важна фактическая точность информации, а также для компаний, стремящихся интегрировать в свои продукты проверяемые AI-ответы с указанием источников.
-
----
-[Subnet 8: Theta (PTN)](https://www.taoshi.io/) — специализированный сабнет, который собирает и анализирует торговые сигналы от квантовых и систем глубокого обучения для предоставления комплексных торговых рекомендаций по различным классам активов.
-
-Приложения на базе сабнета:
-
-[Taoshi](https://www.taoshi.io/ptn) — платформа, предоставляющая доступ к высокоточным торговым сигналам, сгенерированным децентрализованной сетью алгоритмических систем, работающих на инфраструктуре Bittensor.
-
-Возможности участия в сети:
-
-1. **Майнер**:
-- Разработка и запуск алгоритмических торговых моделей
-- Генерация торговых сигналов по различным классам активов
-- Предоставление прогнозов движения рынка с указанием уровней входа/выхода
-- Получение вознаграждения на основе точности и эффективности сигналов
-
-2. **Валидатор**:
-- Оценка исторической точности торговых сигналов
-- Мониторинг производительности майнеров в реальном времени
-- Проверка соответствия сигналов рыночным условиям
-- Участие в распределении наград на основе эффективности прогнозов
-
-3. **Потребитель**:
-- Получение агрегированных торговых сигналов высокой точности
-- Доступ к диверсифицированным торговым сигналам по различным классам активов (криптовалюты, акции, товары, форекс)
-- Повышенная точность прогнозов благодаря агрегации данных от множества независимых алгоритмических систем
-- Снижение рисков за счет использования разнообразных стратегий и моделей машинного обучения
-- Возможность интеграции торговых сигналов в собственные торговые системы через API, например для использования с ботом для торговли
-- Прозрачная система оценки эффективности сигналов с историческими данными о производительности
-- Доступ к диверсифицированным стратегиям от множества алгоритмических моделей
-
-Если хотите, можете попробовать создать аккаунт и выбрать бесплатных майнеров чтобы протестировать данный [сервис](https://request.taoshi.io/).
-
-Таким образом, Theta особенно ценен для трейдеров, инвестиционных фондов и финансовых учреждений, которым требуются высококачественные алгоритмические торговые сигналы без необходимости разработки и поддержки собственных сложных систем машинного обучения и квантовых моделей.
+Thus, Chutes is especially useful for both individual developers and companies that need flexible and scalable access to AI infrastructure without significant upfront investment.
 
 ---
-[Subnet 8:BitMind](https://bitmind.ai/) — специализированный сабнет, который фокусируется на идентификации и верификации контента, созданного искусственным интеллектом, используя децентрализованную сеть майнеров для анализа и классификации медиафайлов различных типов.
+[Subnet 4: Targon](https://targon.com/) — one of the largest subnets, where miners analyze responses from language models and provide sources to verify the accuracy of information using a deterministic verification mechanism.
 
-Приложения на базе сабнета:
+Applications built on the subnet:
 
-[Thedetector](https://thedetector.ai/) — платформа для обнаружения AI-сгенерированного контента, включая изображения,видео с высокой точностью и прозрачностью результатов анализа.
+[Sybil](https://sybil.com/) — an AI-powered search engine that delivers answers to user queries along with cited sources, ensuring a high level of result reliability.
 
-Возможности участия в сети:
+Participation opportunities in the network:
 
-1. **Майнер**:
-- Запуск алгоритмов детекции AI-сгенерированного контента
-- Анализ и классификация различных типов медиафайлов
-- Постоянное обучение и адаптация к новым методам генерации контента
-- Получение вознаграждения за точность определения синтетического контента
+1. **Miner**:
+- Process user queries using language models  
+- Search for and verify sources to support the information  
+- Provide structured answers with proper citations  
+- Support an API interface compatible with OpenAI standards  
 
-2. **Валидатор**:
-- Оценка точности работы детекторов майнеров
-- Проверка результатов на контрольных наборах данных
-- Мониторинг способности майнеров обнаруживать новые типы AI-генерации
-- Участие в распределении наград на основе эффективности детекции
+2. **Validator**:
+- Evaluate the accuracy and reliability of miners’ answers  
+- Check the relevance of the provided sources  
+- Monitor citation quality and how well answers match the queries  
+- Participate in reward distribution based on verification quality
 
-3. **Потребитель**:
-- Проверка подлинности медиафайлов через веб-интерфейс или API
-- Надежное определение синтетического контента (дипфейков, AI-сгенерированных изображений, текстов и аудио) с высокой точностью
-- Постоянное обновление алгоритмов распознавания благодаря децентрализованной сети майнеров, адаптирующихся к новым методам генерации контента
-- Прозрачность процесса верификации с подробными отчетами о признаках искусственного происхождения
-- Возможность интеграции через API в существующие платформы социальных сетей, новостные сайты и системы модерации контента
-- Защита от дезинформации и манипуляций общественным мнением через выявление поддельных медиаматериалов
-- Интеграция инструментов верификации в собственные платформы
+3. **Consumer**:
+- Receive verifiable answers with cited sources  
+- Increased accuracy and reliability of results thanks to the verification mechanism  
+- Access to an OpenAI-compatible API for integration into your own applications  
+- Reduced reliance on centralized AI services while maintaining high-quality responses  
+- Protection against misinformation and unverified data through source-checking  
+- Use the API to integrate verifiable answers into your own apps  
+- Access trustworthy information with the ability to verify it
 
-Таким образом, BitMind особенно ценен для медиа-компаний, платформ социальных сетей, правоохранительных органов и организаций, занимающихся проверкой фактов, которым необходимы надежные инструменты для борьбы с дезинформацией и защиты пользователей от манипулятивного AI-сгенерированного контента в эпоху, когда различие между реальным и синтетическим становится все менее очевидным.
-
----
-[Subnet 51: Compute Subnet](https://celiumcompute.ai/) — децентрализованная P2P-платформа для аренды вычислительных мощностей GPU, объединяющая владельцев графических процессоров и пользователей, нуждающихся в вычислительных ресурсах для решения различных задач.
-
-Приложения на базе сабнета:
-
-[Celium Compute](https://celiumcompute.ai/) — платформа для аренды вычислительных мощностей с удобным веб-интерфейсом, где пользователи могут арендовать GPU-ресурсы напрямую у майнеров сети.
-
-Возможности участия в сети:
-
-1. **Майнер (Поставщик GPU)**:
-- Предоставление своих GPU для аренды другим участникам сети
-- Получение вознаграждений за предоставленные вычислительные мощности
-- Автоматическое управление нагрузкой и распределением ресурсов
-
-2. **Валидатор**:
-- Проверка качества и доступности предоставляемых вычислительных ресурсов (Удаление майнера если он не имеет 100% доступности к услугам)
-- Мониторинг выполнения условий аренды и разрешение споров
-- Участие в распределении наград между майнерами
-- Получение вознаграждения за валидацию операций в сети
-
-3. **Потребитель мощностей**:
-- Доступ к широкому выбору GPU различной мощности
-- Значительное снижение затрат на вычислительную инфраструктуру
-- Гибкая система оплаты и масштабирования ресурсов (оплата через токен TAO)
-- Прозрачное ценообразование и система репутации участников
-- Отсутствие необходимости в долгосрочных контрактах
-- Доступ к специализированным GPU для задач машинного обучения и рендеринга
-- Возможность краткосрочной и долгосрочной аренды вычислительных ресурсов
-- Оплата только за фактически использованное время
-- Выбор оптимальной конфигурации под конкретные задачи
-
-Таким образом, Compute Subnet представляет особую ценность как для владельцев GPU, желающих монетизировать простаивающие мощности, так и для компаний, исследователей и разработчиков, нуждающихся в гибком доступе к вычислительным ресурсам без крупных первоначальных инвестиций в оборудование.
+Thus, Targon and the Sybil.com platform built on it are especially valuable for users and developers who prioritize factual accuracy, as well as for companies looking to integrate verifiable AI-generated answers with sources into their products.
 
 ---
-[Subnet 19: Nineteen](https://sn19.ai/) — специализированный сабнет, фокусирующийся на создании децентрализованной сети для выполнения сложных задач по обработке и генерации текста с использованием моделей LLM. В отличие от других сабнетов, Nineteen делает акцент на выполнении конкретных инструкций и задач, а не просто на генерации текста.
+[Subnet 8: Theta (PTN)](https://www.taoshi.io/) — a specialized subnet that collects and analyzes trading signals from quantum models and deep learning systems to provide comprehensive trading recommendations across various asset classes.
 
-Приложения на базе сабнета:
+Applications built on the subnet:
 
-[Corcel](https://corcel.io/) — платформа, предоставляющая API для доступа к открытым языковым моделям с высокой производительностью и низкой задержкой. Сервис предлагает доступ к моделям Llama 3, Mistral и другим через простой API, совместимый с OpenAI, с оплатой по факту использования. Corcel фокусируется на обеспечении стабильной и быстрой инфраструктуры для разработчиков, которым требуется надежный доступ к современным языковым моделям.
+[Taoshi](https://www.taoshi.io/ptn) — a platform offering access to high-precision trading signals generated by a decentralized network of algorithmic systems running on Bittensor infrastructure.
 
-[Tao Bot](https://tao.bot/) — платформа, упрощающая доступ к экосистеме Bittensor. Сервис разработан как для новичков в блокчейне, так и для опытных криптоэнтузиастов, позволяя легко осуществлять бриджинг, торговлю и стейкинг токенов. Tao Bot абстрагирует сложности мультичейн-взаимодействия, позволяя пользователям сосредоточиться на исследовании инновационных AI-сетей и развитии своих цифровых активов. Главный сайт работает в ограниченном функционале, но у протокола уже есть [сайт](https://interact.tao.bot/).
+Participation opportunities in the network:
 
-[Makeitaquote](https://makeitaquote.com/) — сервис для создания мемов, картином с цитатами с использованием различных моделей.
+1. **Miner**:
+- Develop and run algorithmic trading models  
+- Generate trading signals across different asset classes  
+- Provide market movement forecasts with entry/exit levels  
+- Earn rewards based on the accuracy and effectiveness of signals  
 
-Возможности участия в сети:
+2. **Validator**:
+- Evaluate the historical accuracy of trading signals  
+- Monitor miner performance in real-time  
+- Verify whether signals align with market conditions  
+- Participate in reward distribution based on forecast performance
 
-1. **Майнер**:
-- Запуск и обслуживание специализированных языковых моделей, оптимизированных для выполнения инструкций
-- Обработка запросов, требующих точного следования указаниям и структурированных ответов
-- Выполнение сложных задач, включая написание кода, анализ данных и создание структурированного контента
-- Получение вознаграждения на основе качества выполнения инструкций и точности результатов
+3. **Consumer**:
+- Access aggregated high-precision trading signals  
+- Get diversified trading signals across various asset classes (crypto, stocks, commodities, forex)  
+- Increased forecast accuracy through aggregation of data from multiple independent algorithmic systems  
+- Reduced risk through the use of diverse strategies and machine learning models  
+- Ability to integrate trading signals into your own trading systems via API, e.g., for use with trading bots  
+- Transparent signal performance tracking with historical data  
+- Access to diversified strategies from a wide range of algorithmic models  
 
-2. **Валидатор**:
-- Оценка способности майнеров точно следовать инструкциям и выполнять конкретные задачи
-- Проверка качества и структуры ответов на основе заданных критериев
-- Мониторинг производительности и способности майнеров решать различные типы задач
-- Участие в распределении наград на основе объективных метрик качества выполнения инструкций
+If you’d like, you can try creating an account and select free miners to test the [service](https://request.taoshi.io/).
 
-3. **Потребитель**:
-- Доступ к специализированным языковым моделям, оптимизированным для выполнения конкретных инструкций
-- Получение структурированных и точных ответов на сложные запросы
-- Возможность использования моделей для решения практических задач, таких как написание кода, анализ данных и создание контента
-- Экономическая эффективность: оплата только за фактически использованные вычисления
-- Повышенная надежность и точность выполнения инструкций по сравнению с общими языковыми моделями
-- Доступ к моделям, специально обученным для решения узкоспециализированных задач
-- Возможность получения результатов в структурированном формате, готовом для интеграции в приложения
-
-Таким образом, Subnet Nineteen особенно ценен для разработчиков, аналитиков данных и компаний, которым требуются языковые модели, способные точно следовать инструкциям и выполнять конкретные задачи с высокой степенью структурированности и точности результатов.
+Thus, Theta is especially valuable for traders, investment funds, and financial institutions that need high-quality algorithmic trading signals without having to develop and maintain complex machine learning or quantum systems themselves.
 
 ---
-[Subnet 13: Data Universe](https://www.macrocosmos.ai/sn13) — специализированный сабнет, созданный для сбора, хранения и предоставления доступа к большим объемам данных из различных источников. Сабнет разработан с акцентом на децентрализацию и масштабируемость, позволяя хранить до 50 петабайт данных на 200 майнерах, при этом требуя всего около 10 ГБ хранилища на валидаторах.
+[Subnet 8: BitMind](https://bitmind.ai/) — a specialized subnet focused on identifying and verifying AI-generated content, using a decentralized network of miners to analyze and classify various types of media files.
 
-Приложения на базе сабнета:
+Applications built on the subnet:
 
-[Data Universe Dashboard](https://shorturl.at/Ca5uu) — информационная панель, отображающая текущее состояние данных в сети, помогающая майнерам оптимизировать свою конфигурацию для максимизации вознаграждений.
+[Thedetector](https://thedetector.ai/) — a platform for detecting AI-generated content, including images and videos, with high accuracy and transparent analysis results.
 
-[HuggingFace Datasets](https://huggingface.co/) — майнеры могут загружать собранные данные на HuggingFace, делая их доступными для публичного использования в анонимизированном виде.
+Participation opportunities in the network:
 
-Возможности участия в сети:
+1. **Miner**:
+- Run detection algorithms for AI-generated content  
+- Analyze and classify various types of media files  
+- Continuously train and adapt to new content generation methods  
+- Earn rewards based on the accuracy of synthetic content detection  
 
-1. **Майнер**:
-- Сбор данных из определенных источников (DataSources)
-- Хранение данных в локальной базе данных
-- Предоставление индекса хранимых данных валидаторам
-- Загрузка данных на HuggingFace для публичного доступа
-- Получение вознаграждения на основе объема и ценности хранимых данных
+2. **Validator**:
+- Evaluate the accuracy of miners' detection models  
+- Verify results using benchmark datasets  
+- Monitor miners' ability to detect new types of AI-generated content  
+- Participate in reward distribution based on detection performance
 
-2. **Валидатор**:
-- Периодический опрос майнеров для получения их индексов данных
-- Хранение информации о всех данных в сети и о том, какие майнеры их хранят
-- Проверка корректности данных, хранимых майнерами
-- Оценка майнеров на основе объема, свежести и уникальности их данных
-- Распределение наград между майнерами
+3. **Consumer**:
+- Verify the authenticity of media files via web interface or API  
+- Reliably detect synthetic content (deepfakes, AI-generated images, texts, and audio) with high accuracy  
+- Continuously updated detection algorithms thanks to a decentralized network of miners adapting to new content generation methods  
+- Transparent verification process with detailed reports on indicators of artificial origin  
+- API integration into existing social media platforms, news sites, and content moderation systems  
+- Protection from disinformation and public opinion manipulation through detection of fake media  
+- Integration of verification tools into your own platforms
 
-3. **Потребитель**:
-- Доступ к большим объемам данных из различных источников через единый интерфейс
-- Использование данных для обучения моделей искусственного интеллекта и проведения исследований
-- Получение актуальных данных, обновляемых майнерами
-- Доступ к уникальным наборам данных, которые могут быть недоступны в централизованных хранилищах
+Thus, BitMind is especially valuable for media companies, social media platforms, law enforcement agencies, and fact-checking organizations that need reliable tools to combat disinformation and protect users from manipulative AI-generated content — in an era where the line between real and synthetic is becoming increasingly blurred.
 
-Система оценки в Data Universe учитывает несколько факторов:
-- **Свежесть данных**: более новые данные ценятся выше, а данные старше 30 дней не учитываются
-- **Желательность данных**: определенные типы данных оцениваются выше в соответствии
-- **Фактор дублирования**: данные, хранимые многими майнерами, менее ценны, чем уникальные данные
-- **Достоверность майнера**: валидаторы проверяют корректность данных и поддерживают рейтинг доверия к каждому майнеру
+---
+[Subnet 51: Compute Subnet](https://celiumcompute.ai/) — a decentralized P2P platform for renting GPU computing power, connecting GPU owners with users who need compute resources for various tasks.
 
-Таким образом, Data Universe особенно ценен для исследователей, разработчиков AI-моделей и компаний, которым требуется доступ к большим объемам разнообразных данных для обучения моделей машинного обучения и проведения аналитических исследований. Сабнет стимулирует разнообразие данных и их качество, создавая децентрализованную инфраструктуру для хранения и доступа к информации.
+Applications built on the subnet:
 
-Полный список сабнетов можно посмотреть [здесь](https://taomarketcap.com/subnets?sortColumn=market_cap&sortType=desc).
+[Celium Compute](https://celiumcompute.ai/) — a platform for renting computing power with a user-friendly web interface, where users can rent GPU resources directly from network miners.
 
-## Bittensor: Реальная ценность децентрализованного AI для пользователей
+Participation opportunities in the network:
 
-Если отбросить маркетинговые лозунги, возникает логичный вопрос: какую реальную ценность Bittensor приносит обычным пользователям? Разберем ключевые преимущества и сценарии использования.
+1. **Miner (GPU Provider)**:
+- Offer your GPUs for rent to other network participants  
+- Earn rewards for providing compute power  
+- Automatically manage workload and resource distribution  
 
-### Преимущества Bittensor
+2. **Validator**:
+- Check the quality and availability of provided compute resources (remove miners if they don't maintain 100% uptime)  
+- Monitor fulfillment of rental agreements and handle disputes  
+- Participate in reward distribution among miners  
+- Earn rewards for validating operations in the network
 
-**Доступ к различным AI-моделям без привязки к одному провайдеру**
-В отличие от централизованных сервисов (OpenAI, Anthropic, Google), Bittensor предоставляет доступ к множеству моделей через единый интерфейс.
-Это означает:
-- Независимость от политики и ценовой стратегии одной компании.
-- Возможность выбора оптимальной модели для конкретной задачи.
-- Гибкость в переключении между моделями в зависимости от потребностей.
+3. **Compute Consumer**:
+- Access to a wide range of GPUs with varying performance levels  
+- Significant cost reduction for compute infrastructure  
+- Flexible payment and resource scaling system (payment via TAO token)  
+- Transparent pricing and participant reputation system  
+- No need for long-term contracts  
+- Access to specialized GPUs for machine learning and rendering tasks  
+- Option for short-term or long-term compute rentals  
+- Pay only for actual usage time  
+- Choose the optimal configuration for specific tasks  
 
-**Экономическая выгода**
-- Прозрачное ценообразование — стоимость использования определяется рыночными механизмами, а не корпоративными решениями.
-- Оплата по факту использования — большинство сервисов работают по модели pay-as-you-go, без фиксированной абонентской платы.
-- Возможность монетизации ресурсов — владельцы оборудования могут сдавать свои мощности в аренду и получать вознаграждение.
+Thus, the Compute Subnet is especially valuable both for GPU owners looking to monetize idle hardware, and for companies, researchers, and developers in need of flexible access to compute power without large upfront hardware investments.
 
-Таким образом, главные пункты:
-- **Устойчивость к цензуре** — децентрализованная сеть сложнее поддается внешнему контролю.
-- **Отказоустойчивость** — отсутствие единой точки отказа делает систему более надежной.
-- **Инновационность** — открытая экосистема стимулирует внедрение новых моделей и алгоритмов.
+---
+[Subnet 19: Nineteen](https://sn19.ai/) — a specialized subnet focused on building a decentralized network for handling complex text processing and generation tasks using LLMs. Unlike other subnets, Nineteen emphasizes executing specific instructions and tasks, rather than just generating generic text.
 
-### Примеры использования
+Applications built on the subnet:
 
-**Разработчик приложений**
-Разработчик может использовать Bittensor вместо API от одного провайдера (например, OpenAI). Например, **Corcel (Subnet 19)** предоставляет доступ к различным языковым моделям через единый API, что дает:
-- Снижение стоимости работы с AI.
-- Возможность легко переключаться между моделями.
-- Независимость от политики одного поставщика.
+[Corcel](https://corcel.io/) — a platform providing an API for access to open-source language models with high performance and low latency. The service offers access to models like Llama 3, Mistral, and others via a simple, OpenAI-compatible API with pay-as-you-go pricing. Corcel focuses on delivering stable and fast infrastructure for developers who need reliable access to modern language models.
 
-**Исследователь данных**
-Для обучения AI-моделей требуются большие объемы данных.
+[Tao Bot](https://tao.bot/) — a platform that simplifies access to the Bittensor ecosystem. Designed for both blockchain newcomers and experienced crypto enthusiasts, the service enables easy bridging, trading, and staking of tokens. Tao Bot abstracts the complexities of multichain interaction, allowing users to focus on exploring innovative AI networks and growing their digital assets. The main site is currently limited in functionality, but the protocol already has a working [site](https://interact.tao.bot/).
 
-**Data Universe (Subnet 13)** предлагает:
-- Децентрализованное хранилище данных.
-- Доступ к уникальным наборам данных.
-- Свежие и актуальные данные, обновляемые майнерами.
+[Makeitaquote](https://makeitaquote.com/) — a service for creating memes and quote images using various models.
 
-**Обычный пользователь, работающий с AI**
-При поиске информации важна достоверность.
+Participation opportunities in the network:
 
-**Sybil (Subnet 4)** предлагает:
-- Ответы с подтвержденными источниками.
-- Минимизацию недостоверной информации от AI.
-- Возможность проверки происхождения данных.
+1. **Miner**:
+- Run and maintain specialized language models optimized for instruction-following  
+- Process requests that require precise adherence to prompts and structured responses  
+- Execute complex tasks such as code generation, data analysis, and structured content creation  
+- Earn rewards based on instruction-following quality and output accuracy  
 
-### Возможные применения в будущем
+2. **Validator**:
+- Evaluate miners’ ability to follow instructions and complete specific tasks  
+- Check the quality and structure of responses based on predefined criteria  
+- Monitor miner performance and their ability to handle various task types  
+- Participate in reward distribution based on objective metrics of instruction execution quality
 
-_AI агенты:_
+3. **Consumer**:
+- Access to specialized language models optimized for following specific instructions  
+- Receive structured and accurate answers to complex queries  
+- Use models for practical tasks such as code writing, data analysis, and content creation  
+- Cost-efficiency: pay only for the compute actually used  
+- Increased reliability and precision in instruction execution compared to general-purpose language models  
+- Access to models specifically trained for narrow, task-focused applications  
+- Get results in a structured format, ready for integration into applications  
 
-Bittensor позволяет создавать AI-агентов, способных выполнять сложные задачи. Например, AI-агент для планирования путешествий может:
-1. Анализировать предпочтения пользователя.
-2. Искать авиабилеты через API.
-3. Проверять прогноз погоды.
-4. Подбирать отели на основе отзывов.
-5. Создавать маршрут поездки.
+Thus, Subnet Nineteen is especially valuable for developers, data analysts, and companies that require language models capable of accurately following instructions and performing specific tasks with a high degree of structure and precision.
 
-Такой агент мог бы использовать несколько сабнетов: один для обработки запроса, другой для поиска информации, третий для построения оптимального маршрута.
+---
+[Subnet 13: Data Universe](https://www.macrocosmos.ai/sn13) — a specialized subnet designed for collecting, storing, and providing access to large volumes of data from various sources.  
+The subnet is built with a focus on decentralization and scalability, allowing up to 50 petabytes of data to be stored across 200 miners, while requiring only around 10 GB of storage on validators.
 
-_Путь к AGI:_
+Applications built on the subnet:
 
-Возможно, что **AGI (Artificial General Intelligence)** будет достигнут через интеграцию множества специализированных моделей. Bittensor движется в этом направлении, создавая:
-1. **Специализированные модели** — каждая сабнет решает конкретную задачу.
-2. **Комбинацию возможностей** — AI-агенты могут взаимодействовать друг с другом.
-3. **Рыночное развитие** — лучшие модели получают больше ресурсов и развиваются быстрее.
-4. **Коллективный интеллект** — тысячи независимых участников создают мощную AI-систему.
+[Data Universe Dashboard](https://shorturl.at/Ca5uu) — an information panel that displays the current state of data in the network, helping miners optimize their setup to maximize rewards.
 
-Таким образом, Bittensor — это не просто блокчейн для AI, а фундамент для новой децентрализованной AI-экосистемы, в которой технологии развиваются благодаря сообществу, а не централизованным корпорациям.
+[HuggingFace Datasets](https://huggingface.co/) — miners can upload collected datasets to HuggingFace, making them publicly available in anonymized form.
 
-## Заключение
+Participation opportunities in the network:
 
-Bittensor создает революционную децентрализованную инфраструктуру для искусственного интеллекта, где ценность определяется рыночными механизмами, а не корпоративными решениями.
-Архитектура сабнетов обеспечивает беспрецедентную гибкость, позволяя создавать специализированные сети для различных задач — от обработки текста до анализа изображений. Механизмы Dynamic TAO и Yuma Consensus формируют справедливую систему вознаграждений, где участники влияют на развитие сети пропорционально своему вкладу.
-Экономическая модель Bittensor создает рыночную систему, где участники получают вознаграждение за предоставление вычислительных ресурсов и интеллектуальных моделей, что делает разработку и использование AI более доступными и эффективными
-Интеграция с EVM расширяет возможности взаимодействия с существующими блокчейн-экосистемами, а в перспективе Bittensor может стать фундаментом для развития AGI через интеграцию множества специализированных моделей.
-Успех проекта будет зависеть от его способности преодолеть существующие ограничения, сохраняя при этом главную цель — создание открытой и доступной экосистемы для развития технологий AI.
+1. **Miner**:
+- Collect data from specific sources (DataSources)  
+- Store data in a local database  
+- Provide an index of stored data to validators  
+- Upload datasets to HuggingFace for public access  
+- Earn rewards based on the volume and value of stored data  
 
-## Ссылки
+2. **Validator**:
+- Periodically query miners to retrieve their data indexes  
+- Store metadata about all data in the network and which miners hold it  
+- Verify the correctness of the data stored by miners  
+- Evaluate miners based on the volume, freshness, and uniqueness of their data  
+- Distribute rewards among miners
 
-- [Официальный сайт Bittensor](https://bittensor.com/)
-- [Bittensor wiki](https://bittensorwiki.com/)
-- [Learn bittensor](https://learnbittensor.org/subnets)
-- [Tao marketcap](https://taomarketcap.com/subnets?sortColumn=market_cap&sortType=desc)
-- [Документация Bittensor](https://docs.bittensor.com/)
-- [Dynamic TAO: подробное руководство](https://docs.bittensor.com/dynamic-tao/dtao-guide)
-- [Yuma Consensus: документация](https://docs.bittensor.com/yuma-consensus)
-- [Substrate: документация](https://polkadot-blockchain-academy.github.io/pba-book/substrate/intro/page.html)
-- [Polkadot: официальный сайт](https://polkadot.com/)
-- [Proof of Authority (PoA): объяснение механизма](https://coinmerce.io/en/learn/what-is-proof-of-authority/)
-- [Статистика сабнетов Bittensor](https://taostats.io/subnets)
-- [Sybil: AI-поисковик на базе Bittensor](https://sybil.com)
-- [Github: Bittensor](https://github.com/opentensor/bittensor)
+3. **Consumer**:
+- Access large volumes of data from various sources through a unified interface  
+- Use data for training AI models and conducting research  
+- Receive up-to-date datasets continuously refreshed by miners  
+- Access unique datasets that may not be available in centralized storage platforms  
+
+The scoring system in Data Universe takes several factors into account:
+- **Freshness of data**: newer data is valued more highly, and data older than 30 days is not counted  
+- **Desirability of data**: certain types of data are rated higher based on demand  
+- **Duplication factor**: data stored by many miners is less valuable than unique data  
+- **Miner reliability**: validators check data accuracy and maintain a trust score for each miner
+
+Thus, Data Universe is especially valuable for researchers, AI model developers, and companies that need access to large volumes of diverse data for training machine learning models and conducting analytical research.  
+The subnet incentivizes data diversity and quality, creating a decentralized infrastructure for storing and accessing information.
+
+You can view the full list of subnets [here](https://taomarketcap.com/subnets?sortColumn=market_cap&sortType=desc).
+
+## Bittensor: Real Value of Decentralized AI for Users
+
+Putting aside the marketing slogans, a fair question arises: what real value does Bittensor bring to everyday users? Let’s break down the key benefits and use cases.
+
+### Advantages of Bittensor
+
+**Access to various AI models without relying on a single provider**  
+Unlike centralized services (OpenAI, Anthropic, Google), Bittensor gives access to multiple models through a single interface.  
+This means:
+- Independence from the policies and pricing strategies of a single company  
+- The ability to choose the best model for a specific task  
+- Flexibility to switch between models based on your needs
+
+**Economic Benefits**
+- Transparent pricing — usage costs are determined by market mechanisms, not corporate decisions  
+- Pay-as-you-go — most services operate on a usage-based model with no fixed subscription fees  
+- Monetization opportunity — hardware owners can rent out their resources and earn rewards  
+
+So, the main points are:
+- **Censorship resistance** — a decentralized network is harder to control externally  
+- **Fault tolerance** — no single point of failure makes the system more reliable  
+- **Innovation** — an open ecosystem encourages the development of new models and algorithms  
+
+### Example Use Cases
+
+**App Developer**  
+A developer can use Bittensor instead of relying on a single provider’s API (like OpenAI). For example, **Corcel (Subnet 19)** provides access to various language models through a unified API, which offers:
+- Reduced cost of working with AI  
+- Easy switching between models  
+- Independence from a single provider’s policies
+
+**Data Researcher**  
+Training AI models requires large volumes of data.
+
+**Data Universe (Subnet 13)** offers:
+- Decentralized data storage  
+- Access to unique datasets  
+- Fresh and up-to-date data continuously updated by miners  
+
+**Everyday AI User**  
+When searching for information, reliability matters.
+
+**Sybil (Subnet 4)** offers:
+- Answers with verified sources  
+- Minimization of misinformation from AI  
+- The ability to trace the origin of data
+
+### Potential Future Applications
+
+_AI Agents:_
+
+Bittensor enables the creation of AI agents capable of performing complex tasks. For example, a travel planning AI agent could:
+
+1. Analyze user preferences  
+2. Search for flights via APIs  
+3. Check the weather forecast  
+4. Find hotels based on reviews  
+5. Build a travel itinerary  
+
+Such an agent could use multiple subnets: one for processing the request, another for information retrieval, and a third for building the optimal route.
+
+_Path to AGI:_
+
+It’s possible that **AGI (Artificial General Intelligence)** will be achieved through the integration of many specialized models.  
+Bittensor is moving in that direction by creating:
+
+1. **Specialized models** — each subnet solves a specific task  
+2. **Combined capabilities** — AI agents can interact with each other  
+3. **Market-driven growth** — the best models attract more resources and evolve faster  
+4. **Collective intelligence** — thousands of independent participants contribute to a powerful AI system  
+
+Thus, Bittensor is not just a blockchain for AI — it’s the foundation for a new decentralized AI ecosystem, where innovation is driven by the community, not centralized corporations.
+
+## Conclusion
+
+Bittensor is building a revolutionary decentralized infrastructure for artificial intelligence, where value is defined by market forces rather than corporate decisions.  
+The subnet architecture provides unprecedented flexibility, enabling the creation of specialized networks for a wide range of tasks — from text processing to image analysis.  
+The Dynamic TAO and Yuma Consensus mechanisms create a fair reward system, where participants influence the network’s development in proportion to their contribution.
+Bittensor’s economic model establishes a market-driven system where participants are rewarded for providing computational resources and intelligent models, making AI development and usage more accessible and efficient.  
+EVM integration expands interoperability with existing blockchain ecosystems, and in the long term, Bittensor may become the foundation for AGI by integrating a wide array of specialized models.
+The project’s success will depend on its ability to overcome current limitations while staying true to its core mission — building an open and accessible ecosystem for advancing AI technologies.
+
+## Links
+
+- [Official Bittensor Website](https://bittensor.com/)  
+- [Bittensor Wiki](https://bittensorwiki.com/)  
+- [Learn Bittensor](https://learnbittensor.org/subnets)  
+- [Tao Marketcap](https://taomarketcap.com/subnets?sortColumn=market_cap&sortType=desc)  
+- [Bittensor Documentation](https://docs.bittensor.com/)  
+- [Dynamic TAO: Full Guide](https://docs.bittensor.com/dynamic-tao/dtao-guide)  
+- [Yuma Consensus: Documentation](https://docs.bittensor.com/yuma-consensus)  
+- [Substrate: Docs](https://polkadot-blockchain-academy.github.io/pba-book/substrate/intro/page.html)  
+- [Polkadot: Official Site](https://polkadot.com/)  
+- [Proof of Authority (PoA): Mechanism Explained](https://coinmerce.io/en/learn/what-is-proof-of-authority/)  
+- [Bittensor Subnet Stats](https://taostats.io/subnets)  
+- [Sybil: AI Search Engine on Bittensor](https://sybil.com)  
+- [Bittensor GitHub](https://github.com/opentensor/bittensor)
