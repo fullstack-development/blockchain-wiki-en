@@ -1,44 +1,44 @@
 # Safe Singleton Factory
 
-**Автор:** [Роман Ярлыков](https://github.com/rlkvrv) 🧐
+**Author:** [Roman Yarlykov](https://github.com/rlkvrv) 🧐
 
-## Введение
+## Introduction
 
-Возможно, вы замечали, что у смарт-контрактов некоторых DeFi-протоколов одинаковые адреса в разных блокчейнах. Речь, конечно же, о блокчейнах на основе EVM. Недавно я столкнулся с подобной задачей и хочу поделиться существующими решениями.
+You may have noticed that smart contracts of some DeFi protocols have the same addresses on different blockchains. We're talking, of course, about EVM-based blockchains. Recently, I faced a similar task and want to share existing solutions.
 
-## Что необходимо для того, чтобы адреса были одинаковыми?
+## What is needed for addresses to be the same?
 
-Для начала нужно разобраться, из чего формируется адрес смарт-контракта. В зависимости от способа развертывания есть два варианта входных параметров:
+First, we need to understand what a smart contract address is made of. Depending on the deployment method, there are two sets of input parameters:
 
-1. **Адрес деплойера и `nonce`**. В этом случае адрес вычисляется по следующей формуле:
+1. **Deployer address and `nonce`**. In this case, the address is calculated by the following formula:
 
     ```js
     keccak256(rlp([sender_address, sender_nonce]))[12:]
     ```
 
-    Этот способ используется в двух случаях:
-    - Если смарт-контракт создается путем отправки транзакции с пустым полем `to`. Для его развертывания используется опкод `RETURN`.
-    - Если смарт-контракт создается внутри другого смарт-контракта с помощью ключевого слова `new`, либо через `assembly` и функцию `create`. В обоих случаях под капотом применяется опкод `CREATE`.
+    This method is used in two cases:
+    - When a smart contract is created by sending a transaction with an empty `to` field. The contract is deployed using the `RETURN` opcode.
+    - When a smart contract is created inside another smart contract using the `new` keyword, or via `assembly` and the `create` function. In both cases, the `CREATE` opcode is used under the hood.
 
-2. **Адрес деплойера, `bytecode` и `salt`**. Такой способ вычисления адреса появился вместе с опкодом `CREATE2`. Подробно об этом можно почитать в другой статье wiki под названием "EIP-1014: Skinny CREATE2". Если коротко, этот метод позволяет убрать зависимость от `nonce` адреса, что значительно упрощает задачу. Но есть и недостаток — развернуть контракт с помощью `CREATE2` можно только из другого смарт-контракта.
+2. **Deployer address, `bytecode`, and `salt`**. This method of address calculation appeared with the `CREATE2` opcode. You can read more about it in another wiki article called "EIP-1014: Skinny CREATE2". In short, this method removes the dependency on the address’s `nonce`, which greatly simplifies the task. But there is a drawback — contracts can be deployed via `CREATE2` only from another smart contract.
 
-    Полная формула вычисления адреса в этом случае:
+    The full address calculation formula in this case:
 
     ```js
     keccak256(0xff + sender_address + salt + keccak256(initialisation_code))[12:]
     ``` 
 
-Таким образом, чтобы адреса были одинаковыми во всех сетях, необходимо использовать один и тот же `nonce` для деплойера. На первый взгляд, это несложно: достаточно создать "чистый" адрес и развернуть контракт. Однако на практике этот метод не самый надежный и удобный.
+Thus, for addresses to be the same across all networks, it’s necessary to use the same `nonce` for the deployer. At first glance, this seems simple: just create a "clean" address and deploy the contract. However, in practice, this method is not the most reliable or convenient.
 
-Например, в одном из блокчейнов можно случайно отправить не ту транзакцию, что изменит `nonce`. Бывают и другие ситуации: транзакция может "подвиснуть", и чтобы ее пропустить, придется отправить пустую транзакцию с тем же `nonce`, что снова его увеличит.
+For example, in one of the blockchains, you might accidentally send the wrong transaction, which changes the `nonce`. Other situations happen too: a transaction can get "stuck," and to bypass it, you have to send an empty transaction with the same `nonce`, which again increments it.
 
-Поэтому был придуман более надежный, удобный и предсказуемый вариант — **Deterministic Deployment Proxy**.
+That’s why a more reliable, convenient, and predictable solution was invented — the **Deterministic Deployment Proxy**.
 
 ## Deterministic Deployment Proxy
 
-Если упростить, идея довольно проста: нужно создать "чистый" адрес и развернуть в каждой сети один и тот же смарт-контракт — фабрику. Этот контракт выполняет единственную функцию: деплоит другие смарт-контракты с использованием `CREATE2`. То есть для развертывания любого контракта потребуется только `salt` и его байткод.
+To simplify, the idea is pretty straightforward: you need to create a "clean" address and deploy the same smart contract — a factory — on every network. This contract has a single function: to deploy other smart contracts using `CREATE2`. So, to deploy any contract, you only need the `salt` and its bytecode.
 
-Так появился [Deterministic Deployment Proxy](https://github.com/Arachnid/deterministic-deployment-proxy). Чтобы минимизировать размер кода и расходы на газ, контракт был написан на `Yul`. Вот его полный код:
+That’s how the [Deterministic Deployment Proxy](https://github.com/Arachnid/deterministic-deployment-proxy) appeared. To minimize code size and gas costs, the contract was written in `Yul`. Here is its full code:
 
 ```solidity
 object "Proxy" {
@@ -61,19 +61,19 @@ object "Proxy" {
 }
 ```
 
-Как вызывать этот контракт и передавать ему данные, разберем позже в практических примерах. Сейчас важно другое: как найти свободный адрес для деплоя смарт-контракта во всех существующих и будущих сетях? И как быть уверенным, что доступ к этому аккаунту никогда не будет потерян?
+How to call this contract and pass data to it will be covered later in practical examples. For now, the important question is: how to find a free address to deploy a smart contract on all existing and future networks? And how to be sure that access to this account will never be lost?
 
-Решение оказалось довольно тривиальным. Любая транзакция в Ethereum подписывается некоторым приватным ключом, а затем с помощью функции `ecrecover` из подписи можно восстановить публичный адрес владельца. Подпись передается в виде трех параметров: `v, r, s`.
+The solution turned out to be quite straightforward. Every transaction in Ethereum is signed by a private key, and using the `ecrecover` function, you can recover the public address of the owner from the signature. The signature is passed as three parameters: `v, r, s`.
 
-Но что если пойти от обратного? Алгоритм следующий:
+But what if we reverse the approach? The algorithm is as follows:
 
-1. **Придумываем подпись** — заранее выбираем `v, r, s` таким образом, чтобы `ecrecover` гарантированно дал нам фиксированный адрес.
-2. **Финансируем этот адрес** — отправляем на него небольшое количество нативных токенов для оплаты газа. Точный расчет возможен, но лучше предусмотреть небольшой запас.
-3. **Создаем транзакцию** — подписываем ее заранее выбранной подписью, указываем байткод `Proxy` и оставляем поле `to` пустым, чтобы транзакция развернула контракт.
+1. **Come up with a signature** — pre-select `v, r, s` so that `ecrecover` reliably returns a fixed address.  
+2. **Fund this address** — send a small amount of native tokens to pay for gas. The exact calculation is possible, but it’s better to provide a buffer.  
+3. **Create a transaction** — sign it with the pre-selected signature, specify the `Proxy` bytecode, and leave the `to` field empty so the transaction deploys the contract.
 
-Этого достаточно, чтобы кто угодно мог развернуть контракт в любой сети. При этом никто не владеет этим аккаунтом, а значит, он не может быть утерян. Предполагается, что `nonce` всегда будет равен `0`, а значит, и адрес `Proxy` останется неизменным.
+This is enough for anyone to deploy the contract on any network. At the same time, no one owns this account, so it cannot be lost. It’s assumed that the `nonce` will always be `0`, meaning the `Proxy` address remains unchanged.
 
-Такая транзакция называется `pre-signed`. Подпись при этом может быть максимально простой. Например, в [Deterministic Deployment Proxy](https://github.com/Arachnid/deterministic-deployment-proxy) используется такая:
+Such a transaction is called `pre-signed`. The signature can be very simple. For example, in [Deterministic Deployment Proxy](https://github.com/Arachnid/deterministic-deployment-proxy), the following is used:
 
 ```js
 const v = arrayFromNumber(27)
@@ -81,49 +81,49 @@ const r = arrayFromHexString('22222222222222222222222222222222222222222222222222
 const s = arrayFromHexString('2222222222222222222222222222222222222222222222222222222222222222')
 ```
 
-Решение изящное, но есть нюансы.
+The solution is elegant, but there are some nuances.
 
 ## Safe Singleton Factory
 
-Deterministic Deployment Proxy — рабочее решение, но у него есть несколько проблем:
+Deterministic Deployment Proxy is a working solution, but it has several issues:
 
-1. В новой сети, где контракт `Proxy` еще не развернут, кто-то может отправить транзакцию с той же подписью, но с невалидными данными или другим байткодом. Это увеличит `nonce`, и исправить ситуацию уже не удастся.
-2. Вторая проблема связана с [EIP-155: Simple replay attack protection](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md). Этот стандарт требует добавления `chainId` в подписываемые данные транзакции, чтобы предотвратить их повторное выполнение в другой сети. Это правило строго применяется только в некоторых новых сетях. Однако оно ломает саму концепцию использования одной и той же подписи.
+1. In a new network where the `Proxy` contract hasn’t been deployed yet, someone could send a transaction with the same signature but with invalid data or different bytecode. This would increase the `nonce`, and the situation couldn’t be fixed afterward.  
+2. The second issue relates to [EIP-155: Simple replay attack protection](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md). This standard requires adding the `chainId` to the signed transaction data to prevent replaying transactions on another network. This rule is strictly enforced only in some newer networks. However, it breaks the whole concept of using the same signature everywhere.
 
-Из-за этих проблем предложение [ERC-2470: Singleton Factory](https://eips.ethereum.org/EIPS/eip-2470) не было принято. Сообщество решило, что принимать отдельный ERC ради такого хака "избыточно".
+Because of these problems, the proposal [ERC-2470: Singleton Factory](https://eips.ethereum.org/EIPS/eip-2470) was not adopted. The community decided that accepting a separate ERC just for such a hack was "overkill."
 
-Так мы подошли к [Safe Singleton Factory](https://github.com/safe-global/safe-singleton-factory). Чтобы решить описанные выше проблемы, команда [Safe](https://safe.global/) использует один конкретный аккаунт для развертывания фабрики во всех сетях.
+This brings us to [Safe Singleton Factory](https://github.com/safe-global/safe-singleton-factory). To solve the problems described above, the [Safe](https://safe.global/) team uses a single specific account to deploy the factory on all networks.
 
-Изначально это была внутренняя разработка, но поскольку контрактом может пользоваться любой, команда поделилась им с сообществом. Кроме того, фабрика уже развернута во множестве блокчейнов, неофициальный список доступен [здесь](https://contractscan.xyz/contract/0x914d7Fec6aaC8cd542e72Bca78B30650d45643d7).
+Initially, this was an internal development, but since anyone can use the contract, the team shared it with the community. Moreover, the factory is already deployed on many blockchains — an unofficial list is available [here](https://contractscan.xyz/contract/0x914d7Fec6aaC8cd542e72Bca78B30650d45643d7).
 
-Фабрика Safe основана на концепции [Deterministic Deployment Proxy](https://github.com/Arachnid/deterministic-deployment-proxy), но с одним ключевым отличием: вместо общей подписи используется подпись, контролируемая Safe. 
+The Safe factory is based on the concept of [Deterministic Deployment Proxy](https://github.com/Arachnid/deterministic-deployment-proxy), but with one key difference: instead of a shared signature, it uses a signature controlled by Safe. 
 
-Если вам нужно добавить новый блокчейн, команда Safe может развернуть контракт самостоятельно. Для этого необходимо:
+If you need to add a new blockchain, the Safe team can deploy the contract themselves. To do this, it’s necessary to:
 
-1. Убедиться, что сеть есть на [Chainlist](https://chainlist.org/). Другие сети не принимаются.
-2. Создать `issue` в репозитории [Safe Singleton Factory](https://github.com/safe-global/safe-singleton-factory) с запросом на деплой.
-3. После создания `issue` бот автоматически подтвердит его и опубликует комментарий с адресом деплойера и суммой нативных токенов, необходимых для развертывания.
-4. Перевести указанные средства на адрес деплойера и отметить задачу как выполненную. Команда Safe развернет контракт.
+1. Make sure the network is listed on [Chainlist](https://chainlist.org/). Other networks are not accepted.  
+2. Create an `issue` in the [Safe Singleton Factory](https://github.com/safe-global/safe-singleton-factory) repository requesting deployment.  
+3. After creating the `issue`, a bot will automatically confirm it and post a comment with the deployer’s address and the amount of native tokens needed for deployment.  
+4. Send the specified funds to the deployer’s address and mark the task as completed. The Safe team will deploy the contract.
 
-Процесс занимает около двух недель. 
+The process takes about two weeks.
 
-*Примечание:* Блокчейны, основанные на `OP Stack`, включают Safe Singleton Factory как предустановленный контракт, поэтому развертывать его вручную не требуется.
+*Note:* Blockchains based on the `OP Stack` include the Safe Singleton Factory as a pre-deployed contract, so manual deployment is not required.
 
-Но все это касается **только развертывания фабрики в новой сети**. Если же нужно просто деплоить смарт-контракты с одинаковыми адресами в разных сетях, можно использовать уже развернутую фабрику Safe по адресу:  
-`0x914d7Fec6aaC8cd542e72Bca78B30650d45643d7`. Ее адрес будет одинаковым во всех EVM-сетях, где нет каких-то существенных отличий в работе опкодов или особенностей, которые не позволяют это сделать (всегда нужно проверять, возможны исключения).
+But all this concerns **only deploying the factory on a new network**. If you just need to deploy smart contracts with the same addresses on different networks, you can use the already deployed Safe factory at the address: `0x914d7Fec6aaC8cd542e72Bca78B30650d45643d7`. Its address will be the same on all EVM networks where there are no significant differences in opcode behavior or other features that prevent this (always check for exceptions).
 
-## Пример использования
 
-Есть несколько способов развернуть смарт-контракты с помощью Safe Singleton Factory. Начнем с самого наглядного, хотя он включает промежуточный деплой, который **не является обязательным**, но помогает лучше понять процесс.
+## Example Usage
 
-Для этого создадим смарт-контракт "прослойку" `DeployFactory`, на схеме это будет выглядеть так:
+There are several ways to deploy smart contracts using the Safe Singleton Factory. Let's start with the most illustrative one, although it includes an intermediate deployment that is **not mandatory**, but helps better understand the process.
+
+For this, we will create a "wrapper" smart contract `DeployFactory`; on the diagram, it will look like this:
 
 ![deploy-with-deploy-factory](./img/deploy-with-deploy-factory.png)  
-*Процесс деплоя с использованием дополнительного смарт-контракта DeployFactory*
+*Deployment process using an additional smart contract DeployFactory*
 
-### Отдельный смарт-контракт для деплоя
+### Separate smart contract for deployment
 
-Напишем простой контракт `OurMultichainContract`, который должен иметь одинаковый адрес во всех сетях. Предположим, что у него есть управляющая роль, поэтому в конструктор передается `owner`:
+Let's write a simple contract `OurMultichainContract` that should have the same address across all networks. Suppose it has an admin role, so the constructor receives an `owner`:
 
 ```solidity
 contract OurMultichainContract {
@@ -135,12 +135,12 @@ contract OurMultichainContract {
 }
 ```
 
-Теперь создадим смарт-контракт `DeployFactory`. Это промежуточный контракт, который обеспечит предсказуемость результата, независимо от того, кто его развернет. Сначала добавим несколько констант:
+Now let's create the `DeployFactory` smart contract. This is an intermediate contract that ensures predictability of the result, regardless of who deploys it. First, we'll add several constants:
 
-1. **Адрес Safe Singleton Factory**, выполняющей основную работу.
-2. **Соль (`salt`)** — может быть любым `bytes32`. На самом деле ее не обязательно делать константой, можно просто передать в конструкторе. В случае ошибки достаточно будет заново развернуть контракт с правильной солью.
-3. **Адрес `owner`**, который будет добавлен к байт-коду, как аргумент конструктора.
-4. **Переменную для хранения адреса развернутого контракта**.
+1. **Address of the Safe Singleton Factory** that does the main work.  
+2. **Salt (`salt`)** — can be any `bytes32`. Actually, it doesn't have to be a constant; you can just pass it in the constructor. If there’s an error, you can simply redeploy the contract with the correct salt.  
+3. **Address of the `owner`**, which will be added to the bytecode as a constructor argument.  
+4. **A variable to store the address of the deployed contract**.
 
 ```solidity
 contract DeployFactory {
@@ -150,23 +150,23 @@ contract DeployFactory {
     address constant SAFE_SINGLETON_FACTORY =
         0x914d7Fec6aaC8cd542e72Bca78B30650d45643d7;
 
-    /// @notice Любая фиксированная соль
+    /// @notice Any fixed salt
     bytes32 constant SALT = keccak256(bytes("any salt"));
 
-    /// @notice Адрес owner, он будет "зашит" в байт-код
-    /// Его смена приведет к смене результирующего адреса
+    /// @notice Address of the owner, it will be "hardcoded" into the bytecode  
+    /// Changing it will result in a different resulting address
     address public immutable owner = 0x32bb35Fc246CB3979c4Df996F18366C6c753c29c;
 
-    /// @notice Адрес развернутого смарт-контракта
+    /// @notice Address of the deployed smart contract
     address public immutable ourMultichainContract;
 }
 ```
 
-Деплой `OurMultichainContract` выполняется в конструкторе, так как `DeployFactory` используется только один раз:
+Deployment of `OurMultichainContract` is done in the constructor since `DeployFactory` is used only once:
 
 ```solidity
 constructor() {
-    /// Шаг 1. Вызываем Singleton Factory напрямую
+    /// Step 1. Call Singleton Factory directly
     (bool success, bytes memory result) = SAFE_SINGLETON_FACTORY.call(
         abi.encodePacked(
             SALT,
@@ -175,33 +175,33 @@ constructor() {
         )
     );
 
-    /// Шаг 2. Проверяем, что контракт еще не развернут
+    /// Step 2. Check that the contract is not deployed yet
     if (!success) {
         revert AlreadyDeployed();
     }
 
-    /// Шаг 3. Извлекаем адрес развернутого контракта
+    /// Step 3. Retrieve the address of the deployed contract
     ourMultichainContract = address(bytes20(result));
 }
 ```
 
-Разберем процесс:
+Let's break down the process:
 
-1. **Прямой вызов Safe Singleton Factory** через `call`. Если помните, у фабрики нет никаких функций.
-2. **Проверка успешности деплоя** — если контракт уже развернут, выбрасываем ошибку.
-3. **Получение адреса нового контракта** из возвращенных данных.
+1. **Direct call to Safe Singleton Factory** via `call`. Remember, the factory has no functions.  
+2. **Check deployment success** — if the contract is already deployed, throw an error.  
+3. **Retrieve the address of the new contract** from the returned data.
 
-Полный код контракта доступен [здесь](./contracts/DeployFactory.sol). Его можно развернуть в нескольких сетях через Remix.
+The full contract code is available [here](./contracts/DeployFactory.sol). It can be deployed on multiple networks via Remix.
 
-### Использование Foundry-скрипта
+### Using a Foundry script
 
-Первый способ подходит для демонстрации и развертывания через Remix. Либо, возможно, если вы хотите явно задекларировать все параметры конструктора, чтобы упростить жизнь будущим разработчикам, которым понадобится деплоить контракт в новой сети.
+The first method is good for demonstration and deployment via Remix. Or maybe if you want to explicitly declare all constructor parameters to make life easier for future developers who need to deploy the contract on a new network.
 
-Но есть способ проще — можно напрямую вызвать Safe Singleton Factory, используя Foundry или Hardhat (можно конечно и в ручную сделать такой вызов, но это уже совсем экзотика). Начнем с Foundry.
+But there’s an easier way — you can call the Safe Singleton Factory directly using Foundry or Hardhat (you can also do this manually, but that’s quite exotic). Let’s start with Foundry.
 
-Клонируем [этот репозиторий](https://github.com/wilsoncusack/safe-singleton-deployer-sol), рекомендованный командой Safe. В нем есть все необходимое, хотя сам скрипт несложный, и его можно написать с нуля.
+Clone [this repository](https://github.com/wilsoncusack/safe-singleton-deployer-sol), recommended by the Safe team. It has everything you need, although the script itself isn’t complicated and you can write it from scratch.
 
-В [этом скрипте](https://github.com/wilsoncusack/safe-singleton-deployer-sol/blob/main/scripts/ExampleDeploy.s.sol) заменим контракт, аргументы конструктора и соль, например так:
+In [this script](https://github.com/wilsoncusack/safe-singleton-deployer-sol/blob/main/scripts/ExampleDeploy.s.sol), replace the contract, constructor arguments, and salt, for example like this:
 
 ```solidity
 // SPDX-License-Identifier: MIT
@@ -209,12 +209,12 @@ pragma solidity ^0.8.26;
 
 import {Script, console} from "forge-std/Script.sol";
 import {SafeSingletonDeployer} from "../src/SafeSingletonDeployer.sol";
-import {OurMultichainContract} from "../src/OurMultichainContract.sol"; /// Заменяем Mock на нужный контракт
+import {OurMultichainContract} from "../src/OurMultichainContract.sol"; /// Replace Mock with the desired contract
 
 contract ExampleDeployScript is Script {
-    /// Добавляем соль
+    /// Add the salt
     bytes32 constant SALT = keccak256(bytes("any salt"));
-    /// Добавляем аргументы конструктора
+    /// Add constructor arguments
     address public immutable owner = 0x32bb35Fc246CB3979c4Df996F18366C6c753c29c;
 
     function run() public {
@@ -232,13 +232,13 @@ contract ExampleDeployScript is Script {
 }
 ```
 
-Остается добавить файл `.env` с приватным ключом и запустить скрипт:
+All that’s left is to add a `.env` file with the private key and run the script:
 
 ```bash
 forge script ./scripts/ExampleDeploy.s.sol --rpc-url <rpc_url>
 ```
 
-Под капотом никакой магии: функция `SafeSingletonDeployer.broadcastDeploy` вызывает `_deploy`, которая работает почти так же, как наш код в Remix:
+No magic under the hood: the function `SafeSingletonDeployer.broadcastDeploy` calls `_deploy`, which works almost exactly like our code in Remix:
 
 ```solidity
 function _deploy(bytes memory creationCode, bytes memory args, bytes32 salt) private returns (address) {
@@ -254,17 +254,17 @@ function _deploy(bytes memory creationCode, bytes memory args, bytes32 salt) pri
 }
 ```
 
-Так мы избавляемся от дополнительного промежуточного контракта [`DeployFactory`](./contracts/DeployFactory.sol).
+This way, we get rid of the additional intermediate contract [`DeployFactory`](./contracts/DeployFactory.sol).
 
-#### Важное предостережение!
+#### Important warning!
 
-Функция `type(T).creationCode` возвращает байткод контракта, включая метаданные. Здесь кроется коварная проблема: если не контролировать настройки компиляции, **вы не получите одинаковый байткод** в разных средах, так как они применяют настройки компилятора по умолчанию, которые также различаются.
+The function `type(T).creationCode` returns the contract bytecode including metadata. Here lies a tricky problem: if you don’t control the compilation settings, **you won’t get identical bytecode** across different environments, since they apply default compiler settings that also differ.
 
-В метаданные могут быть добавлены даже название папки и файла, на результирующий байт-код может повлиять даже форматирование смарт-контракта!
+Metadata can even include folder and file names, and the resulting bytecode can be affected by the contract’s formatting!
 
-Если не хочется заморачиваться с настройками компилятора, есть простой способ: взять байткод уже развернутого смарт-контракта и вставить его вместо `creationCode`. 
+If you don’t want to bother with compiler settings, there’s a simple way: take the bytecode of an already deployed smart contract and insert it instead of `creationCode`.
 
-Например так:
+For example:
 
 ```solidity
 contract ExampleDeployScript is Script {
@@ -286,20 +286,20 @@ contract ExampleDeployScript is Script {
 }
 ```
 
-Этот метод гарантированно даст ожидаемый адрес. Смарт-контракт `OurMultichainContract` развернут в следующих тестовых сетях:  
+This method guarantees the expected address. The smart contract `OurMultichainContract` has been deployed in the following test networks:  
 - [Sepolia](https://sepolia.etherscan.io/address/0x215cd90dec2168876618114A0910E1765b257A6D#code)  
 - [Polygon Amoy](https://amoy.polygonscan.com/address/0x215cD90Dec2168876618114A0910E1765b257A6D#code)  
 - [Scroll Sepolia](https://sepolia.scrollscan.com/address/0x215cD90Dec2168876618114A0910E1765b257A6D#code)  
 - [Base Sepolia](https://sepolia.basescan.org/address/0x215cD90Dec2168876618114A0910E1765b257A6D#code)  
 
 
-### Использование Hardhat и npm-пакета Safe
+### Using Hardhat and the Safe npm package
 
-В плагине `hardhat-deploy` есть функция [deterministicDeployment](https://github.com/wighawag/hardhat-deploy/blob/42964ca4f74a3f3c57cf694e9713b335f8ba7b2c/README.md#4-deterministicdeployment-ability-to-specify-a-deployment-factory), которая позволяет выполнить развертывание аналогичным образом.
+The `hardhat-deploy` plugin has a function called [deterministicDeployment](https://github.com/wighawag/hardhat-deploy/blob/42964ca4f74a3f3c57cf694e9713b335f8ba7b2c/README.md#4-deterministicdeployment-ability-to-specify-a-deployment-factory) that allows deployment in a similar way.
 
-Кроме того, можно воспользоваться [NPM-пакетом](https://www.npmjs.com/package/@safe-global/safe-singleton-factory) от Safe.
+Also, you can use the [NPM package](https://www.npmjs.com/package/@safe-global/safe-singleton-factory) from Safe.
 
-## Ссылки
+## Links
 
 - [EIP-1014: Skinny CREATE2](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1014.md)
 - [ERC-2470: Singleton Factory](https://eips.ethereum.org/EIPS/eip-2470)
