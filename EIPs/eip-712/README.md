@@ -1,98 +1,98 @@
 # EIP-712: Typed structured data hashing and signing
 
-**Автор:** [Павел Найданов](https://github.com/PavelNaydanov) 🕵️‍♂️
+**Author:** [Pavel Naydanov](https://github.com/PavelNaydanov) 🕵️‍♂️
 
-EIP-712 - это стандарт для хеширования и подписи типизированных данных. Основная цель заключается в улучшение пользовательского опыта, позволяя кошелькам показывать человекочитаемые данные  подписи.
+EIP-712 is a standard for hashing and signing typed data. Its main goal is to improve user experience by allowing wallets to display human-readable signature data.
 
-Стандарт является разновидностью [ERC-191](https://eips.ethereum.org/EIPS/eip-191). Согласно стандарту подпись формируется следующим образом:
+The standard is a variant of [ERC-191](https://eips.ethereum.org/EIPS/eip-191). According to the standard, the signature is formed as follows:
 
 ![](./images/eip-191-signature.png)
 
-`0x19` - говорит о том, что подпись используется в сети Ethereum и не является совместимой с RLP кодировкой, которая применяется для кодирования данных транзакций.
-`1 byte version` - говорит о типе подписи: personal, EIP-712 и так далее.
+`0x19` — indicates that the signature is used in the Ethereum network and is not compatible with RLP encoding, which is used for encoding transaction data.  
+`1 byte version` — indicates the type of signature: personal, EIP-712, and so on.
 
-Для EIP-712 оставшиеся поля описываются следующим образом:
-- `<1 byte version>` = `0x01`. Указывает в подписи, что будет использоваться стандарт EIP-712. Все возможные типы версий описаны в [таблице стандарта ERC-191](https://eips.ethereum.org/EIPS/eip-191#registry-of-version-bytes).
-- `<version specific data>` = `domainSeparator`. Термин `domainSeparator` вводится стандартом EIP-712 и служит для описания особенностей контекста подписи.
-- `<data to sign>` = `hashStruct(message)`. Это хеш подписываемых пользователем данных.
+For EIP-712, the remaining fields are described as follows:  
+- `<1 byte version>` = `0x01`. Indicates in the signature that the EIP-712 standard is used. All possible version types are listed in the [ERC-191 version bytes registry](https://eips.ethereum.org/EIPS/eip-191#registry-of-version-bytes).  
+- `<version specific data>` = `domainSeparator`. The term `domainSeparator` is introduced by the EIP-712 standard and serves to describe the context specifics of the signature.  
+- `<data to sign>` = `hashStruct(message)`. This is the hash of the data signed by the user.
 
-## Кодирование domainSeparator
+## Encoding domainSeparator
 
-**DomainSeparator** является уникальным идентификатором контекста подписи и имеет три глобальные цели:
-1. **Идентификация контекста** – включает в себя данные, чтобы гарантировать уникальность подписи.
-2. **Защита от повторного использования** – если пользователь подписал данные для конкретного протокола, то они не могут быть действительным для другого протокола или сети.
-3. **Оптимизация хеширования** – domainSeparator позволяет заранее вычислить часть хэша всей подписи, что ускоряет проверку подписи.
+**DomainSeparator** is a unique identifier of the signing context and serves three main purposes:  
+1. **Context identification** — includes data to ensure the signature’s uniqueness.  
+2. **Replay protection** — if a user signed data for a specific protocol, it won’t be valid for another protocol or network.  
+3. **Hashing optimization** — domainSeparator allows precomputing part of the full signature hash, speeding up signature verification.
 
-Описывается `domainSeparator` следующим образом:
+The `domainSeparator` is described as follows:
 ```
 domainSeparator = hashStruct(eip712Domain)
 ```
 
-`hashStruct(eip712Domain)` - это хеш структуры, которая содержит следующие поля:
+`hashStruct(eip712Domain)` is the hash of a structure containing the following fields:
 
 ![](./images/eip712Domain.png)
 
-- `string name`. Название протокола, в котором будет использоваться подпись
-- `string version`. Текущая версия домена подписи. Подписи из разных версий несовместимы. По сути это инструмент для версионирования подписей.
-- `uint256 chainId`. Идентификатор цепочки. Используется EIP-155 для защиты от *replay attack*. Особенно необходимо, когда протокол работает в нескольких сетях.
-- `address verifyingContract`. Адрес контракта, который будет проверять подпись. Используется для того, чтобы ограничить список проверяющих подпись.
-- `bytes32 salt`. Соль для устранения неоднозначности протокола. Запасной вариант, который может использоваться для разграничения двух подписей с одинаковыми данными domainSeparator.
+- `string name`. The name of the protocol where the signature will be used.  
+- `string version`. The current version of the signing domain. Signatures from different versions are incompatible. Essentially, this is a tool for signature versioning.  
+- `uint256 chainId`. The chain identifier. Used by EIP-155 for protection against *replay attacks*. Especially necessary when the protocol operates on multiple networks.  
+- `address verifyingContract`. The address of the contract that will verify the signature. Used to restrict the list of valid verifiers.  
+- `bytes32 salt`. A salt to eliminate protocol ambiguity. A fallback option that can be used to differentiate two signatures with the same domainSeparator data.
 
-_Важно!_ Все поля структуры `eip712Domain` опциональны и должны включаться разработчиками в случае необходимости протокола.
+_Important!_ All fields of the `eip712Domain` structure are optional and should be included by developers only if the protocol requires them.
 
-## Кодирование данных подписи
+## Encoding Signature Data
 
-Этот раздел описывает кодирование того, что в рамках EIP-191 мы определили, как `<data to sign>`, а в рамках EIP-712 как `hashStruct(message)`.
+This section describes encoding of what we defined in EIP-191 as `<data to sign>`, and in EIP-712 as `hashStruct(message)`.
 
-Но прежде, чем разбирать хеш структурированных данных необходимо понимать какие в принципе типы данных могут быть.
+But before diving into hashing structured data, it’s important to understand which data types can be used.
 
-### Типы данных
+### Data Types
 
-Выделяют всего три типа данных:
-1. **Атомарные типы**. Это `bytes1`, `bytes32`, `uint8`, `uint256`, `int8`, `int256` и так далее. Также `bool` и `address`. Важно, что не используются aliases `int`, `uint`. Также стандарт оставляет возможность добавления новых типов в будущем.
-2. **Динамические типы**. Сюда относятся `bytes` и `string`.
-3. **Ссылочные типы**. Это массивы и структуры. Массивы с динамическим размером обозначаются, как `Type[]`, c фиксированным размером `Type[n]`. Например, `address[]` или `address[5]`.
+There are three main data types:  
+1. **Atomic types.** These include `bytes1`, `bytes32`, `uint8`, `uint256`, `int8`, `int256`, and so on. Also `bool` and `address`. Important: aliases like `int` and `uint` are not used. The standard also allows for adding new types in the future.  
+2. **Dynamic types.** These are `bytes` and `string`.  
+3. **Reference types.** These are arrays and structs. Dynamic-sized arrays are written as `Type[]`, fixed-size arrays as `Type[n]`. For example, `address[]` or `address[5]`.
 
-Важно знать и учитывать типы данных, потому что для некоторых из них есть нюансы при кодировании и проверке подписи на смарт-контрактах.
+It’s important to know and consider data types because some have nuances in encoding and signature verification on smart contracts.
 
-### Хеширование данных подписи
+### Hashing Signature Data
 
-Посмотрим, что из себя представляет `hashStruct(message)`.
+Let’s look at what `hashStruct(message)` represents.
 
 > hashStruct(message) = keccak256(typeHash ‖ encodeData(message))
 
-Эту запись можно понять так, что хешируется при помощи keccak256 два объекта: `typeHash` и `encodeData(message)`.
+This means that two objects are hashed using keccak256: `typeHash` and `encodeData(message)`.
 
-`typeHash` - это константа, которая описывает хеш типов данных из message. Описать математически это можно следующим образом `typeHash = keccak256(encodeType(typeOf(message)))`.
+`typeHash` is a constant describing the hash of the data types from the message. Mathematically, it can be described as `typeHash = keccak256(encodeType(typeOf(message)))`.
 
-`encodeData(message)` - это кодирование полей структуры данных `message`.
+`encodeData(message)` is the encoding of the fields of the data structure `message`.
 
-В коде мы будем описывать TYPE_HASH хешем строки, которая описывает типы поля `user` для абстрактной структуры `Order`:
+In the code, we will define TYPE_HASH as the hash of the string that describes the types of the `user` field for an abstract `Order` structure:
 
 ```solidity
 bytes32 private constant TYPE_HASH = keccak256("Order(address user)");
 ```
 
-В роли `message` выступает значения адреса user, которое мы будем кодировать.
+The `message` here is the value of the `user` address, which we will encode.
 
 **encodeData**
 
-Можно воспринимать это, как функцию, которая конкатенирует закодированные поля структуры `message` в том порядке, в котором они объявлены.
+You can think of this as a function that concatenates the encoded fields of the `message` struct in the order they are declared.
 
-_Важно!_ Каждое закодированное значение члена имеет длину ровно 32 байта.
+_Important!_ Each encoded member value has a length of exactly 32 bytes.
 
-И вот здесь мы подошли к кодированию полей, которое зависит от типа самого поля.
+And here we come to field encoding, which depends on the type of the field itself.
 
-**Значения атомарного типа**
+**Atomic type values**
 
-Кодируются атомарные типы соответственно ABI v1 и v2. То есть `bool` кодируется, как число uint256 в значениях 0 или 1. Адреса кодируются как uint160. И так далее. Больше подробностей в [документации](https://docs.soliditylang.org/en/latest/abi-spec.html#formal-specification-of-the-encoding) Solidity.
+Atomic types are encoded according to ABI v1 and v2. For example, `bool` is encoded as a `uint256` with values 0 or 1. Addresses are encoded as `uint160`. And so on. More details can be found in the [Solidity documentation](https://docs.soliditylang.org/en/latest/abi-spec.html#formal-specification-of-the-encoding).
 
-При проверке подписи на смарт-контрактах не требуется дополнительно кодировать эти типы данных.
+When verifying signatures on smart contracts, these data types do not require additional encoding.
 
-**Значения динамического типа**
-Кодируются, как хеш контента при помощи функции `keccak256()`. `keccak256` - принимает набор байт и это означает, что чтобы хешировать строку, необходимо сначала строку преобразовать в `bytes` при помощи функции `abi.encodePacked()`.
+**Dynamic type values**  
+Are encoded as the hash of their content using the `keccak256()` function. `keccak256` takes a byte array, which means to hash a string, you first need to convert the string to `bytes` using the `abi.encodePacked()` function.
 
-При проверки подписи на смарт-контрактах, нам придется дополнительно кодировать эти данные.
+When verifying signatures on smart contracts, we will need to encode these data additionally.
 
 ```solidity
 // string
@@ -104,9 +104,9 @@ bytes memory strInBytes = "test";
 bytes32 encodedStrInBytes = keccak256(strInBytes);
 ```
 
-**Значения ссылочного типа**
+**Reference type values**
 
-Массивы кодируются, как хеш конкатенированных значений массива. А структура, кодируется рекурсивно, как `hashStruct(message)`. Сложно для понимания, но это тот случай когда в структуре данных на подпись есть вложенная структура и вложенная структура будет кодироваться по тем же правилам, что и родительская.
+Arrays are encoded as the hash of the concatenated array elements. A struct is encoded recursively as `hashStruct(message)`. It’s a bit tricky to understand, but this is the case when a nested struct exists inside the data structure to be signed — the nested struct is encoded using the same rules as the parent.
 
 ```solidity
 // array[2]
@@ -128,11 +128,11 @@ bytes32 encodedStruct = keccak256(abi.encode(
 ));
 ```
 
-## Проверка подписи
+## Signature Verification
 
-В этом разделе посмотрим на примеры обработки подписи на смарт-контракте в разных ситуациях.
+In this section, we’ll look at examples of handling signatures on smart contracts in different situations.
 
-Для этого возьмем эталонный пример смарт-контракта с использованием OpenZeppelin.
+For this, we’ll take a reference smart contract example using OpenZeppelin.
 
 ```solidity
 // SPDX-License-Identifier: MIT
@@ -171,17 +171,17 @@ contract SignatureChecker is EIP712 {
 }
 ```
 
-Этот простой пример проверяет, что вызывающий функцию `checkSignature()`, подписал собственный адрес аккаунта, как структуру данных в сообщении.
+This simple example verifies that the caller of the `checkSignature()` function signed their own account address as the data structure in the message.
 
-Функция `_hashTypedDataV4()` хеширует согласно EIP-712 encodedData (мы сами кодируем эти значения) и domainSeparator (устанавливается в конструкторе) вместе.
+The function `_hashTypedDataV4()` hashes the EIP-712 encodedData (which we encode ourselves) and the domainSeparator (set in the constructor) together.
 
-### Повторное использование
+### Reuse
 
-*Если подпись должна использоваться единоразово, то не должно быть возможности использовать ее повторно.*
+*If a signature is meant to be used only once, it should not be possible to reuse it.*
 
-Самый распространенный пример подписи, которая позволяет распоряжаться активами пользователя. Предположим пользователь создает ордер на покупку актива и подписывает сумму, которую он готов потратить на покупку. Подпись передается протоколу, протокол должен использовать подпись и списать сумму оплаты в момент передачи актива пользователю.
+The most common example is a signature that allows spending a user’s assets. Suppose a user creates an order to buy an asset and signs the amount they are willing to spend. The signature is passed to the protocol, which must use the signature and deduct the payment amount at the moment of asset transfer to the user.
 
-В примере выше важно, чтобы никто не смог воспользоваться и несколько раз произвести списание указанной суммы. Для того, чтобы этого не произошло в тело подписи вводится одноразовый счетчик `nonce`, который делает подпись уникальной. После использования подписи на смарт-контракте счетчик увеличивается.
+In the example above, it’s important that no one can reuse the signature to deduct the amount multiple times. To prevent this, a one-time counter `nonce` is introduced into the signature payload, making the signature unique. After the signature is used on the smart contract, the counter increments.
 
 ```solidity
 contract SignatureChecker is EIP712 {
@@ -216,21 +216,21 @@ contract SignatureChecker is EIP712 {
 }
 ```
 
-Смарт-контракт всегда ожидает, что nonce в подписи будет определен согласно счетчику, который увеличивается сразу после использования подписи. Такой нехитрый алгоритм не позволяет переиспользовать подпись и делает ее одноразовой.
+The smart contract always expects the nonce in the signature to match the counter, which increments immediately after the signature is used. This simple algorithm prevents signature reuse and makes it one-time.
 
-### Использование в разных сетях, протоколах, смарт-контрактах
+### Usage Across Different Networks, Protocols, Smart Contracts
 
-*Подпись, данная пользователем в одной сети, не должна быть использована в другой.*
+*A signature given by a user on one network should not be valid on another.*
 
-*Подпись, данная пользователем для одного смарт-контракта, не должна быть использована в другом.*
+*A signature given by a user for one smart contract should not be used in another.*
 
-Часто протоколы работают в нескольких EVM совместимых сетях. Совместимость позволяет переиспользовать код смарт-контрактов. Для того, чтобы подпись не могла быть использована в другой сети в состав полей domainSeparator вводится поле `chainId`.
+Often protocols operate across multiple EVM-compatible networks. Compatibility allows reusing smart contract code. To prevent signatures from being valid on another network, the `chainId` field is added to the `domainSeparator`.
 
-Если мы используем смарт-контракт EIP-712 от OpenZeppelin, то нам не нужно переживать за `chainId`, если мы используем собственное решение, то должны учитывать это поле. Помним, что поле опциональное, и если протокол работает в одной сети, то поле может быть опущено.
+If you use the EIP-712 smart contract from OpenZeppelin, you don’t need to worry about `chainId`. If you implement your own solution, you should consider this field. Remember, the field is optional, and if the protocol runs on a single network, it can be omitted.
 
-Однако чаще всего поле всегда добавляется, так как протокол может захотеть опубликоваться в новой сети, а обновить контракты в старой сети и добавить поле `chainId` не всегда возможно в связи с неизменностью смарт-контрактов.
+However, most of the time the field is always included, because the protocol might want to launch on a new network, and updating contracts on the old network to add the `chainId` field isn’t always possible due to smart contract immutability.
 
-В смарт-контракте [EIP-712](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/cryptography/EIP712.sol#L91) от OpenZeppelin видно, что в составе domain находится chainId по умолчанию.
+In the [EIP-712](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/cryptography/EIP712.sol#L91) smart contract by OpenZeppelin, you can see that the `chainId` is included in the domain by default.
 
 ```solidity
 abstract contract EIP712 is IERC5267 {
@@ -244,13 +244,13 @@ abstract contract EIP712 is IERC5267 {
 }
 ```
 
-Аналогично `chainId` поля `_hashedName` и`address(this)` регламентируют использование подписи только в конкретном протоколе или смарт-контракте, где реализован алгоритм проверки подписи.
+Similarly to `chainId`, the fields `_hashedName` and `address(this)` regulate the use of the signature only within a specific protocol or smart contract where the signature verification algorithm is implemented.
 
-### Использование в разных функциях одного смарт-контракта
+### Usage Across Different Functions of a Single Smart Contract
 
-*Подпись, данная пользователем для проверки в одной функции смарт-контракта, не должна быть использована в другой, за исключением, когда это действительно необходимо.*
+*A signature given by a user for verification in one smart contract function should not be used in another, except when absolutely necessary.*
 
-Для регламентирования использования подписи в одной функции смарт-контракта лучший вариант делать уникальными подписываемые данные. Если поля данных одинаковые, то они могут быть разными семантически. Ниже пример формирования двух TYPE_HASH для функций `deposit()` и `withdraw()`.
+To regulate signature usage within one smart contract function, the best way is to make the signed data unique. If the data fields are the same, they can differ semantically. Below is an example of forming two TYPE_HASH values for the `deposit()` and `withdraw()` functions.
 
 ```solidity
 contract SignatureChecker is EIP712 {
@@ -285,15 +285,15 @@ contract SignatureChecker is EIP712 {
 }
 ```
 
-Есть еще один вариант решения. В domain предусмотрено поле salt, которое может быть использована для уникальности домена подписи.
+There is another possible solution. The domain includes a `salt` field, which can be used for signature domain uniqueness.
 
-Однако смарт-контракт EIP-712 от OpenZeppelin не предоставляет возможность работать с этим полем из коробки. Для использования salt и OpenZeppelin вместе придется переопределять функции смарт-контракта EIP-712 вручную.
+However, the OpenZeppelin EIP-712 smart contract does not support this field out of the box. To use `salt` together with OpenZeppelin, you’ll have to override the EIP-712 smart contract functions manually.
 
-### Использование времени жизни
+### Using Expiration Time
 
-*Подпись, данная пользователем, может быть использована в рамках конкретного временного отрезка.*
+*A signature given by a user can be used within a specific time window.*
 
-Иногда стоит задача реализовать время жизни подписи, чтобы по истечению времени она перестала быть валидной. Решается это путем добавления в тело подписи timestamp, который обозначает время окончания валидности подписи. При этом на смарт-контракте необходимо добавить проверку, что это время еще не наступило.
+Sometimes there’s a need to implement a signature’s lifespan so that after a certain time it becomes invalid. This is done by adding a timestamp to the signature payload, which marks the expiration time of the signature. The smart contract then needs to check that this time hasn’t passed yet.
 
 ```solidity
 contract SignatureChecker is EIP712 {
@@ -331,13 +331,13 @@ contract SignatureChecker is EIP712 {
 }
 ```
 
-### Отмена подписи
+### Signature Cancellation
 
-*Возможность отменить подпись.*
+*The ability to cancel a signature.*
 
-Часто подпись используется в качестве разрешения действия от имени пользователя. Более того, пользователь подписывает сообщение и передает подпись на хранение протоколу. В таком случае он остается без возможности отменить действие.
+Often a signature is used as permission to act on behalf of a user. Moreover, the user signs a message and hands the signature over to the protocol for safekeeping. In this case, they have no way to cancel the action.
 
-Исправить это достаточно легко. На базе `nonce` необходимо реализовать отмену подписи. Для этого достаточно увеличить `nonce`. Если `nonce` еще нет в составе подписи, тогда необходимо его туда добавить.
+This can be fixed quite easily. Based on the `nonce`, you need to implement signature cancellation. To do this, simply increment the `nonce`. If the `nonce` isn’t part of the signature yet, it should be added.
 
 ```solidity
 contract SignatureChecker is EIP712 {
@@ -353,21 +353,21 @@ contract SignatureChecker is EIP712 {
 }
 ```
 
-Пользователю достаточно самостоятельно вызвать функцию `cancelSignature()`, что увеличит `nonce` и сделает выданную ранее подпись автоматически невалидной.
+The user just needs to call the `cancelSignature()` function, which will increment the `nonce` and automatically invalidate any previously issued signatures.
 
-## Топ ошибок на смарт-контрактах
+## Top Smart Contract Mistakes
 
-В этом разделе разберем типовые ошибки, которые возникают у разработчиков при разработке смарт-контрактов, реализующих проверку подписи. Ошибки взяты с ресурса [Solodit](https://solodit.cyfrin.io/?i=HIGH%2CMEDIUM).
+In this section, we’ll cover common mistakes developers make when implementing signature verification in smart contracts. The errors are taken from the [Solodit](https://solodit.cyfrin.io/?i=HIGH%2CMEDIUM) resource.
 
-> Все эти проблемы могут быть не выявлены в ходе написания тестов с использованием Foundry. Так как тестирование подписей, как и другие тесты пишутся на solidity и результат может быть неосознанно подогнан под ошибку.
->
-> В этом плане Hardhat дает больше надежности, потому что там для тестирования подписи приходится написать максимально приближенный к реальности код на js.
+> All these issues might not be detected when writing tests using Foundry. Since signature tests, like other tests, are written in Solidity, the results can unknowingly be tailored to the mistake.  
+>  
+> In this regard, Hardhat offers more reliability because testing signatures requires writing code in JS that closely simulates real scenarios.
 
-### Пропуск TYPE_HASH
+### Missing TYPE_HASH
 
-*Несоблюдение стандарта.*
+*Non-compliance with the standard.*
 
-Иногда разработчики забывают указать TYPE_HASH для структуры данных или считают, что он не является важным.
+Sometimes developers forget to specify the TYPE_HASH for the data structure or think it’s not important.
 
 ```solidity
 contract SignatureChecker is EIP712 {
@@ -391,13 +391,13 @@ contract SignatureChecker is EIP712 {
     }
 ```
 
-Не использование поля TYPE_HASH приводит к несовместимости со стандартом EIP-712, что влечет за собой невозможность использовать классические инструменты для создания подписи (metamask sdk и так далее). Также не является безопасным.
+Not using the TYPE_HASH field leads to incompatibility with the EIP-712 standard, making it impossible to use classic tools for creating signatures (MetaMask SDK, etc.). It’s also not secure.
 
-### Пропуск полей описанных в TYPE_HASH при кодировании
+### Omitting fields described in TYPE_HASH during encoding
 
-*Любого рода ошибки при формировании TYPE_HASH или полей подписываемых данных.*
+*Any kind of mistakes when forming TYPE_HASH or the signed data fields.*
 
-В ходе разработки часто бывает много изменений, требующих особого внимания. Работа с подписью не является исключением. Типичная ошибка, когда структура данных разработчиком меняется, но он забывает исправить TYPE_HASH для этой структуры.
+During development, there are often many changes that require special attention. Working with signatures is no exception. A common mistake is when a developer changes the data structure but forgets to update the TYPE_HASH for that structure.
 
 ```solidity
 contract SignatureChecker is EIP712 {
@@ -422,17 +422,17 @@ contract SignatureChecker is EIP712 {
     }
 ```
 
-Было добавлено поле `expiredTime` в тело подписи, но забыли добавить поле в TYPE_HASH. Такие ошибки часто встречаются. Может быть ситуация наоборот, когда TYPE_HASH обновлен, а структура данных нет.
+A field `expiredTime` was added to the signature payload, but the field was forgotten in the TYPE_HASH. Such mistakes are common. The opposite can also happen — TYPE_HASH is updated but the data structure isn’t.
 
-В большинстве случаев эту проблему можно избежать качественно выполняя работу по тестированию смарт-контракта.
+In most cases, this problem can be avoided by thorough smart contract testing.
 
-### Ошибка кодирования динамических типов
+### Error encoding dynamic types
 
-*Динамические типы должны кодироваться особым способом.*
+*Dynamic types must be encoded in a special way.*
 
-Часто новенькие в разработке смарт-контрактов, но возможно бывалые разработчики из других технологий упускают важность правильного кодирования динамических типов.
+Often newcomers to smart contract development — and sometimes experienced developers from other fields — miss the importance of correctly encoding dynamic types.
 
-Динамические типы кодируются, как хеш значения при помощи `keccak256()`.
+Dynamic types are encoded as the hash of their value using `keccak256()`.
 
 ```solidity
 contract SignatureChecker is EIP712 {
@@ -463,15 +463,15 @@ contract SignatureChecker is EIP712 {
 }
 ```
 
-`keccak256()` принимает на вход bytes, поэтому строку сначала необходимо перевести в bytes при помощи `abi.encodePacked()`.
+`keccak256()` takes bytes as input, so a string must first be converted to bytes using `abi.encodePacked()`.
 
-### Ошибка кодирования ссылочных типов
+### Error encoding reference types
 
-*Ссылочные типы должны кодироваться особым способом.*
+*Reference types must be encoded in a special way.*
 
-Это подобная ошибка, как и с динамическими типами, только касается массивов и структур данных.
+This is a similar mistake to dynamic types, but it concerns arrays and data structures.
 
-В кодировании массивов разработчики часто забывают, что это должен быть хеш от набора байт всех элементов массива `keccak256(abi.encodePacked(array))`. Забывают или `keccak256` или `abi.encodePacked`, или все вместе.
+When encoding arrays, developers often forget that it should be the hash of the bytes of all array elements: `keccak256(abi.encodePacked(array))`. They forget either `keccak256`, or `abi.encodePacked`, or both.
 
 ```solidity
 contract SignatureChecker is EIP712 {
@@ -497,7 +497,7 @@ contract SignatureChecker is EIP712 {
 }
 ```
 
-Для вложенных друг в друга структур часто допускают ошибки в описании TYPE_HASH. В примере ниже показан правильный вариант описания структур OPERATOR_TYPE_HASH и ORDER_TYPE_HASH.
+For nested structs, mistakes are often made in the TYPE_HASH description. The example below shows the correct way to describe the `OPERATOR_TYPE_HASH` and `ORDER_TYPE_HASH` structs.
 
 ```solidity
 contract SignatureChecker is EIP712 {
@@ -526,13 +526,13 @@ contract SignatureChecker is EIP712 {
 }
 ```
 
-### Использование abi.encode вместо abi.encodePacked для генерации TYPE_HASH
+### Using abi.encode instead of abi.encodePacked for generating TYPE_HASH
 
-*Необходимо с осторожностью конкатенировать различные TYPE_HASH.*
+*Be careful when concatenating different TYPE_HASH values.*
 
-В примере с вложенными структурами можно заметить дублирование OPERATOR_TYPE_HASH внутри ORDER_TYPE_HASH.
+In the example with nested structs, you can see that `OPERATOR_TYPE_HASH` is duplicated inside `ORDER_TYPE_HASH`.
 
-Поэтому некоторые протоколы оптимизируют расчет TYPE_HASH, особенно, когда необходимо подписать вложенные структуры данных. Посмотрим на новом примере структур данных.
+Therefore, some protocols optimize TYPE_HASH calculation, especially when nested data structures need to be signed. Let’s look at a new example of data structures.
 
 ```solidity
 bytes memory itemTypeString = abi.encodePacked(
@@ -544,7 +544,7 @@ bytes memory orderTypeString = abi.encodePacked(
 );
 ```
 
-Для получения итогового TYPE_HASH нельзя использовать `abi.encode`, необходимо использовать `abi.encodePacked`.
+To get the final TYPE_HASH, you cannot use `abi.encode`; you need to use `abi.encodePacked`.
 
 ```diff
 bytes32 TYPE_HASH = keccak256(
@@ -554,9 +554,9 @@ bytes32 TYPE_HASH = keccak256(
 +
 ```
 
-В отличие от `abi.encodePacked`, `abi.encode` добавляет нулевые байты, чтобы всегда возвращать данные в формате 32-х байт, таким образом результирующие хеши не будут одинаковыми.
+Unlike `abi.encodePacked`, `abi.encode` adds zero bytes to always return data in 32-byte format, so the resulting hashes will not be the same.
 
-Для проверки я накидал пример, можно проверить его в remix.
+For testing, I made an example — you can check it in Remix.
 
 ```solidity
 contract Test {
@@ -578,23 +578,23 @@ contract Test {
 }
 ```
 
-Среди возвращаемых значений третий хеш будет совпадать со вторым, первый будет отличаться. Согласно EIP-712 второй и третий - это правильные варианты.
+Among the returned values, the third hash will match the second one, and the first will differ. According to EIP-712, the second and third are the correct variants.
 
-### Подпись не защищена от повторного использования
+### Signature Not Protected Against Replay
 
-*Зачастую подпись не должна иметь возможность быть использованной повторно.*
+*Often, a signature should not be reusable.*
 
-Мы уже разбирали эту ошибку косвенно в разделе от чего подпись должна быть защищена, но к сожалению, ошибка повторного использования продолжает нередко встречаться в смарт-контрактах.
+We already touched on this error indirectly in the section about what a signature should be protected against, but unfortunately, replay vulnerabilities still often appear in smart contracts.
 
-Решается введением счетчика `nonce` для каждой подписи или `deadline` параметра, регламентирующего время валидности подписи.
+This is fixed by introducing a `nonce` counter for each signature or a `deadline` parameter that limits the validity period of the signature.
 
-### Подпись может быть перехвачена и использована другим адресом
+### Signature Can Be Intercepted and Used by Another Address
 
-*Нужно четко определять, кто может воспользоваться подписью.*
+*It’s important to clearly define who can use the signature.*
 
-Структура данных подписи не включает поле аккаунта, который может использовать эту подпись.
+The signature’s data structure doesn’t include the account that is allowed to use this signature.
 
-Атака может быть проведена по типу [front-run](https://quillaudits.medium.com/front-running-and-sandwich-attack-explained-quillaudits-de1e8ff3356d). Слушается мемпул, как только оригинальная транзакция, подписанная пользователем, попадает в мемпул, злоумышленник копирует данные подписи и вызывает от своего имени.
+An attack like this can be performed via [front-running](https://quillaudits.medium.com/front-running-and-sandwich-attack-explained-quillaudits-de1e8ff3356d). The mempool is monitored, and as soon as the original user-signed transaction hits the mempool, an attacker copies the signature data and calls the function on their own behalf.
 
 ```solidity
 contract SignatureChecker is EIP712 {
@@ -631,29 +631,29 @@ contract SignatureChecker is EIP712 {
 }
 ```
 
-## Интересный факт
+## Interesting Fact
 
-Даже у таких передовых специалистов из области безопасности, как разработчики из OpenZeppelin, бывают факапы.
+Even top security experts like the developers at OpenZeppelin can make mistakes.
 
-До версии 4.7.3 в смарт-контрактах OpenZeppelin оставлена [уязвимость](https://github.com/OpenZeppelin/openzeppelin-contracts/security/advisories/GHSA-4h98-2769-gh6h) связанная с обработкой подписи.
+Before version 4.7.3, OpenZeppelin smart contracts contained a [vulnerability](https://github.com/OpenZeppelin/openzeppelin-contracts/security/advisories/GHSA-4h98-2769-gh6h) related to signature handling.
 
-Функции `ECDSA.recover()`и `ECDSA.tryRecover()`. Затронуты были перегрузки, которые принимали набор `bytes` за место `v, r, s` параметров. Пользователь мог взять подпись, которая уже была отправлена, отправить ее снова в другой форме и обойти проверку.
+The functions `ECDSA.recover()` and `ECDSA.tryRecover()` were affected. The overloads that accepted a `bytes` array instead of `v, r, s` parameters had issues. A user could take a signature already submitted, resend it in a different form, and bypass verification.
 
-## Вывод
+## Conclusion
 
-EIP-712 предоставляет мощный механизм защиты от атак повторного воспроизведения, делает подписи человекочитаемыми и безопасными. Однако реализация этого стандарта требует строгого соблюдения правил кодирования.
+EIP-712 provides a powerful mechanism for protection against replay attacks and makes signatures human-readable and secure. However, implementing this standard requires strict adherence to encoding rules.
 
-Основные выводы:
+Key takeaways:
 
-- Использование domainSeparator регламентирует использование подписей в разных контекстах.
+- Using `domainSeparator` regulates signature usage across different contexts.
 
-- Кодирование данных  требует особого внимания к данным динамических и ссылочных типов, чтобы избежать проблем с валидацией подписей.
+- Encoding data requires special attention to dynamic and reference types to avoid signature validation issues.
 
-- Включение nonce предотвращает повторное использование подписей, что особенно важно для финансовых операций.
+- Including a `nonce` prevents signature replay, which is especially important for financial operations.
 
-Отступление от стандарта может привести к уязвимостям, позволяющим злоумышленникам использовать подписи повторно или в нежелательных контекстах.
+Deviating from the standard can lead to vulnerabilities allowing attackers to reuse signatures or use them in unwanted contexts.
 
-Разработчикам рекомендуется тщательно тестировать реализацию EIP-712 и использовать проверенные библиотеки (например, OpenZeppelin).
+Developers are advised to thoroughly test their EIP-712 implementations and use well-audited libraries (e.g., OpenZeppelin).
 
 ## Links
 
