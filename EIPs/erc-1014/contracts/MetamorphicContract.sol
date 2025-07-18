@@ -57,22 +57,22 @@ contract MetamorphicContract {
     }
 
     function secondDeploy() external {
-        /// Проверяем, что контракты удалены
+        /// Check that the contracts have been destroyed
         emit CodeLength(address(factory).code.length, address(first).code.length);
 
-        /// Деплоим фабрику на тот же адрес
+        /// Deploy the factory at the same address
         factory = new Factory{salt: keccak256(abi.encode("evil"))}();
 
-        /// Деплоим новый контракт на тот же адрес, что и первый
+        /// Deploy a new contract at the same address as the first one
         second = Second(factory.createSecond(42));
 
-        /// Проверяем, что адреса совпадают
+        /// Check that the addresses match
         require(address(first) == address(second));
 
-        /// Выполняем логику нового контракта
+        /// Execute the logic of the new contract
         second.setNumber(21);
 
-        /// Логируем адреса
+        /// Log the addresses
         emit SecondDeploy(address(factory), address(second));
     }
 }
