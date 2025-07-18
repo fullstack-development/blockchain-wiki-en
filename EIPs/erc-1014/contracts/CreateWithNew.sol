@@ -11,14 +11,14 @@ contract Bar {
     }
 }
 contract Deployer {
-    /// @notice Создание контракта через create без отправки ETH на новый адрес
+    /// @notice Creating a contract via create without sending ETH to the new address
     function createFoo() external returns (address) {
         Foo foo = new Foo();
 
         return address(foo);
     }
 
-    /// @notice Создание контракта через create с отправкой ETH на новый адрес
+    /// @notice Creating a contract via create with sending ETH to the new address
     function createBar() external payable returns (address) {
         Bar bar = new Bar{value: msg.value}();
 
