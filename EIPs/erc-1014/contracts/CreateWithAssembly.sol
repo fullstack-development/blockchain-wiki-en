@@ -19,7 +19,7 @@ contract Deployer {
 
         assembly {
             // Load init code into memory
-            let codeSize := mload(initCode) // Размер init code
+            let codeSize := mload(initCode) // Size of the init code
             let codeOffset := add(initCode, 0x20) // Skip 32 bytes for the array length
 
             // Call CREATE without sending msg.value
