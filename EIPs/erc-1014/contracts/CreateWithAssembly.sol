@@ -12,26 +12,26 @@ contract Bar {
 }
 
 contract Deployer {
-    /// @notice Создание контракта через create без отправки ETH на новый адрес
+    /// @notice Creating a contract via create without sending ETH to the new address
     function deployFoo() public returns (address) {
         address foo;
         bytes memory initCode = type(Foo).creationCode;
 
         assembly {
-            // Загружаем init code в память
+            // Load init code into memory
             let codeSize := mload(initCode) // Размер init code
-            let codeOffset := add(initCode, 0x20) // Пропускаем 32 байта для длины массива
+            let codeOffset := add(initCode, 0x20) // Skip 32 bytes for the array length
 
-            // Вызываем CREATE с без отправки msg.value
+            // Call CREATE without sending msg.value
             foo := create(0, codeOffset, codeSize)
-            // Проверяем, что контракт был успешно создан
+            // Check that the contract was successfully created
             if iszero(foo) { revert(0, 0) }
         }
 
         return foo;
     }
 
-    /// @notice Создание контракта через create с отправкой ETH на новый адрес
+    /// @notice Creating a contract via create with sending ETH to the new address
     function deployBar() public payable returns (address) {
         address bar;
         bytes memory initCode = type(Bar).creationCode;
@@ -46,8 +46,8 @@ contract Deployer {
         return bar;
     }
 
-    /// @notice Вычисление адреса следующего контракта который будет развернут этим контрактом
-    /// @dev Подсказка. Сразу после развертывания Deployer следующий nonce = 1
+    /// @notice Calculate the address of the next contract to be deployed by this contract
+    /// @dev Hint: Right after deployment, Deployer’s next nonce = 1
     function computeAddressWithCreate(uint256 _nonce) public view returns (address) {
         address _origin = address(this);
         bytes memory data;
