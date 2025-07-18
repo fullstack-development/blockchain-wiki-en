@@ -12,7 +12,7 @@ contract OurMultichainContract {
 contract DeployFactory {
     error AlreadyDeployed();
 
-    /// @notice Адрес Singleton Factory
+    /// @notice Address of the Singleton Factory
     address constant SAFE_SINGLETON_FACTORY = 0x914d7Fec6aaC8cd542e72Bca78B30650d45643d7;
 
     /// @notice Any fixed salt
