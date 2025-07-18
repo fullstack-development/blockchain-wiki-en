@@ -18,8 +18,9 @@ contract TestContract {
 contract FactoryAssembly {
     event Deployed(address addr, uint256 salt);
 
-    // 1. Получение байткода контракта для развертывания
-    // NOTE: _owner и _foo являются аргументами конструктора TestContract
+    // 1. Getting the contract bytecode for deployment
+    // NOTE: _owner and _foo are constructor arguments for TestContract
+
     function getBytecode(address _owner, uint256 _foo)
         public
         pure
@@ -30,8 +31,8 @@ contract FactoryAssembly {
         return abi.encodePacked(bytecode, abi.encode(_owner, _foo));
     }
 
-    // 2. Вычислите адрес контракта, который необходимо развернуть
-    // NOTE: _salt - случайное число, используемое для создания адреса.
+    // 2. Calculate the address of the contract to be deployed
+    // NOTE: _salt is a random number used for address creation.
     function getAddress(bytes memory bytecode, uint256 _salt)
         public
         view
@@ -43,35 +44,35 @@ contract FactoryAssembly {
             )
         );
 
-        // NOTE: Переведите последние 20 байт хэша в адрес
+        // NOTE: Convert the last 20 bytes of the hash to an address
         return address(uint160(uint256(hash)));
     }
 
-    // 3. Развертывание контракта
+    // 3. Deploying the contract
     // NOTE:
-    // Проверьте журнал событий Deployed, который содержит адрес развернутого TestContract.
-    // Адрес в журнале должен быть равен адресу, вычисленному выше.
+    // Check the Deployed event log, which contains the address of the deployed TestContract.
+    // The address in the log should match the address calculated above.
     function deploy(bytes memory bytecode, uint256 _salt) public payable {
         address addr;
 
         /*
-        NOTE: Как вызвать create2
+        NOTE: How to call create2
 
         create2(v, p, n, s)
-        создайте новый контракт с кодом в памяти от p до p + n
-        и отправить v ETH
-        и вернуть новый адрес
-        где новый адрес = first 20 bytes of keccak256(0xff + address(this) + s + keccak256(mem[p…(p+n)))
+        create a new contract with code in memory from p to p + n
+        and send v ETH  
+        and return the new address  
+        where the new address = first 20 bytes of keccak256(0xff + address(this) + s + keccak256(mem[p…(p+n)]))
               s = big-endian 256-bit value
         */
         assembly {
             addr :=
                 create2(
-                    callvalue(), // ETH отправленный с текущим вызовом
-                    // Фактический код начинается после пропуска первых 32 байт
+                    callvalue(), // ETH sent with the current call
+                    // Actual code starts after skipping the first 32 bytes
                     add(bytecode, 0x20),
-                    mload(bytecode), // Загрузите размер кода, содержащегося в первых 32 байтах
-                    _salt // Соль из аргументов функции
+                    mload(bytecode), // Load the size of the code contained in the first 32 bytes
+                    _salt // Salt from the function arguments
                 )
 
             if iszero(extcodesize(addr)) { revert(0, 0) }
