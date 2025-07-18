@@ -15,28 +15,28 @@ contract DeployFactory {
     /// @notice Адрес Singleton Factory
     address constant SAFE_SINGLETON_FACTORY = 0x914d7Fec6aaC8cd542e72Bca78B30650d45643d7;
 
-    /// @notice Любая фиксированная соль
+    /// @notice Any fixed salt
     bytes32 constant SALT = keccak256(bytes("any salt"));
 
-    /// @notice Адрес owner, он будет "зашит" в байт-код
-    /// Его смена приведет к смене результирующего адреса
+    /// @notice Address of the owner, it will be "hardcoded" into the bytecode  
+    /// Changing it will result in a different resulting address
     address public immutable owner = 0x32bb35Fc246CB3979c4Df996F18366C6c753c29c;
 
-    /// @notice Адрес развернутого смарт-контракта
+    /// @notice Address of the deployed smart contract
     address public immutable ourMultichainContract;
 
     constructor() {
-        /// Шаг 1. Вызываем Singleton Factory напрямую
+        /// Step 1. Call Singleton Factory directly
         (bool success, bytes memory result) = SAFE_SINGLETON_FACTORY.call(
             abi.encodePacked(SALT, type(OurMultichainContract).creationCode, abi.encode(owner))
         );
 
-        /// Шаг 2. Проверяем, что контракт еще не развернут
+        /// Step 2. Check that the contract is not deployed yet
         if (!success) {
             revert AlreadyDeployed();
         }
 
-        /// Шаг 3. Извлекаем адрес развернутого контракта
+        /// Step 3. Retrieve the address of the deployed contract
         ourMultichainContract = address(bytes20(result));
     }
 }
