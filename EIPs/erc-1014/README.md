@@ -1,24 +1,24 @@
 # EIP-1014: Skinny CREATE2
 
-**Автор:** [Роман Ярлыков](https://github.com/rlkvrv) 🧐  
+**Author:** [Roman Yarlykov](https://github.com/rlkvrv) 🧐 
 
-Раньше было лучше — ну или, по крайней мере, надежнее. Так можно сказать про опкод `CREATE`, предшественника `CREATE2`. Он был прост и не создавал проблем (возможных уязвимостей).  
+It used to be better — or at least more reliable. That's how you could describe the `CREATE` opcode, the predecessor of `CREATE2`. It was simple and didn’t cause issues (potential vulnerabilities). 
 
 
-## Опкод CREATE  
+## Opcode CREATE
 
-На самом деле, опкод `CREATE` никуда не делся — он используется всегда, когда контракт создается через ключевое слово `new`:  
+In fact, the `CREATE` opcode hasn't gone anywhere — it's used every time a contract is created using the `new` keyword:  
 
 ```solidity
 contract Bar {
-    // @notice Создание контракта через create без отправки ETH на новый адрес
+   // @notice Creating a contract via create without sending ETH to the new address
     function createFoo() external returns (address) {
         Foo foo = new Foo();
 
         return address(foo);
     }
 
-    // @notice Создание контракта через create с отправкой ETH на новый адрес
+    // @notice Creating a contract via create with sending ETH to the new address
     function createBaz() external payable returns (address) {
         Baz baz = new Baz{value: msg.value}();
 
@@ -27,35 +27,35 @@ contract Bar {
 }
 ```
 
-Полный код контракта приведен [здесь](./contracts/CreateWithNew.sol).  
+The full contract code is provided [here](./contracts/CreateWithNew.sol).  
 
-Опкод `CREATE` принимает три аргумента и возвращает одно значение:  
+The `CREATE` opcode takes three arguments and returns one value:  
 
-**Входные данные (Stack input):**  
-- `value` — количество нативной валюты в wei, которое будет отправлено на новый адрес.  
-- `offset` — смещение байтов, с которого начинается код инициализации контракта.  
-- `size` — размер кода инициализации.  
+**Input data (Stack input):**  
+- `value` — the amount of native currency in wei to be sent to the new address.  
+- `offset` — the byte offset where the contract’s initialization code starts.  
+- `size` — the size of the initialization code. 
 
-**Выходные данные (Stack output):**  
-- `address` — адрес развернутого контракта либо `0`, если произошла ошибка.  
+**Output data (Stack output):**  
+- `address` — the address of the deployed contract, or `0` if an error occurred.  
 
-Развертывание контракта через assembly выглядит нагляднее:  
+Deploying a contract via assembly looks more illustrative:  
 
 ```solidity
 contract Deployer {
-    // @notice Создание контракта через create без отправки wei на новый адрес
+   // @notice Creating a contract via create without sending wei to the new address
     function deployFoo() public returns (address) {
         address foo;
         bytes memory initCode = type(Foo).creationCode;
 
         assembly {
-            // Загружаем код инициализации в память
-            let codeSize := mload(initCode)  // Размер кода инициализации
-            let codeOffset := add(initCode, 0x20)  // Пропускаем 32 байта, содержащие длину массива initCode
+           // Load the initialization code into memory
+            let codeSize := mload(initCode) // Size of the initialization code
+            let codeOffset := add(initCode, 0x20)  // Skip 32 bytes that contain the length of the initCode array
 
-            // Вызываем CREATE без отправки msg.value
+            // Call CREATE without sending msg.value
             foo := create(0, codeOffset, codeSize)
-            // Проверяем, что контракт был успешно создан
+            // Check that the contract was successfully created
             if iszero(foo) { revert(0, 0) }
         }
 
@@ -64,31 +64,31 @@ contract Deployer {
 }
 ```
 
-Полный код контракта с созданием через assembly — [здесь](./contracts/CreateWithAssembly.sol).
+The full contract code with creation via assembly is [here](./contracts/CreateWithAssembly.sol).
 
-### Вычисление адреса опкодом CREATE (0xf0)  
+### Address Calculation with the CREATE Opcode (0xf0)
 
-Чтобы опкод `CREATE` мог вернуть адрес развернутого контракта, ему необходимы адрес вызывающей стороны (`msg.sender`) и ее `nonce`:  
+For the `CREATE` opcode to return the address of the deployed contract, it needs the caller’s address (`msg.sender`) and its `nonce`:  
 
-В упрощенном виде это выглядит так:  
+In simplified form, it looks like this:  
 ```js
 address = hash(sender, nonce)
 ```
-Но на самом деле процесс сложнее:  
+But in reality, the process is more complex:  
 ```js
 address = keccak256(rlp([sender_address, sender_nonce]))[12:]
 ```
 
-Где:  
-- `sender_address` — адрес отправителя, создающего контракт.  
-- `sender_nonce` — nonce отправителя (количество транзакций, отправленных с этого адреса).  
-- `rlp` — функция RLP-кодирования. RLP (Recursive Length Prefix) используется для сериализации данных в Ethereum, обеспечивая однозначное и предсказуемое кодирование.  
-- `keccak256` — хеш-функция Keccak-256.  
-- `[12:]` — первые 12 байт отбрасываются, поскольку `keccak256` возвращает 32 байта, а адрес в Ethereum занимает последние 20 байт хеша (32 - 20 = 12).  
+Where:  
+- `sender_address` — the address of the sender creating the contract.  
+- `sender_nonce` — the sender’s nonce (number of transactions sent from this address).  
+- `rlp` — RLP encoding function. RLP (Recursive Length Prefix) is used for serializing data in Ethereum, ensuring unambiguous and predictable encoding. 
+- `keccak256` — the Keccak-256 hash function.  
+- `[12:]` — the first 12 bytes are discarded since `keccak256` returns 32 bytes, and an Ethereum address takes the last 20 bytes of the hash (32 - 20 = 12).
 
-Таким образом, в теории можно вычислить адрес будущего контракта заранее. Однако есть проблема: этот адрес зависит от `nonce`. Если перед развертыванием контракта будет отправлена другая транзакция, `nonce` увеличится, и вычисленный адрес станет недействительным.  
+Thus, in theory, it’s possible to calculate the future contract address in advance. However, there's a problem: this address depends on the `nonce`. If another transaction is sent before the contract is deployed, the `nonce` will increase, and the calculated address will become invalid.  
 
-Из-за использования RLP для вычисления адреса в Solidity перед развертыванием необходима следующая громоздкая функция:  
+Due to the use of RLP for address calculation, the following bulky function is needed in Solidity before deployment:  
 
 ```solidity
 function computeAddressWithCreate(uint256 _nonce) public view returns (address) {
@@ -111,115 +111,115 @@ function computeAddressWithCreate(uint256 _nonce) public view returns (address) 
     return address(uint160(uint256(keccak256(data))));
 }
 ```
-Длина всего кодирования зависит от того, сколько байт нужно для кодирования `nonce`, так как адрес имеет постоянную длину 20 байт, отсюда и много `if`.
+The total encoding length depends on how many bytes are needed to encode the `nonce`, since the address has a fixed length of 20 bytes — hence all the `if` statements.
 
-Например, если nonce 0, то параметры значат следующее:
+For example, if the nonce is 0, the parameters mean the following:
 
-- `0xd6` - длина всей структуры 22 байта (в случае с `nonce` равным 0).
-- `bytes1(0x94)` - означает, что дальше идет поле длиной в 20 байт.
-- `_origin` - поле адреса.
-- `bytes1(0x80)` означает, что `nonce` равен 0, согласно RLP.
+- `0xd6` — the total length of the structure is 22 bytes (in the case where `nonce` is 0).  
+- `bytes1(0x94)` — indicates that the following field is 20 bytes long.  
+- `_origin` — the address field.  
+- `bytes1(0x80)` — indicates that the `nonce` is 0, according to RLP.
 
-Остальное аналогично, только добавляется `nonce`, как один байт и так далее. То есть в кодировке RLP важно явно указывать длину данных перед самими данными.
+The rest is similar — only the `nonce` is added as one byte and so on. In RLP encoding, it’s important to explicitly specify the length of the data before the data itself.
 
-Я добавил эту функцию контракту [Deployer](./contracts/CreateWithAssembly.sol) — можете протестировать в Remix.  
+I added this function to the [Deployer](./contracts/CreateWithAssembly.sol) contract — you can test it in Remix.  
 
-## Предпосылки создания CREATE2  
+## The Premises for CREATE2 Creation
 
-В 2018 году Виталик Бутерин предложил [EIP-1014: Skinny CREATE2](https://eips.ethereum.org/EIPS/eip-1014) со следующей мотивацией:  
+In 2018, Vitalik Buterin proposed [EIP-1014: Skinny CREATE2](https://eips.ethereum.org/EIPS/eip-1014) with the following motivation:
 
-> *"Позволяет проводить взаимодействия (фактически или контрфактически в каналах) с адресами, которые еще не существуют на блокчейне, но могут быть использованы, предполагая, что в будущем они будут содержать код, созданный определенным кодом инициализации. Важно для случаев использования каналов состояния, связанных с контрфактическими взаимодействиями с контрактами."*  
+> *"Allows interactions (actual or counterfactual in channels) with addresses that do not yet exist on-chain but can be relied on to eventually contain code created by a given initialization code. This is important for state channel use cases involving counterfactual interactions with contracts."*  
 
-Звучит сложно, но попробую объяснить. Дело в [state channels](https://ethereum.org/en/developers/docs/scaling/state-channels/). До появления rollups они рассматривались как способ масштабирования Ethereum.  
+Sounds complicated, but I’ll try to explain. It’s about [state channels](https://ethereum.org/en/developers/docs/scaling/state-channels/). Before rollups appeared, they were considered a way to scale Ethereum.
 
-Если коротко, в каналах состояния существовали неэффективности, которые можно было устранить с помощью *counterfactual instantiation*. Суть в том, что смарт-контракт мог существовать контрфактически — то есть его не нужно было развертывать, но его адрес был известен заранее.  
+In short, state channels had inefficiencies that could be eliminated with *counterfactual instantiation*. The idea is that a smart contract could exist counterfactually — meaning it didn’t need to be deployed, but its address was known in advance.  
 
-Этот контракт мог быть развернут ончейн в случае необходимости — например, если один из участников канала пытался обмануть другого в процессе офф-чейн транзакции.  
+This contract could be deployed on-chain if needed — for example, if one of the channel participants tried to cheat the other during an off-chain transaction.
 
-Пример из описания механизма:  
-> *"Представьте платежный канал между Алисой и Бобом. Алиса отправляет Бобу 4 ETH через канал, подписав соответствующую транзакцию. Эта транзакция может быть развернута ончейн в любой момент, но этого не происходит. Таким образом, можно сказать: 'Контрфактически Алиса отправила Бобу 4 ETH'. Это позволяет им действовать так, как будто транзакция уже состоялась — она окончательная в рамках заданных моделей угроз."*  
+Example from the mechanism description:  
+> *"Imagine a payment channel between Alice and Bob. Alice sends Bob 4 ETH through the channel by signing the corresponding transaction. This transaction can be deployed on-chain at any time, but it isn’t. So, you can say: 'Counterfactually, Alice has sent Bob 4 ETH'. This allows them to act as if the transaction has already happened — it is final within the given threat models."* 
 
-То есть, по теории игр, зная, что существует такая "страховка", стороны не будут пытаться обмануть друг друга, а сам контракт, скорее всего, так и не придется развертывать.  
+So, from a game theory perspective, knowing that such an "insurance" exists, the parties won’t try to cheat each other, and the contract most likely won’t even need to be deployed.
 
-Подробнее об этом можно почитать [здесь](https://medium.com/statechannels/counterfactual-generalized-state-channels-on-ethereum-d38a36d25fc6) и [здесь](https://medium.com/spankchain/a-state-channels-adventure-with-counterfactual-rick-part-1-ce68e16252ea), но тема непростая — я вас предупредил.
+You can read more about this [here](https://medium.com/statechannels/counterfactual-generalized-state-channels-on-ethereum-d38a36d25fc6) and [here](https://medium.com/spankchain/a-state-channels-adventure-with-counterfactual-rick-part-1-ce68e16252ea), but fair warning — the topic is not an easy one.
 
-## Как работает опкод CREATE2 (0xf5)  
+## How the CREATE2 Opcode Works (0xf5)
 
-Опкод `CREATE2` был введен в хардфорке *Константинополь* как альтернатива `CREATE`. Главное отличие — способ вычисления адреса создаваемого контракта. Вместо `nonce` деплойера используется код инициализации (`creationCode`) и *соль* (`salt`).  
+The `CREATE2` opcode was introduced in the *Constantinople* hard fork as an alternative to `CREATE`. The main difference is the way the address of the created contract is calculated. Instead of the deployer's `nonce`, it uses the initialization code (`creationCode`) and a *salt* (`salt`).  
 
-Новая формула вычисления адреса:  
+New address calculation formula:  
 ```js
 address = keccak256(0xff + sender_address + salt + keccak256(initialisation_code))[12:]
 ```
 
-- `0xff` — префикс, предотвращающий коллизии с адресами, созданными через `CREATE`. В RLP-кодировке `0xff` может использоваться только для данных петабайтного размера, что нереалистично в EVM. Дополнительно `keccak256` защищает от коллизий.  
-- `sender_address` — адрес отправителя, создающего контракт.
-- `salt` — 32-байтовое значение, обычно `keccak256` от некоторого набора данных, который обеспечивает уникальность этой соли. 
-- `initialisation_code` — код инициализации контракта.
+- `0xff` — a prefix that prevents collisions with addresses created via `CREATE`. In RLP encoding, `0xff` can only be used for petabyte-sized data, which is unrealistic in the EVM. Additionally, `keccak256` provides protection against collisions.  
+- `sender_address` — the address of the sender creating the contract.  
+- `salt` — a 32-byte value, usually the `keccak256` hash of some dataset that ensures the uniqueness of this salt.  
+- `initialisation_code` — the initialization code of the contract.
 
-*Важно!* Если `CREATE` или `CREATE2` вызывается в **транзакции создания** и адрес назначения уже содержит ненулевой `nonce` или непустой `code`, создание немедленно завершается (revert), аналогично ситуации, когда первый байт `initialisation_code` — недействительный опкод.  
+*Important!* If `CREATE` or `CREATE2` is called in a **contract creation transaction** and the target address already has a non-zero `nonce` or non-empty `code`, the creation immediately reverts — similar to the case when the first byte of the `initialisation_code` is an invalid opcode.  
 
-Это означает, что если при деплое случится коллизия адреса с уже существующим контрактом (например, развернутым через `CREATE`), произойдет `revert`, так как `nonce` адреса уже ненулевой. Это поведение **нельзя изменить даже через `SELFDESTRUCT`**, так как он не сбрасывает `nonce` в той же транзакции.  
+This means that if a deployment results in an address collision with an already existing contract (for example, one deployed via `CREATE`), a `revert` will occur because the address’s `nonce` is already non-zero. This behavior **cannot be changed even with `SELFDESTRUCT`**, since it does not reset the `nonce` within the same transaction.  
 
-По сравнению с `CREATE`, `CREATE2` отличается лишь добавлением одного параметра на входе — `salt`.
+Compared to `CREATE`, `CREATE2` differs only by the addition of one input parameter — `salt`.
 
-**Входные данные (Stack input):**
-- `value` — количество нативной валюты (wei) для отправки на новый адрес.  
-- `offset` — смещение байтов, с которого начинается код инициализации.  
-- `size` — размер кода инициализации.  
-- `salt` — 32-байтовое значение, используемое при создании контракта.  
+**Input data (Stack input):**  
+- `value` — the amount of native currency (wei) to send to the new address.  
+- `offset` — the byte offset where the initialization code starts.  
+- `size` — the size of the initialization code.  
+- `salt` — a 32-byte value used during contract creation.  
 
-**Выходные данные (Stack output):**  
-- `address` — адрес развернутого контракта или `0`, если произошла ошибка.  
+**Output data (Stack output):**  
+- `address` — the address of the deployed contract, or `0` if an error occurred.  
 
-### Использование CREATE2 в Solidity  
+### Using CREATE2 in Solidity  
 
-В Solidity `CREATE2` можно использовать так же, как `CREATE`, просто добавив `salt`:  
+In Solidity, `CREATE2` can be used just like `CREATE`, simply by adding a `salt`: 
 
 ```solidity
 contract DeployerCreate2 {
-    /// @notice Создание контракта через create2 без отправки wei
+   /// @notice Creating a contract via create2 without sending wei
     function create2Foo(bytes32 _salt) external returns (address) {
         Foo foo = new Foo{salt: _salt}();
         return address(foo);
     }
 
-    /// @notice Создание контракта через create2 с отправкой wei
+    /// @notice Creating a contract via create2 with sending wei
     function create2Bar(bytes32 _salt) external payable returns (address) {
         Bar bar = new Bar{value: msg.value, salt: _salt}();
         return address(bar);
     }
 }
 ```
-Полный код контракта [здесь](./contracts/Create2WithNew.sol).  
+The full contract code is [here](./contracts/Create2WithNew.sol).  
 
-*Важно!* Опкоды `CREATE` и `CREATE2` используются только для создания смарт-контрактов из других смарт-контрактов. При первоначальном развертывании контракта все происходит совсем иначе - в поле транзакции `to` записывается `nil` (аналог `null`), а его фактическое создание выполняется опкодом `RETURN` в `creationCode`, а не `CREATE`.
+*Important!* The `CREATE` and `CREATE2` opcodes are used only for creating smart contracts from other smart contracts. During the initial deployment of a contract, things work very differently — the `to` field in the transaction is set to `nil` (equivalent to `null`), and the actual creation is done by the `RETURN` opcode inside the `creationCode`, not by `CREATE`.
 
-### CREATE2 с помощью Assembly  
+### CREATE2 Using Assembly  
 
-Пример кода на *Assembly* (взято из [Cyfrin](https://www.cyfrin.io/glossary/precompute-contract-address-with-create2-solidity-code-example)):  
+Example code in *Assembly* (taken from [Cyfrin](https://www.cyfrin.io/glossary/precompute-contract-address-with-create2-solidity-code-example)):  
 
 ```solidity
 function deploy(bytes memory bytecode, uint256 _salt) public payable {
     address addr;
 
     /*
-    NOTE: Как вызвать create2
+    NOTE: How to call create2
 
-    create2(v, p, n, s)
-    создает новый контракт с кодом в памяти от p до p + n
-    и отправляет v wei
-    и возвращает новый адрес
-    где новый адрес = первые 20 байт keccak256(0xff + address(this) + s + keccak256(mem[p…(p+n)]))
-          s = big-endian 256-битное значение
+   create2(v, p, n, s)  
+    creates a new contract with code in memory from p to p + n  
+    and sends v wei  
+    and returns the new address  
+    where the new address = first 20 bytes of keccak256(0xff + address(this) + s + keccak256(mem[p…(p+n)]))  
+          s = a big-endian 256-bit value
     */
     assembly {
         addr :=
             create2(
-                callvalue(),       // wei, отправленный с вызовом
-                add(bytecode, 0x20),  // Код начинается после первых 32 байт (длина массива)
-                mload(bytecode),   // Размер кода (первые 32 байта)
-                _salt              // Соль
+               callvalue(),       // wei sent with the call
+                add(bytecode, 0x20),  // Code starts after the first 32 bytes (array length)
+                mload(bytecode),   // Code size (first 32 bytes)
+                _salt              // Salt
             )
 
         if iszero(extcodesize(addr)) { revert(0, 0) }
@@ -228,13 +228,13 @@ function deploy(bytes memory bytecode, uint256 _salt) public payable {
     emit Deployed(addr, _salt);
 }
 ```
-Полный код контракта [здесь](./contracts/Create2WithAssembly.sol).  
+The full contract code is [here](./contracts/Create2WithAssembly.sol).  
 
-## Траты на газ  
+## Gas Costs  
 
-Ранее, при вычислении адреса через `CREATE`, использовались только `address` и `nonce`, занимающие не более 64 байт. Поэтому дополнительная плата за вычисления не взималась ([см. evm.codes](https://www.evm.codes/?fork=cancun#f0)).  
+Previously, when computing the address via `CREATE`, only `address` and `nonce` were used, taking no more than 64 bytes. That’s why no additional gas was charged for computation ([see evm.codes](https://www.evm.codes/?fork=cancun#f0)).  
 
-В `CREATE2` добавилось вычисление хеша от кода инициализации (`hash_cost`), так как его размер может сильно варьироваться. Это изменило формулу расчета газа:  
+In `CREATE2`, a hash of the initialization code (`hash_cost`) is added to the computation, since its size can vary greatly. This changed the gas calculation formula:  
 
 ```js
 minimum_word_size = (size + 31) / 32
@@ -245,39 +245,40 @@ code_deposit_cost = 200 * deployed_code_size
 static_gas = 32000
 dynamic_gas = init_code_cost + hash_cost + memory_expansion_cost + deployment_code_execution_cost + code_deposit_cost
 ```
-Таким образом, использование `CREATE2` обходится дороже `CREATE`, но дает возможность более гибко работать с адресом смарт-контракта до его создания, что открывает новые возможности.
+Thus, using `CREATE2` is more expensive than `CREATE`, but it allows more flexibility when working with a smart contract’s address before it’s created — which opens up new possibilities.
 
-## Преимущества CREATE2  
+## Advantages of CREATE2  
 
-Что дало введение нового опкода?  
+What did the introduction of the new opcode bring?  
 
-1. **Контрфактическая инициализация**  
-   `CREATE2` позволяет резервировать адреса контрактов до их фактического развертывания. Это особенно полезно в каналах состояния, о которых мы говорили ранее.  
+1. **Counterfactual Initialization**  
+   `CREATE2` allows reserving contract addresses before they are actually deployed. This is especially useful in state channels, as we discussed earlier.  
 
-2. **Упрощение онбординга пользователей**  
-   В контексте абстракции аккаунтов контрфактическая инициализация позволяет создавать аккаунты оффчейн и развертывать их только при первой транзакции, которая к тому же может быть оплачена через релейный сервер. Это делает создание *абстрактного аккаунта* проще, чем создание EOA.  
+2. **Simplified User Onboarding**  
+   In the context of account abstraction, counterfactual initialization allows creating accounts off-chain and deploying them only with the first transaction — which can even be paid for via a relayer. This makes creating an *abstract account* easier than creating an EOA.  
 
-   В момент появления `CREATE2` это было лишь идеей, но спустя три года концепция была реализована в [ERC-4337](https://eips.ethereum.org/EIPS/eip-4337#first-time-account-creation). Для этого используется статический вызов `entryPoint.getSenderAddress(bytes initCode)`, который позволяет получить контрфактический адрес кошелька до его создания.  
+   When `CREATE2` first appeared, it was just an idea — but three years later, the concept was implemented in [ERC-4337](https://eips.ethereum.org/EIPS/eip-4337#first-time-account-creation). It uses a static call to `entryPoint.getSenderAddress(bytes initCode)`, which allows retrieving the counterfactual wallet address before it's deployed.  
 
-3. **Vanity-адреса**  
-   Можно подобрать "красивый" адрес, перебирая `salt`, например, если хотите, чтобы он начинался или заканчивался на определенные символы: `0xC0FFEE...`, `0xDEADBEEF...` и т. д.  
+3. **Vanity Addresses**  
+   You can generate a "pretty" address by brute-forcing the `salt`, for example, if you want it to start or end with certain characters: `0xC0FFEE...`, `0xDEADBEEF...`, and so on.  
 
-4. **Эффективные адреса**  
-   В EVM стоимость нулевых и ненулевых байт различается. За каждый ненулевой байт `calldata` взимается `G_txdatanonzero` (16 газа), а за нулевой — `G_txdatazero` (4 газа). Это значит, что если ваш адрес начинается с нулей, его использование будет дешевле.  
+4. **Efficient Addresses**  
+   In the EVM, the gas cost differs for zero and non-zero bytes. Each non-zero byte in `calldata` costs `G_txdatanonzero` (16 gas), while a zero byte costs `G_txdatazero` (4 gas). This means that if your address starts with zeros, using it will be cheaper.
 
-   Здесь подробно разобран этот аспект: [On Efficient Ethereum Addresses](https://medium.com/coinmonks/on-efficient-ethereum-addresses-3fef0596e263) (хотя расчеты по газу уже устарели из-за изменения стоимости `calldata`).  
+   This aspect is explained in detail here: [On Efficient Ethereum Addresses](https://medium.com/coinmonks/on-efficient-ethereum-addresses-3fef0596e263) (though the gas calculations are outdated due to changes in `calldata` pricing).  
 
-5. **Метаморфичные контракты**  
-   Способ обновления контрактов через `CREATE2`, при котором контракт уничтожается (`SELFDESTRUCT`) и создается заново с тем же адресом, но с новым кодом. К счастью сообщество не приняло этот подход, например, в [этой статье](https://0age.medium.com/the-promise-and-the-peril-of-metamorphic-contracts-9eb8b8413c5e) его называют *"уродливым сводным братом Transparent Proxy"*.  
+5. **Metamorphic Contracts**  
+   A method of upgrading contracts via `CREATE2`, where a contract is destroyed (`SELFDESTRUCT`) and then recreated at the same address with new code. Fortunately, the community didn’t adopt this approach — for example, in [this article](https://0age.medium.com/the-promise-and-the-peril-of-metamorphic-contracts-9eb8b8413c5e) it’s called the *"ugly stepbrother of the Transparent Proxy."*
 
-   Примеры кода можно посмотреть [здесь](https://github.com/0age/metamorphic/blob/master/README.md).  
+   You can check out code examples [here](https://github.com/0age/metamorphic/blob/master/README.md).  
 
-6. **Вычисление адреса вместо хранения**  
-   В ряде случаев проще вычислить адрес контракта, развернутого через `CREATE2`, чем хранить его. Яркий пример — *Uniswap v2*.  
+6. **Address Calculation Instead of Storage**  
+   In many cases, it’s easier to compute the address of a contract deployed via `CREATE2` than to store it. A clear example of this is *Uniswap v2*.  
 
-   **Как это работает?**  
+   **How does it work?**  
 
-   - Для создания пар через [UniswapV2Factory](https://github.com/Uniswap/v2-core/blob/ee547b17853e71ed4e0101ccfd52e70d5acded58/contracts/UniswapV2Factory.sol#L23) используется `CREATE2`, а в качестве соли используются адреса двух токенов в паре. Обратите внимание, что контракт пары использует функцию `initialize` для сохранения адресов токенов, это важный момент.
+- To create pairs via [UniswapV2Factory](https://github.com/Uniswap/v2-core/blob/ee547b17853e71ed4e0101ccfd52e70d5acded58/contracts/UniswapV2Factory.sol#L23), `CREATE2` is used, and the salt is derived from the addresses of the two tokens in the pair. Note that the pair contract uses an `initialize` function to store the token addresses — this is an important detail.
+
 
      ```solidity
      function createPair(address tokenA, address tokenB) external returns (address pair) {
@@ -292,7 +293,8 @@ dynamic_gas = init_code_cost + hash_cost + memory_expansion_cost + deployment_co
      }
      ```
 
-   - Теперь библиотека `UniswapV2Library` может **вычислять** адрес пары, используя заранее известный `init code hash` в функции [pairFor]([UniswapV2Library::pairFor](https://github.com/Uniswap/v2-periphery/blob/0335e8f7e1bd1e8d8329fd300aea2ef2f36dd19f/contracts/libraries/UniswapV2Library.sol#L18)). При этом код инициализации можно просто захардкодить, потому что нам не нужно добавлять аргументы конструктора (именно поэтому используется `initialize`):  
+   - Now the `UniswapV2Library` can **compute** the pair address using the known `init code hash` in the [pairFor](https://github.com/Uniswap/v2-periphery/blob/0335e8f7e1bd1e8d8329fd300aea2ef2f36dd19f/contracts/libraries/UniswapV2Library.sol#L18) function. The initialization code can be hardcoded, because there’s no need to pass constructor arguments — that’s exactly why `initialize` is used:
+  
 
      ```solidity
      function pairFor(address factory, address tokenA, address tokenB) internal pure returns (address pair) {
@@ -306,9 +308,10 @@ dynamic_gas = init_code_cost + hash_cost + memory_expansion_cost + deployment_co
      }
      ```
 
-     ⚠️ *Если форкаете Uniswap v2, не забудьте поменять `init code hash`, так как он зависит от фабрики (`factory`), адрес которой устанавливается в конструкторе контракта пары.*  
+    ⚠️ *If you're forking Uniswap v2, don’t forget to change the `init code hash`, as it depends on the factory (`factory`), whose address is set in the constructor of the pair contract.*  
 
-   - Ну и теперь имея функцию `pairFor` можно спокойно вычислять этот адрес когда необходимо. Только посмотрите как часто эта функция используется в [UniswapV2Router01](https://github.com/Uniswap/v2-periphery/blob/master/contracts/UniswapV2Router01.sol). К примеру так выглядит функция добавления ликвидности:
+   - And now, with the `pairFor` function, you can easily compute this address whenever needed. Just look at how often this function is used in [UniswapV2Router01](https://github.com/Uniswap/v2-periphery/blob/master/contracts/UniswapV2Router01.sol). For example, here’s how the add liquidity function looks:
+
 
      ```solidity
      function addLiquidity(
@@ -327,23 +330,25 @@ dynamic_gas = init_code_cost + hash_cost + memory_expansion_cost + deployment_co
      }
      ```
 
-Как видно, `CREATE2` открыл множество новых возможностей, хотя у него есть и недостатки.
+As you can see, `CREATE2` has unlocked a lot of new possibilities, though it also comes with some drawbacks.
 
-## Уязвимость CREATE2  
+## CREATE2 Vulnerability  
 
-В документации Solidity можно встретить следующее предупреждение:  
+You can find the following warning in the Solidity documentation:  
 
-> "*Создание солей имеет некоторые особенности. Контракт может быть повторно создан по тому же адресу после того, как он был уничтожен. При этом вновь созданный контракт может иметь другой развернутый байткод, даже если байткод создания был тем же самым (что является обязательным условием, поскольку в противном случае адрес изменился бы). Это связано с тем, что конструктор может запросить внешнее состояние, которое могло измениться между двумя созданиями, и включить его в развернутый байткод до того, как он будет сохранен."*  
+> "*Salt creation has some caveats. A contract can be re-created at the same address after it has been destroyed. The newly created contract can have different deployed bytecode, even if the creation bytecode was the same (which is required, otherwise the address would change). This happens because the constructor may query external state, which might have changed between the two deployments, and include it in the deployed bytecode before it’s stored.*"
 
-Речь идет о хорошо известной уязвимости: комбинация `CREATE` и `CREATE2` в сочетании с `SELFDESTRUCT` позволяет развернуть на одном и том же адресе **разные** контракты. Именно этот метод использовали при [взломе Tornado Cash](https://coinsbench.com/understanding-soliditys-create-create2-with-tornado-cash-1m-hack-01f8c147e5c7), когда был украден $1M.  
+This refers to a well-known vulnerability: a combination of `CREATE` and `CREATE2` together with `SELFDESTRUCT` allows deploying **different** contracts at the same address.  
+This exact method was used in the [Tornado Cash hack](https://coinsbench.com/understanding-soliditys-create-create2-with-tornado-cash-1m-hack-01f8c147e5c7), where $1M was stolen.  
 
-Это также касается **метаморфических контрактов**.   
+This also applies to **metamorphic contracts**.  
 
-### Демонстрация атаки  
+### Attack Demonstration  
 
-Есть [репозиторий](https://github.com/ManaanAnsari/solidity-metamorphic-contracts-example/blob/main/test/MetamorphicContract.t.sol), в котором повторяется подобная атака. Я немного изменил этот код, чтобы можно было проверить его в Remix, ниже мы его разберем чуть подробнее:
+There’s a [repository](https://github.com/ManaanAnsari/solidity-metamorphic-contracts-example/blob/main/test/MetamorphicContract.t.sol) that reproduces a similar attack.  
+I slightly modified that code so it can be tested in Remix — we’ll go through it in more detail below:
 
-Контракт фабрики:  
+Factory contract:  
 ```solidity
 contract Factory {
     function createFirst() public returns (address) {
@@ -359,9 +364,9 @@ contract Factory {
     }
 }
 ```
-Эта фабрика создает контракты **с идентичными адресами, но разным кодом**. 😈  
+This factory creates contracts **with identical addresses but different code**. 😈  
 
-Шаг 1. Деплоим `MetamorphicContract` и вызываем функцию `firstDeploy`:
+Step 1. Deploy `MetamorphicContract` and call the `firstDeploy` function:
 
 ```solidity
 function firstDeploy() external {
@@ -374,55 +379,55 @@ function firstDeploy() external {
     factory.kill();
 }
 ```
-Этот вызов:  
-- Деплоит фабрику и первую версию контракта.  
-- Уничтожает их сразу после развертывания.  
-- Логирует их адреса.
-- Уничтожает оба контракта.
+This call:  
+- Deploys the factory and the first version of the contract.  
+- Immediately destroys them after deployment.  
+- Logs their addresses.  
+- Destroys both contracts.
 
-Результат в Remix:  
+Result in Remix:  
 ![first-deploy-logs](./img/first-deploy-logs.png)  
 
-Шаг 2. Теперь можно вызывать функцию `secondDeploy`:
+Step 2. Now you can call the `secondDeploy` function:
 
 ```solidity
 function secondDeploy() external {
-    /// Проверяем, что контракты удалены
+   /// Check that the contracts have been destroyed
     emit CodeLength(address(factory).code.length, address(first).code.length);
 
-    /// Деплоим фабрику на тот же адрес
+    /// Deploy the factory at the same address
     factory = new Factory{salt: keccak256(abi.encode("evil"))}();
 
-    /// Деплоим новый контракт на тот же адрес, что и первый
+    /// Deploy a new contract at the same address as the first one
     second = Second(factory.createSecond(42));
 
-    /// Проверяем, что адреса совпадают
+    /// Check that the addresses match
     require(address(first) == address(second));
 
-    /// Выполняем логику нового контракта
+    /// Execute the logic of the new contract
     second.setNumber(21);
 
-    /// Логируем адреса
+    /// Log the addresses
     emit SecondDeploy(address(factory), address(second));
 }
 ```
-Результат в Remix:  
+Result in Remix:  
 ![second-deploy-logs](./img/second-deploy-logs.png)  
 
-**Что здесь произошло?**
+**What just happened?**
 
-1. Развернули фабрику через `CREATE2` с фиксированной солью.  
-2. Фабрика через `CREATE` создала контракт-имплементацию. Ее адрес зависит от адреса фабрики и `nonce`.  
-3. Уничтожили оба контракта (`SELFDESTRUCT`). Это **обнулило nonce** фабрики.  
-4. Развернули ту же фабрику **по тому же адресу** (так как соль не изменилась).  
-5. Развернули **другую** имплементацию **по тому же адресу**, так как `nonce` фабрики снова `0`.  
-6. Теперь на одном и том же адресе — совершенно другой код!  
+1. Deployed the factory using `CREATE2` with a fixed salt.  
+2. The factory used `CREATE` to deploy an implementation contract. Its address depends on the factory’s address and its `nonce`.  
+3. Both contracts were destroyed using `SELFDESTRUCT`. This **reset the factory’s nonce**.  
+4. Deployed the same factory **at the same address** (since the salt didn’t change).  
+5. Deployed a **different** implementation **at the same address**, because the factory’s `nonce` is again `0`.  
+6. Now there's completely different code at the exact same address!  
 
-Полный код контракта [тут](./contracts/MetamorphicContract.sol).
+The full contract code is [here](./contracts/MetamorphicContract.sol).
 
-Теперь вы знаете, как можно развернуть **разные** контракты на **одном** адресе. 🚨
+Now you know how to deploy **different** contracts at the **same** address. 🚨
 
-## Ссылки
+## Links
 
 - [EIP-1014: Skinny CREATE2](https://eips.ethereum.org/EIPS/eip-1014)
 - [Docs: Salted contract creations / create2](https://docs.soliditylang.org/en/latest/control-structures.html#salted-contract-creations-create2)
