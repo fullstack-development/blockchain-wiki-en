@@ -154,7 +154,7 @@ ERC-6909 introduces a hybrid approval system. There are two ways to grant approv
 - **To an operator**, allowing unlimited use of tokens on behalf of the user. The operator can manage any of the user’s tokens (with any `id`).
 - **To an arbitrary account**, with a limit on the number of tokens it can use on behalf of the user.
 
-Таким образом интерфейс ERC-6909 предоставляет две функции для реализации работы с апрувом:
+Thus, the ERC-6909 interface provides two functions for implementing approval logic:
 
 ```solidity
 - function setOperator(address spender, bool approved) public returns (bool);
