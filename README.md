@@ -63,7 +63,7 @@ Join our TG-channel: [MetaLamp|Web3 DevTeam](https://t.me/metametalamp)
           - [Overview](./concepts/oracles/README.md)
           - [Uniswap TWAP vs oracle](./concepts/oracles/twap.md)
         </details>
-        - [Safe Singleton Factory](./concepts/safe-singleton-factory/README.md)
+      - [Safe Singleton Factory](./concepts/safe-singleton-factory/README.md)
       - <details>
           <summary>Upgradeable contracts</summary>
 
