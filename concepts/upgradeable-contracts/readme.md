@@ -21,6 +21,7 @@ The executable code can be changed in several ways:
 3. Using **Proxy patterns** to delegate function calls from an immutable proxy contract to a mutable logic contract. [More details](./method-3/readme.md).
 4. Using **Strategy pattern**. Creating an immutable main contract that interacts with flexible auxiliary contracts and relies on them to perform certain functions. [More details](./method-4/readme.md).
 5. Using **Diamond pattern** to delegate function calls from a proxy contract to logic contracts. [More details](./method-5/readme.md).
+6. The routing approach in Pendle. [Read more](./method-6/README.md).
 
 ## Pros and Cons of Updating Smart Contracts
 
