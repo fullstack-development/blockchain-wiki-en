@@ -73,6 +73,7 @@ Join our TG-channel: [MetaLamp|Web3 DevTeam](https://t.me/metametalamp)
           - [Proxy pattern](./concepts/upgradeable-contracts/method-3/README.md)
           - [Strategy pattern](./concepts/upgradeable-contracts/method-4/README.md)
           - [Diamond pattern](./concepts/upgradeable-contracts/method-5/README.md)
+          - [Pendle routing way](./concepts/upgradeable-contracts/method-6/README.md)
         </details>
     </details>
   - <details>
