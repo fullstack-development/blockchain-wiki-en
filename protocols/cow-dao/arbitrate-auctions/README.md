@@ -341,7 +341,7 @@ Where:
 - `protocol_fees` – protocol fees
 - `native_price_buy_token` – price of the buy token in ETH (from the auction)
 
-**Пример расчета для sell ордера:**
+**Example calculation for a sell order:**
 ```
 Sell order: sell 1 ETH for USDC
 - Limit price: 1 ETH = 2000 USDC
