@@ -140,6 +140,7 @@ Join our TG-channel: [MetaLamp|Web3 DevTeam](https://t.me/metametalamp)
   - <details>
       <summary>Guides</summary>
 
+      - [EIP-7702. Создание смарт-контракта `Wallet.sol`](./guides/eip-7702/README.md)
       - [Uniswap-v2](./guides/uniswap-v2/README.md)
       - [Uniswap-v3](./guides/uniswap-v3/README.md)
     </details>
