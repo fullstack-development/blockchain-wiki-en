@@ -186,7 +186,7 @@ The test shows that the constructor of the `Delegation` smart contract didn’t 
 
 ![](./images/eip-7702-storage-example.png)
 
-Full example of the `test_workWithStorage` test can be found in [Delegation.t.sol](./contracts/storageExample/Delegation.sol).
+Full example of the `test_workWithStorage` test can be found in [Delegation.t.sol](./contracts/storageExample/Delegation.t.sol).
 
 _Important!_ In fact, the constructor of the smart contract can still be used for `immutable` variables, since such variables become part of the contract’s bytecode after deployment.
 
