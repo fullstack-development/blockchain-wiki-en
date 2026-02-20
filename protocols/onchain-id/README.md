@@ -44,9 +44,9 @@ In this article, we look at ONCHAINID as a protocol:
 
 **ERC-735 (Claim Manager)** – a standard for managing claims in an identity contract. It defines the structure of a claim and methods for adding, verifying, and removing them.
 
-**Key (ключ)** – an address identifier in the identity contract. Typically represented as `keccak256(abi.encode(address))`. Each key has a purpose and a keyType (signature type).
+**Key** – an address identifier in the identity contract. Typically represented as `keccak256(abi.encode(address))`. Each key has a purpose and a keyType (signature type).
 
-**Claim (аттestation)** – a statement about the identity holder, signed by a Claim Issuer. For example: "KYC passed", "country of residence: USA", "accredited investor". Stored onchain as a structure with topic, scheme, issuer, signature, data, and uri.
+**Claim (attestation)** – a statement about the identity holder, signed by a Claim Issuer. For example: "KYC passed", "country of residence: USA", "accredited investor". Stored onchain as a structure with topic, scheme, issuer, signature, data, and uri.
 
 **Claim Topic** – the type of claim, represented as a `uint256` (e.g., 1 = KYC, 2 = AML, 3 = COUNTRY). The ecosystem agrees on how to interpret the topic ID.
 
@@ -482,7 +482,7 @@ This scenario is used in enterprise setups and T-REX, where the backend (token i
    factory.createIdentityWithManagementKeys(
        investorWallet,        // investor address
        "investor-123-v1",     // custom salt
-       managementKeys        // MANAGEMENT keys для backend
+       managementKeys        // MANAGEMENT keys for backend
    );
    ```
    

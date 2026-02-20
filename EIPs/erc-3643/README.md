@@ -163,7 +163,7 @@ Thus, the MANAGEMENT Key has full control over the identity: it can add and remo
 
 Thus, the CLAIM Key can only manage claims and does not have access to key management. This allows for separation of responsibilities: the MANAGEMENT Key controls everything, while the CLAIM Key can be given to a separate service solely for handling claims.
 
-### 4.6. Claim Issuer контракт
+### 4.6. Claim Issuer Contract
 
 The Claim Issuer owner, via the **MANAGEMENT Key**, operates through the `onlyManager` modifier and has access to the following functionality:
 - `revokeClaimBySignature(bytes signature)` – revoke a claim using its signature
