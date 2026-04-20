@@ -146,6 +146,7 @@ Join our TG-channel: [MetaLamp|Web3 DevTeam](https://t.me/metametalamp)
       - [EIP-7702. Создание смарт-контракта `Wallet.sol`](./guides/eip-7702/README.md)
       - [Uniswap-v2](./guides/uniswap-v2/README.md)
       - [Uniswap-v3](./guides/uniswap-v3/README.md)
+      - [Uniswap v3/v4: how to calculate a human-readable price from tick and sqrtPriceX96](./guides/uniswap-v3-and-v4-price-guide/README.md)
     </details>
   - <details>
       <summary>Protocols</summary>
