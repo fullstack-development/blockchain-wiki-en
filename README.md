@@ -51,7 +51,7 @@ Join our TG-channel: [MetaLamp|Web3 DevTeam](https://t.me/metametalamp)
           - [Overview](./concepts/dao/README.md)
           - [OpenZeppelin governance](./concepts/dao/openzeppelin-governance/README.md)
         </details>
-      - [Digital Signatures on ethereum](./concepts/digital-signature-on-ethereum/README.md)
+      - [Digital Signatures on Ethereum](./concepts/digital-signature-on-ethereum/README.md)
       - [Hash time locked contract (HTLC)](./concepts/hash-time-locked-contracts/README.md)
       - [Intent based protocols](./concepts/intent-based-protocols/README.md)
       - [keccak256](./concepts/keccak256/README.md)
